@@ -13,6 +13,7 @@ function love.conf(configuration)
         },
 
         window = {
+            icon = 'Assets/Icon.png',
             resizable = true,
             title = "Nexus",
         },
