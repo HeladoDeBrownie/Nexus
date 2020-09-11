@@ -5,13 +5,6 @@ function love.conf(configuration)
         gammacorrect = true,
         identity = 'helado_Nexus',
 
-        modules = {
-            font = false,
-            physics = false,
-            touch = false,
-            video = false,
-        },
-
         window = {
             icon = 'Assets/Icon.png',
             resizable = true,
