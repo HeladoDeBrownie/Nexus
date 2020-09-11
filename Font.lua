@@ -54,14 +54,19 @@ function Font:print(text)
     local x, y = 0, 0
 
     for character in text:gmatch'.' do
-        local quad = self_.love_quads[character]
+        if character == '\n' then
+            x = 0
+            y = y + self_.metadata.glyph_height
+        else
+            local quad = self_.love_quads[character]
 
-        if quad == nil then
-            quad = self_.love_missing_glyph_quad
+            if quad == nil then
+                quad = self_.love_missing_glyph_quad
+            end
+
+            lg.draw(self_.love_image, quad, x, y)
+            x = x + self_.metadata.glyph_width
         end
-
-        lg.draw(self_.love_image, quad, x, y)
-        x = x + self_.metadata.glyph_width
     end
 end
 
