@@ -1,7 +1,9 @@
+local lg = love.graphics
+local utf8 = require'utf8'
+
 local Font = {}
 local private = setmetatable({}, {__mode = 'k'})
 local font_metatable = {__index = Font}
-local lg = love.graphics
 
 function Font.new(metadata)
     local result = setmetatable({}, font_metatable)
@@ -14,7 +16,7 @@ function Font.new(metadata)
     local quads = {}
     local column, row = 1, 0
 
-    for character in characters:gmatch'.' do
+    for character in characters:gmatch(utf8.charpattern) do
         quads[character] =
             lg.newQuad(
                 column * glyph_width,
@@ -53,7 +55,7 @@ function Font:print(text)
     local self_ = private[self]
     local x, y = 0, 0
 
-    for character in text:gmatch'.' do
+    for character in text:gmatch(utf8.charpattern) do
         if character == '\n' then
             x = 0
             y = y + self_.metadata.glyph_height
