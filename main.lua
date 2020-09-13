@@ -10,6 +10,7 @@ local TextBuffer = require'TextBuffer'
 local buffer
 local font
 local shader
+local scale = 4
 
 -- # Helpers
 
@@ -60,6 +61,12 @@ function love.keypressed(key)
     end
 end
 
+function love.wheelmoved(_, y)
+    if (is_ctrl_down()) then
+        scale = math.max(1, math.min(scale + y, 8))
+    end
+end
+
 function love.textinput(text)
     buffer:append(text)
 end
@@ -75,7 +82,7 @@ function love.draw()
 
     -- Scale everything up so that the text is readable.
     -- This will be set by a setting later.
-    lg.scale(8)
+    lg.scale(scale)
 
     -- Display some sample text while things are still largely unimplemented.
     font:print('type here: ' .. buffer:read())
