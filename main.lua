@@ -62,7 +62,7 @@ function love.keypressed(key)
 end
 
 function love.wheelmoved(_, y)
-    if (is_ctrl_down()) then
+    if is_ctrl_down() then
         scale = math.max(1, math.min(scale + y, 8))
     end
 end
