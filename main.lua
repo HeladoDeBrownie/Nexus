@@ -44,6 +44,8 @@ end
 function love.keypressed(key)
     if key == 'backspace' then
         buffer:backspace()
+    elseif key == 'return' then
+        buffer:append'\n'
     end
 end
 
