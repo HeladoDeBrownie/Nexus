@@ -12,6 +12,11 @@ local shader
 
 -- # Helpers
 
+local function is_ctrl_down()
+    local isDown = love.keyboard.isDown
+    return isDown'lctrl' or isDown'rctrl'
+end
+
 local function rgb24_to_love_color(red, green, blue)
     return red / 255, green / 255, blue / 255, 1
 end
@@ -46,6 +51,10 @@ function love.keypressed(key)
         buffer:backspace()
     elseif key == 'return' then
         buffer:append'\n'
+    elseif is_ctrl_down() then
+        if key == 'v' then
+            buffer:append(love.system.getClipboardText())
+        end
     end
 end
 
