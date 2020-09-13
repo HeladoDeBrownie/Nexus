@@ -1,6 +1,7 @@
 -- # Modules
 
 local lg = love.graphics
+local lk = love.keyboard
 local Font = require'Font'
 local TextBuffer = require'TextBuffer'
 
@@ -13,8 +14,7 @@ local shader
 -- # Helpers
 
 local function is_ctrl_down()
-    local isDown = love.keyboard.isDown
-    return isDown'lctrl' or isDown'rctrl'
+    return lk.isDown'lctrl' or lk.isDown'rctrl'
 end
 
 local function rgb24_to_love_color(red, green, blue)
@@ -26,6 +26,8 @@ end
 function love.load()
     -- Use nearest neighbor scaling in order to preserve pixel fidelity.
     lg.setDefaultFilter('nearest', 'nearest')
+
+    lk.setKeyRepeat(true)
 
     buffer = TextBuffer.new()
     font = Font.new(require'Assets/Font')
