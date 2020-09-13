@@ -22,6 +22,10 @@ local function rgb24_to_love_color(red, green, blue)
     return red / 255, green / 255, blue / 255, 1
 end
 
+local function run_lua_code(code)
+    return load(code, 'player input', 't')()
+end
+
 -- # Callbacks
 
 function love.load()
@@ -53,7 +57,8 @@ function love.keypressed(key)
     if key == 'backspace' then
         buffer:backspace()
     elseif key == 'return' then
-        buffer:append'\n'
+        run_lua_code(buffer:read())
+        buffer:clear()
     elseif is_ctrl_down() then
         if key == 'v' then
             buffer:append(love.system.getClipboardText())
@@ -85,7 +90,7 @@ function love.draw()
     lg.scale(scale)
 
     -- Display some sample text while things are still largely unimplemented.
-    font:print('type here: ' .. buffer:read())
+    font:print('> ' .. buffer:read())
 
     -- Revert all graphical state.
     lg.pop()

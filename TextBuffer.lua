@@ -18,6 +18,10 @@ function TextBuffer:read()
     return private[self].text
 end
 
+function TextBuffer:clear()
+    private[self].text = ''
+end
+
 function TextBuffer:append(text)
     private[self].text = private[self].text .. text
 end
