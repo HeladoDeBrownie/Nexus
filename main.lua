@@ -22,7 +22,7 @@ function love.load()
     lg.setDefaultFilter('nearest', 'nearest')
     buffer = TextBuffer.new()
     font = Font.new(require'Assets/Font')
-    shader = lg.newShader'pixel_shader.glsl'
+    shader = lg.newShader'palette_swap.glsl'
 
     shader:sendColor('palette',
         {rgb24_to_love_color(243, 243, 243)},
