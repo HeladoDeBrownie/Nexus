@@ -4,11 +4,15 @@ local font = require'Font'.new(require'Assets/Font')
 local shader = lg.newShader'pixel_shader.glsl'
 local buffer = require'TextBuffer'.new()
 
+local function rgb24_to_love_color(red, green, blue)
+    return red / 255, green / 255, blue / 255, 1
+end
+
 shader:sendColor('palette',
-    {243 / 255, 243 / 255, 243 / 255, 1},
-    {  0 / 255, 228 / 255,  54 / 255, 1},
-    {  0 / 255, 135 / 255,  81 / 255, 1},
-    { 95 / 255,  87 / 255,  79 / 255, 1}
+    {rgb24_to_love_color(243, 243, 243)},
+    {rgb24_to_love_color(  0, 228,  54)},
+    {rgb24_to_love_color(  0, 135,  81)},
+    {rgb24_to_love_color( 95,  87,  79)}
 )
 
 lg.setShader(shader)
