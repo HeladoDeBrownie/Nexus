@@ -6,10 +6,11 @@ package.path = './Modules/?.lua;' .. package.path
 local lg = love.graphics
 local lk = love.keyboard
 local Console = require'UI/Console'
+local Overlay = require'UI/Overlay'
 
 -- # State
 
-local console
+local main_widget
 local shader
 
 -- # Helpers
@@ -30,7 +31,7 @@ function love.load()
 
     lk.setKeyRepeat(true)
 
-    console = Console.new'> '
+    main_widget = Overlay.new(Console.new'1> ', Console.new'2> ')
 
     -- Set up the palette swap pixel shader.
 
@@ -49,20 +50,20 @@ function love.load()
 end
 
 function love.keypressed(key)
-    console:on_key(key, is_ctrl_down())
+    main_widget:on_key(key, is_ctrl_down())
 end
 
 function love.wheelmoved(_, y)
-    console:on_scroll(y, is_ctrl_down())
+    main_widget:on_scroll(y, is_ctrl_down())
 end
 
 function love.textinput(text)
-    console:on_text_input(text)
+    main_widget:on_text_input(text)
 end
 
 function love.draw()
     lg.push'all'
-    console:on_draw(0, 0, lg.getDimensions())
+    main_widget:on_draw(0, 0, lg.getDimensions())
     lg.pop()
 end
 
