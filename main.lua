@@ -5,15 +5,12 @@ package.path = './Modules/?.lua;' .. package.path
 
 local lg = love.graphics
 local lk = love.keyboard
-local Font = require'Font'
-local TextBuffer = require'TextBuffer'
+local Console = require'UI/Console'
 
 -- # State
 
-local buffer
-local font
+local console
 local shader
-local scale = 4
 
 -- # Helpers
 
@@ -25,12 +22,6 @@ local function rgb24_to_love_color(red, green, blue)
     return red / 255, green / 255, blue / 255, 1
 end
 
-local function run_lua_code(code)
-    local thread = love.thread.newThread(code .. '\n')
-    thread:start()
-    thread:wait()
-end
-
 -- # Callbacks
 
 function love.load()
@@ -39,8 +30,7 @@ function love.load()
 
     lk.setKeyRepeat(true)
 
-    buffer = TextBuffer.new()
-    font = Font.new(require'Assets/Carpincho Mono')
+    console = Console.new'> '
 
     -- Set up the palette swap pixel shader.
 
@@ -59,51 +49,20 @@ function love.load()
 end
 
 function love.keypressed(key)
-    local ctrl_down = is_ctrl_down()
-
-    if is_ctrl_down() then
-        if key == 'v' then
-            buffer:append(love.system.getClipboardText())
-        elseif key == 'return' then
-            buffer:append'\n'
-        end
-    else
-        if key == 'backspace' then
-            buffer:backspace()
-        elseif key == 'return' then
-            run_lua_code(buffer:read())
-            buffer:clear()
-        end
-    end
+    console:on_key(key, is_ctrl_down())
 end
 
 function love.wheelmoved(_, y)
-    if is_ctrl_down() then
-        scale = math.max(1, math.min(scale + y, 8))
-    end
+    console:on_scroll(y, is_ctrl_down())
 end
 
 function love.textinput(text)
-    buffer:append(text)
+    console:on_text_input(text)
 end
 
 function love.draw()
-    -- Save all graphical state for easy reversion later.
     lg.push'all'
-
-    -- Since lg.clear() bypasses the shader, draw a solid background instead.
-    lg.setColor(0, 0, 0, 0)
-    lg.rectangle('fill', 0, 0, lg.getDimensions())
-    lg.setColor(1, 1, 1)
-
-    -- Scale everything up so that the text is readable.
-    -- This will be set by a setting later.
-    lg.scale(scale)
-
-    -- Display some sample text while things are still largely unimplemented.
-    font:print('> ' .. buffer:read())
-
-    -- Revert all graphical state.
+    console:on_draw(0, 0, lg.getDimensions())
     lg.pop()
 end
 
