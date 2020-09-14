@@ -56,14 +56,20 @@ function love.load()
 end
 
 function love.keypressed(key)
-    if key == 'backspace' then
-        buffer:backspace()
-    elseif key == 'return' then
-        run_lua_code(buffer:read())
-        buffer:clear()
-    elseif is_ctrl_down() then
+    local ctrl_down = is_ctrl_down()
+
+    if is_ctrl_down() then
         if key == 'v' then
             buffer:append(love.system.getClipboardText())
+        elseif key == 'return' then
+            buffer:append'\n'
+        end
+    else
+        if key == 'backspace' then
+            buffer:backspace()
+        elseif key == 'return' then
+            run_lua_code(buffer:read())
+            buffer:clear()
         end
     end
 end
