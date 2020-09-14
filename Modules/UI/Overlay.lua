@@ -9,6 +9,7 @@ function Overlay.new(under_widget, over_widget)
         under_widget = under_widget,
         over_widget = over_widget,
         overlay_active = false,
+        just_switched = false,
     }
 
     return result
@@ -34,16 +35,20 @@ function Overlay:on_key(...)
     local active_widget = self:get_active_widget()
 
     if self_.overlay_active then
-        if key == 'escape' then
+        if not ctrl and key == 'escape' then
             self_.overlay_active = false
+            self_.just_switched = true
         else
-            active_widget:on_key(...)
+            self_.just_switched = false
+            return active_widget:on_key(...)
         end
     else
-        if key == '`' then
+        if not ctrl and key == '`' then
             self_.overlay_active = true
+            self_.just_switched = true
         else
-            active_widget:on_key(...)
+            self_.just_switched = false
+            return active_widget:on_key(...)
         end
     end
 end
@@ -53,7 +58,9 @@ function Overlay:on_scroll(...)
 end
 
 function Overlay:on_text_input(...)
-    return self:get_active_widget():on_text_input(...)
+    if not private[self].just_switched then
+        return self:get_active_widget():on_text_input(...)
+    end
 end
 
 return Overlay
