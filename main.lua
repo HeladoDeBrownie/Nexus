@@ -37,7 +37,7 @@ function love.load()
     lk.setKeyRepeat(true)
 
     buffer = TextBuffer.new()
-    font = Font.new(require'Assets/Font')
+    font = Font.new(require'Assets/Carpincho Mono')
 
     -- Set up the palette swap pixel shader.
 

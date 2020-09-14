@@ -1,5 +1,5 @@
 return {
-    file_name = 'Assets/Font.png',
+    file_name = 'Assets/Carpincho Mono.png',
     characters = [[
 ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ,.!?:;-–—+=~"'()[]<>{}]],
     columns = 26, rows = 4,
