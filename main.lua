@@ -1,5 +1,8 @@
 -- # Modules
 
+-- Look for modules in the Modules directory.
+package.path = './Modules/?.lua;' .. package.path
+
 local lg = love.graphics
 local lk = love.keyboard
 local Font = require'Font'
