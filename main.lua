@@ -23,7 +23,9 @@ local function rgb24_to_love_color(red, green, blue)
 end
 
 local function run_lua_code(code)
-    return load(code, 'player input', 't')()
+    local thread = love.thread.newThread(code .. '\n')
+    thread:start()
+    thread:wait()
 end
 
 -- # Callbacks
@@ -94,4 +96,8 @@ function love.draw()
 
     -- Revert all graphical state.
     lg.pop()
+end
+
+function love.threaderror(thread, error_message)
+    print(error_message)
 end
