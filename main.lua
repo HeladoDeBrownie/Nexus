@@ -7,10 +7,12 @@ local lg = love.graphics
 local lk = love.keyboard
 local Console = require'UI/Console'
 local Overlay = require'UI/Overlay'
+local Serialization = require'Serialization'
 
 -- # State
 
 local main_widget
+local settings
 local shader
 
 -- # Helpers
@@ -26,6 +28,8 @@ end
 -- # Callbacks
 
 function love.load()
+    settings = require'Settings'
+
     -- Use nearest neighbor scaling in order to preserve pixel fidelity.
     lg.setDefaultFilter('nearest', 'nearest')
 
@@ -69,4 +73,10 @@ end
 
 function love.threaderror()
     -- Swallow thread errors; if we care about them, we will ask for them.
+end
+
+function love.quit()
+    love.filesystem.write('Settings.lua',
+        Serialization.serialize_table(settings)
+    )
 end
