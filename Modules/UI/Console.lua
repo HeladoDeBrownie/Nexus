@@ -14,7 +14,7 @@ function Console.new(prompt_string)
         prompt_string = prompt_string,
         scrollback = TextBuffer.new(),
         input_buffer = TextBuffer.new(),
-        scale = 4,
+        scale = 1,
         font = Font.new(require'Assets/Carpincho Mono'),
     }
 

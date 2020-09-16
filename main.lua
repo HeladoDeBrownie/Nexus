@@ -67,6 +67,7 @@ end
 
 function love.draw()
     lg.push'all'
+    lg.scale(settings.global_scale)
     main_widget:on_draw(0, 0, lg.getDimensions())
     lg.pop()
 end
