@@ -7,6 +7,7 @@ local lg = love.graphics
 local lk = love.keyboard
 local Console = require'UI/Console'
 local Overlay = require'UI/Overlay'
+local Widget = require'UI/Widget'
 
 -- # State
 
@@ -32,6 +33,7 @@ function love.load()
     lk.setKeyRepeat(true)
 
     main_widget = Overlay.new(Console.new'1> ', Console.new'2> ')
+    registered_threads = setmetatable({}, {__mode = 'k'})
 
     -- Set up the palette swap pixel shader.
 
@@ -68,5 +70,11 @@ function love.draw()
 end
 
 function love.threaderror(thread, error_message)
-    print(error_message)
+    local associated_widget = Widget.get_associated_widget(thread)
+
+    if associated_widget ~= nil then
+        associated_widget:on_thread_error(error_message, thread)
+    else
+        print('unassociated thread error: ' .. error_message)
+    end
 end

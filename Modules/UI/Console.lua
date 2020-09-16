@@ -7,13 +7,6 @@ local Console = setmetatable({}, {__index = Widget})
 local private = setmetatable({}, {__mode = 'k'})
 local console_metatable = {__index = Console}
 
-local function run_lua_code(code)
-    -- Use a separate thread so we don't crash the main thread.
-    local thread = love.thread.newThread(code .. '\n')
-    thread:start()
-    thread:wait()
-end
-
 function Console.new(prompt_string)
     local result = setmetatable({}, console_metatable)
 
@@ -68,8 +61,14 @@ function Console:on_key(key, ctrl)
             -- Return: Run command
             local scrollback = self_.scrollback
             local input = input_buffer:read()
-            run_lua_code(input)
             scrollback:append(input .. '\n')
+
+            -- Use a separate thread so we don't crash the main thread.
+            local thread = love.thread.newThread(input_buffer:read() .. '\n')
+            self:register_associated_thread(thread)
+            thread:start()
+            thread:wait()
+
             input_buffer:clear()
             scrollback:append(self_.prompt_string)
         end
@@ -86,6 +85,10 @@ end
 
 function Console:on_text_input(text)
     private[self].input_buffer:append(text)
+end
+
+function Widget:on_thread_error(error_message, _)
+    private[self].scrollback:append(error_message .. '\n')
 end
 
 return Console
