@@ -59,18 +59,21 @@ function Console:on_key(key, ctrl)
             input_buffer:backspace()
         elseif key == 'return' then
             -- Return: Run command
-            local scrollback = self_.scrollback
             local input = input_buffer:read()
-            scrollback:append(input .. '\n')
+            self:print(input .. '\n')
 
             -- Use a separate thread so we don't crash the main thread.
             local thread = love.thread.newThread(input_buffer:read() .. '\n')
-            self:register_associated_thread(thread)
             thread:start()
             thread:wait()
+            local error_message = thread:getError()
+
+            if error_message ~= nil then
+                self:print(error_message .. '\n')
+            end
 
             input_buffer:clear()
-            scrollback:append(self_.prompt_string)
+            self:print(self_.prompt_string)
         end
     end
 end
@@ -85,10 +88,6 @@ end
 
 function Console:on_text_input(text)
     private[self].input_buffer:append(text)
-end
-
-function Widget:on_thread_error(error_message, _)
-    private[self].scrollback:append(error_message .. '\n')
 end
 
 return Console

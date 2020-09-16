@@ -33,7 +33,6 @@ function love.load()
     lk.setKeyRepeat(true)
 
     main_widget = Overlay.new(Console.new'1> ', Console.new'2> ')
-    registered_threads = setmetatable({}, {__mode = 'k'})
 
     -- Set up the palette swap pixel shader.
 
@@ -69,12 +68,6 @@ function love.draw()
     lg.pop()
 end
 
-function love.threaderror(thread, error_message)
-    local associated_widget = Widget.get_associated_widget(thread)
-
-    if associated_widget ~= nil then
-        associated_widget:on_thread_error(error_message, thread)
-    else
-        print('unassociated thread error: ' .. error_message)
-    end
+function love.threaderror()
+    -- Swallow thread errors; if we care about them, we will ask for them.
 end
