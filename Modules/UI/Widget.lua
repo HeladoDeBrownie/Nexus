@@ -1,7 +1,6 @@
 local Widget = {}
 local private = setmetatable({}, {__mode = 'k'})
 local widget_metatable = {__index = Widget}
-local thread_widget_associations = setmetatable({}, {__mode = 'k'})
 
 function Widget.new()
     return setmetatable({}, widget_metatable)
