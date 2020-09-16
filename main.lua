@@ -77,7 +77,5 @@ function love.threaderror()
 end
 
 function love.quit()
-    love.filesystem.write('Settings.lua',
-        Serialization.serialize_table(settings)
-    )
+    love.filesystem.write('Settings.lua', Serialization.to_lua_code(settings))
 end
