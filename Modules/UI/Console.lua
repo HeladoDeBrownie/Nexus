@@ -19,12 +19,18 @@ function Console.new(prompt_string)
 
     private[result] = {
         prompt_string = prompt_string,
-        buffer = TextBuffer.new(),
+        scrollback = TextBuffer.new(),
+        input_buffer = TextBuffer.new(),
         scale = 4,
         font = Font.new(require'Assets/Carpincho Mono'),
     }
 
+    result:print(prompt_string)
     return result
+end
+
+function Console:print(text)
+    private[self].scrollback:append(text)
 end
 
 function Console:on_draw(x, y, width, height)
@@ -39,28 +45,33 @@ function Console:on_draw(x, y, width, height)
     lg.scale(self_.scale)
 
     -- Show the prompt.
-    self_.font:print(self_.prompt_string .. self_.buffer:read())
+    self_.font:print(self_.scrollback:read() .. self_.input_buffer:read())
 end
 
 function Console:on_key(key, ctrl)
-    local buffer = private[self].buffer
+    local self_ = private[self]
+    local input_buffer = self_.input_buffer
 
     if ctrl then
         if key == 'v' then
             -- Ctrl+V: Paste
-            buffer:append(love.system.getClipboardText())
+            input_buffer:append(love.system.getClipboardText())
         elseif key == 'return' then
             -- Ctrl+Return: Insert newline
-            buffer:append'\n'
+            input_buffer:append'\n'
         end
     else
         if key == 'backspace' then
             -- Backspace: Delete last character
-            buffer:backspace()
+            input_buffer:backspace()
         elseif key == 'return' then
             -- Return: Run command
-            run_lua_code(buffer:read())
-            buffer:clear()
+            local scrollback = self_.scrollback
+            local input = input_buffer:read()
+            run_lua_code(input)
+            scrollback:append(input .. '\n')
+            input_buffer:clear()
+            scrollback:append(self_.prompt_string)
         end
     end
 end
@@ -74,7 +85,7 @@ function Console:on_scroll(units, ctrl)
 end
 
 function Console:on_text_input(text)
-    private[self].buffer:append(text)
+    private[self].input_buffer:append(text)
 end
 
 return Console
