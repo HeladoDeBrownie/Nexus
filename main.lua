@@ -7,7 +7,6 @@ local lg = love.graphics
 local lk = love.keyboard
 local Console = require'UI/Console'
 local Overlay = require'UI/Overlay'
-local Widget = require'UI/Widget'
 
 -- # State
 
