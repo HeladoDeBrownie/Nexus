@@ -16,10 +16,13 @@ local function table_to_lua_code(a_table, depth)
     local indent = INDENT_PREFIX:rep(depth + 1)
 
     for key, value in pairs(a_table) do
-        if type(key) == 'string' then
+        local key_type = type(key)
+        if key_type == 'string' then
             table.insert(string_table,
                 TABLE_ITEM_FORMAT:format(indent, key, value)
             )
+        else
+            error(('table_to_lua_code: unsupported key type %s'):format(key_type))
         end
     end
 
