@@ -1,3 +1,6 @@
+-- Use nearest neighbor scaling in order to preserve pixel fidelity.
+love.graphics.setDefaultFilter('nearest', 'nearest')
+
 -- # Modules
 
 -- Look for modules in the Modules directory.
@@ -31,9 +34,6 @@ end
 
 function love.load()
     settings = require'Settings'
-
-    -- Use nearest neighbor scaling in order to preserve pixel fidelity.
-    lg.setDefaultFilter('nearest', 'nearest')
 
     lk.setKeyRepeat(true)
 
