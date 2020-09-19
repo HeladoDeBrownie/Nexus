@@ -1,7 +1,8 @@
 local lg = love.graphics
 local sprite = lg.newImage('Assets/Untitled.png')
+local Widget = require'UI/Widget'
 
-local TileView = {}
+local TileView = setmetatable({}, {__index = Widget})
 local private = setmetatable({}, {__mode = 'k'})
 local tile_view_metatable = {__index = TileView}
 
@@ -10,9 +11,7 @@ function TileView.new()
 end
 
 function TileView:on_draw(x, y, width, height)
-    lg.setColor(0, 0, 0, 0)
-    lg.rectangle('fill', x, y, width, height)
-    lg.setColor(1, 1, 1)
+    self:draw_background(x, y, width, height)
     lg.draw(sprite, x, y)
 end
 

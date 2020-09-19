@@ -30,14 +30,12 @@ function Console:on_draw(x, y, width, height)
     local self_ = private[self]
 
     -- Draw the widget's background.
-    lg.setColor(0, 0, 0, 0)
-    lg.rectangle('fill', x, y, width, height)
-    lg.setColor(1, 1, 1)
+    self:draw_background(x, y, width, height)
 
     -- Use the widget's own scale.
     lg.scale(self_.scale)
 
-    -- Show the prompt.
+    -- Display the actual text of the console.
     self_.font:print(self_.scrollback:read() .. self_.input_buffer:read())
 end
 
