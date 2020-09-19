@@ -65,7 +65,12 @@ function Console:on_key(key, ctrl)
             local input = input_buffer:read()
             self:print(input .. '\n')
 
-            local chunk, load_error_message = load(input_buffer:read(), 'player input', 't', self_.environment)
+            local chunk, load_error_message = load('print(' .. input_buffer:read() .. ')', 'player input', 't', self_.environment)
+            print(chunk, load_error_message)
+
+            if chunk == nil then
+                chunk, load_error_message = load(input_buffer:read(), 'player input', 't', self_.environment)
+            end
 
             if chunk == nil then
                 self:print(load_error_message .. '\n')
