@@ -9,11 +9,7 @@ package.path = './Modules/?.lua;' .. package.path
 local lg = love.graphics
 local lk = love.keyboard
 local Serialization = require'Serialization'
-
-local Console = require'UI/Console'
-local Overlay = require'UI/Overlay'
-local TileView = require'UI/TileView'
-local Widget = require'UI/Widget'
+local UI = require'UI'
 
 -- # State
 
@@ -35,7 +31,7 @@ end
 function love.load()
     lk.setKeyRepeat(true)
 
-    main_widget = Overlay.new(TileView.new(), Console.new'> ')
+    main_widget = UI.Overlay.new(UI.TileView.new(), UI.Console.new'> ')
 
     -- Set up the palette swap pixel shader.
 
@@ -75,6 +71,6 @@ end
 
 function love.quit()
     love.filesystem.write('Widget Settings.lua',
-        Serialization.to_lua_module(Widget.settings)
+        Serialization.to_lua_module(UI.Widget.settings)
     )
 end
