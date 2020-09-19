@@ -26,7 +26,17 @@ end
 
 function TileView:on_draw(x, y, width, height)
     local self_ = private[self]
-    lg.draw(sprite, x + 12 * self_.x, y + 12 * self_.y)
+
+    local base_x, base_y = lg.inverseTransformPoint(
+        math.floor(width / 2),
+        math.floor(height / 2)
+    )
+
+    local girl_x, girl_y = x + 12 * self_.x, y + 12 * self_.y
+
+    lg.translate(base_x - girl_x - 6, base_y - girl_y - 6)
+
+    lg.draw(sprite, girl_x, girl_y)
     lg.draw(sprite2, x + 24, y + 36)
 end
 
