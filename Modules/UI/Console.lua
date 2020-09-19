@@ -29,9 +29,6 @@ end
 function Console:on_draw(x, y, width, height)
     local self_ = private[self]
 
-    -- Draw the widget's background.
-    self:draw_background(x, y, width, height)
-
     -- Use the widget's own scale.
     lg.scale(self_.scale)
 

@@ -11,7 +11,6 @@ function TileView.new()
 end
 
 function TileView:on_draw(x, y, width, height)
-    self:draw_background(x, y, width, height)
     lg.draw(sprite, x, y)
 end
 

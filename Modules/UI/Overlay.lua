@@ -1,4 +1,6 @@
-local Overlay = {}
+local Widget = require'UI/Widget'
+
+local Overlay = setmetatable({}, {__index = Widget})
 local private = setmetatable({}, {__mode = 'k'})
 local overlay_metatable = {__index = Overlay}
 

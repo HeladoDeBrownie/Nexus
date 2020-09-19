@@ -13,11 +13,11 @@ local Serialization = require'Serialization'
 local Console = require'UI/Console'
 local Overlay = require'UI/Overlay'
 local TileView = require'UI/TileView'
+local Widget = require'UI/Widget'
 
 -- # State
 
 local main_widget
-local settings
 local shader
 
 -- # Helpers
@@ -33,8 +33,6 @@ end
 -- # Callbacks
 
 function love.load()
-    settings = require'Settings'
-
     lk.setKeyRepeat(true)
 
     main_widget = Overlay.new(TileView.new(), Console.new'> ')
@@ -68,10 +66,7 @@ function love.textinput(text)
 end
 
 function love.draw()
-    lg.push'all'
-    lg.scale(settings.global_scale)
-    main_widget:on_draw(0, 0, lg.getDimensions())
-    lg.pop()
+    main_widget:draw(0, 0, lg.getDimensions())
 end
 
 function love.threaderror()
@@ -79,5 +74,7 @@ function love.threaderror()
 end
 
 function love.quit()
-    love.filesystem.write('Settings.lua', Serialization.to_lua_module(settings))
+    love.filesystem.write('Widget Settings.lua',
+        Serialization.to_lua_module(Widget.settings)
+    )
 end
