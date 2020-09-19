@@ -11,6 +11,14 @@ function Console.new(prompt_string)
     local result = setmetatable({}, console_metatable)
 
     private[result] = {
+        environment = setmetatable({
+            print = function (...)
+                for _, value in ipairs({...}) do
+                    result:print(tostring(value) .. '\n')
+                end
+            end,
+        }, {__index = _G}),
+
         prompt_string = prompt_string,
         scrollback = TextBuffer.new(),
         input_buffer = TextBuffer.new(),
@@ -57,7 +65,7 @@ function Console:on_key(key, ctrl)
             local input = input_buffer:read()
             self:print(input .. '\n')
 
-            local chunk, load_error_message = load(input_buffer:read(), 'player input', 't')
+            local chunk, load_error_message = load(input_buffer:read(), 'player input', 't', self_.environment)
 
             if chunk == nil then
                 self:print(load_error_message .. '\n')
