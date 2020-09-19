@@ -65,10 +65,6 @@ function love.draw()
     main_widget:draw(0, 0, lg.getDimensions())
 end
 
-function love.threaderror()
-    -- Swallow thread errors; if we care about them, we will ask for them.
-end
-
 function love.quit()
     love.filesystem.write('Widget Settings.lua',
         Serialization.to_lua_module(UI.Widget.settings)

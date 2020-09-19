@@ -57,14 +57,16 @@ function Console:on_key(key, ctrl)
             local input = input_buffer:read()
             self:print(input .. '\n')
 
-            -- Use a separate thread so we don't crash the main thread.
-            local thread = love.thread.newThread(input_buffer:read() .. '\n')
-            thread:start()
-            thread:wait()
-            local error_message = thread:getError()
+            local chunk, load_error_message = load(input_buffer:read(), 'player input', 't')
 
-            if error_message ~= nil then
-                self:print(error_message .. '\n')
+            if chunk == nil then
+                self:print(load_error_message .. '\n')
+            else
+                local succeeded, call_error_message = pcall(chunk)
+
+                if not succeeded then
+                    self:print(call_error_message .. '\n')
+                end
             end
 
             input_buffer:clear()
