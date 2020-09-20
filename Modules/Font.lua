@@ -4,51 +4,36 @@ local utf8 = require'utf8'
 local Font = {}
 local private = setmetatable({}, {__mode = 'k'})
 local font_metatable = {__index = Font}
+local MISSING_GLYPH = '\0'
 
 function Font.new(metadata)
-    local result = setmetatable({}, font_metatable)
-    local characters = metadata.characters
-    local columns, rows = metadata.columns, metadata.rows
-    local glyph_width = metadata.glyph_width
-    local glyph_height = metadata.glyph_height
+    local self = setmetatable({}, font_metatable)
     local image = lg.newImage(metadata.file_name)
-    local image_width, image_height = image:getDimensions()
     local quads = {}
-    local column, row = 1, 0
 
-    for character in characters:gmatch(utf8.charpattern) do
-        quads[character] =
-            lg.newQuad(
-                column * glyph_width,
-                row * glyph_height,
-                glyph_width,
-                glyph_height,
-                image_width,
-                image_height
+    for row_index, row_characters in ipairs(metadata.characters) do
+        local column_index = 1
+
+        for character in row_characters:gmatch(utf8.charpattern) do
+            quads[character] = lg.newQuad(
+                (column_index - 1) * metadata.glyph_width,
+                (row_index - 1) * metadata.glyph_height,
+                metadata.glyph_width,
+                metadata.glyph_height,
+                image:getDimensions()
             )
 
-        if column < columns - 1 then
-            column = column + 1
-        elseif row < rows - 1 then
-            column = 0
-            row = row + 1
-        else
-            error'Font.new: inconsistent size specification'
+            column_index = column_index + 1
         end
     end
 
-    private[result] = {
+    private[self] = {
         love_image = image,
-
-        love_missing_glyph_quad = lg.newQuad(
-            0, 0, glyph_width, glyph_height, image_width, image_height
-        ),
-
         love_quads = quads,
         metadata = metadata,
     }
 
-    return result
+    return self
 end
 
 function Font:print(text)
@@ -63,7 +48,7 @@ function Font:print(text)
             local quad = self_.love_quads[character]
 
             if quad == nil then
-                quad = self_.love_missing_glyph_quad
+                quad = self_.love_quads[MISSING_GLYPH]
             end
 
             lg.draw(self_.love_image, quad, x, y)
