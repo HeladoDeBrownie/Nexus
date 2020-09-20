@@ -57,4 +57,15 @@ function Font:print(text)
     end
 end
 
+function Font:compute_height(text, width)
+    -- TODO: Take width and line wrapping into account.
+    local number_of_rows = 1
+
+    for _ in text:gmatch'[^\n]*\n' do
+        number_of_rows = number_of_rows + 1
+    end
+
+    return number_of_rows * private[self].metadata.glyph_height
+end
+
 return Font

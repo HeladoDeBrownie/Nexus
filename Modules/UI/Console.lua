@@ -47,8 +47,19 @@ function Console:on_draw(x, y, width, height)
     -- Use the widget's own scale.
     lg.scale(self_.scale)
 
-    -- Display the actual text of the console.
-    self_.font:print(self_.scrollback:read() .. self_.input_buffer:read())
+    -- The console's text is the scrollback followed by the current input.
+    local text = self_.scrollback:read() .. self_.input_buffer:read()
+
+    -- Scroll so that the latest text is on-screen and then some.
+
+    local _, transformed_height = lg.inverseTransformPoint(0, height)
+
+    lg.translate(0, math.min(0,
+        transformed_height - self_.font:compute_height(text, width) - 12)
+    )
+
+    -- Display the text.
+    self_.font:print(text)
 end
 
 function Console:on_key(key, ctrl)
