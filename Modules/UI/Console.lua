@@ -13,8 +13,9 @@ function Console.new(prompt_string)
     private[result] = {
         environment = setmetatable({
             print = function (...)
-                for _, value in ipairs({...}) do
-                    result:print(tostring(value) .. '\n')
+                local arguments = {...}
+                for index = 1, select('#', ...) do
+                    result:print(tostring(arguments[index]) .. '\n')
                 end
             end,
         }, {__index = _G}),
