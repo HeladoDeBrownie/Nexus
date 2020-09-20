@@ -13,10 +13,7 @@ function Console.new(prompt_string)
     private[result] = {
         environment = setmetatable({
             print = function (...)
-                local arguments = {...}
-                for index = 1, select('#', ...) do
-                    result:print(tostring(arguments[index]) .. '\n')
-                end
+                return result:print(true, ...)
             end,
         }, {__index = _G}),
 
@@ -27,12 +24,21 @@ function Console.new(prompt_string)
         font = Font.new(require'Assets/Carpincho Mono'),
     }
 
-    result:print(prompt_string)
+    result:print(false, prompt_string)
     return result
 end
 
-function Console:print(text)
-    private[self].scrollback:append(text)
+function Console:print(with_final_line_break, ...)
+    local self_ = private[self]
+    local arguments = {...}
+
+    for index = 1, select('#', ...) do
+        self_.scrollback:append(tostring(arguments[index]) .. '\n')
+    end
+
+    if not with_final_line_break then
+        self_.scrollback:backspace()
+    end
 end
 
 function Console:on_draw(x, y, width, height)
@@ -64,26 +70,26 @@ function Console:on_key(key, ctrl)
         elseif key == 'return' then
             -- Return: Run command
             local input = input_buffer:read()
-            self:print(input .. '\n')
+            self:print(true, input)
 
             local chunk, load_error_message = load(input_buffer:read(), 'player input', 't', self_.environment)
 
             if chunk == nil then
-                chunk, load_error_message = load('print(' .. input_buffer:read() .. ')', 'player input', 't', self_.environment)
+                chunk, load_error_message = load('return ' .. input_buffer:read(), 'player input', 't', self_.environment)
             end
 
             if chunk == nil then
-                self:print(load_error_message .. '\n')
+                self:print(true, load_error_message)
             else
-                local succeeded, call_error_message = pcall(chunk)
-
-                if not succeeded then
-                    self:print(call_error_message .. '\n')
+                local function handle_result(_, ...)
+                    self:print(true, ...)
                 end
+
+                handle_result(pcall(chunk))
             end
 
             input_buffer:clear()
-            self:print(self_.prompt_string)
+            self:print(false, self_.prompt_string)
         end
     end
 end
