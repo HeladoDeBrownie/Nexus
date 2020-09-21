@@ -1,3 +1,5 @@
+local lg = love.graphics
+local UISettings = require'Settings'.UI
 local Widget = require'UI/Widget'
 
 local Overlay = setmetatable({}, {__index = Widget})
@@ -27,8 +29,13 @@ function Overlay:get_active_widget()
     end
 end
 
-function Overlay:on_draw(...)
-    return self:get_active_widget():on_draw(...)
+function Overlay:draw(x, y, width, height)
+    local self_ = private[self]
+    self_.under_widget:draw(x, y, width, height)
+
+    if self_.overlay_active then
+        self_.over_widget:draw(x, y, width, math.floor(height / 3))
+    end
 end
 
 function Overlay:on_key(...)
