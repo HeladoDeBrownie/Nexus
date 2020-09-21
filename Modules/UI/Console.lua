@@ -9,7 +9,7 @@ local private = setmetatable({}, {__mode = 'k'})
 local console_metatable = {__index = Console}
 
 function Console.new(prompt_string)
-    local result = setmetatable({}, console_metatable)
+    local result = setmetatable(Widget.new(), console_metatable)
 
     private[result] = {
         environment = setmetatable({
@@ -25,6 +25,12 @@ function Console.new(prompt_string)
     }
 
     result:print(false, prompt_string)
+    result:set_palette(
+        {0, 0, 0, 1},
+        {0.25, 0.25, 0.25, 1},
+        {0.5, 0.5, 0.5, 1},
+        {1, 1, 1, 1}
+    )
     return result
 end
 

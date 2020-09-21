@@ -8,13 +8,24 @@ local TileView = setmetatable({}, {__index = Widget})
 local private = setmetatable({}, {__mode = 'k'})
 local tile_view_metatable = {__index = TileView}
 
+local function rgb24_to_love_color(red, green, blue)
+    return red / 255, green / 255, blue / 255, 1
+end
+
 function TileView.new()
-    local result = setmetatable({}, tile_view_metatable)
+    local result = setmetatable(Widget.new(), tile_view_metatable)
 
     private[result] = {
         x = 0,
         y = 0,
     }
+
+    result:set_palette(
+        {rgb24_to_love_color(243, 243, 243)},
+        {rgb24_to_love_color(  0, 228,  54)},
+        {rgb24_to_love_color(  0, 135,  81)},
+        {rgb24_to_love_color( 95,  87,  79)}
+    )
 
     return result
 end

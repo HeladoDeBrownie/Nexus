@@ -7,7 +7,7 @@ local private = setmetatable({}, {__mode = 'k'})
 local overlay_metatable = {__index = Overlay}
 
 function Overlay.new(under_widget, over_widget)
-    local result = setmetatable({}, overlay_metatable)
+    local result = setmetatable(Widget.new(), overlay_metatable)
 
     private[result] = {
         under_widget = under_widget,
