@@ -1,5 +1,6 @@
 local lg = love.graphics
 local Font = require'Font'
+local ConsoleSettings = require'Settings'.UI.Console
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
 
@@ -20,7 +21,6 @@ function Console.new(prompt_string)
         prompt_string = prompt_string,
         scrollback = TextBuffer.new(),
         input_buffer = TextBuffer.new(),
-        scale = 1,
         font = Font.new(require'Assets/Carpincho Mono'),
     }
 
@@ -44,8 +44,7 @@ end
 function Console:on_draw(x, y, width, height)
     local self_ = private[self]
 
-    -- Use the widget's own scale.
-    lg.scale(self_.scale)
+    lg.scale(ConsoleSettings.scale)
 
     -- The console's text is the scrollback followed by the current input.
     local text = self_.scrollback:read() .. self_.input_buffer:read()
@@ -108,8 +107,8 @@ end
 function Console:on_scroll(units, ctrl)
     if ctrl then
         -- Ctrl+Scroll: Zoom in/out
-        local self_ = private[self]
-        self_.scale = math.max(1, math.min(self_.scale + units, 8))
+        ConsoleSettings.scale =
+            math.max(1, math.min(ConsoleSettings.scale + units, 8))
     end
 end
 

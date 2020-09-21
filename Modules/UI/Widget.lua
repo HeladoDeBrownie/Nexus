@@ -1,10 +1,9 @@
 local lg = love.graphics
 
+local UISettings = require'Settings'.UI
 local Widget = {}
 local private = setmetatable({}, {__mode = 'k'})
 local widget_metatable = {__index = Widget}
-
-Widget.settings = require'Widget Settings'
 
 function Widget.new()
     return setmetatable({}, widget_metatable)
@@ -20,7 +19,7 @@ function Widget:draw(x, y, width, height)
     lg.setColor(1, 1, 1)
 
     -- Apply the global scale factor.
-    lg.scale(Widget.settings.global_scale)
+    lg.scale(UISettings.global_scale)
 
     -- Run the widget's draw code, which should be overridden for each specific
     -- widget module.

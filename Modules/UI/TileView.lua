@@ -1,6 +1,7 @@
 local lg = love.graphics
 local sprite = lg.newImage('Assets/Untitled.png')
 local sprite2 = lg.newImage('Assets/Untitled2.png')
+local TileViewSettings = require'Settings'.UI.TileView
 local Widget = require'UI/Widget'
 
 local TileView = setmetatable({}, {__index = Widget})
@@ -26,6 +27,8 @@ end
 
 function TileView:on_draw(x, y, width, height)
     local self_ = private[self]
+
+    lg.scale(TileViewSettings.scale)
 
     local base_x, base_y = lg.inverseTransformPoint(
         width / 2,
@@ -58,6 +61,11 @@ function TileView:on_key(key, ctrl)
 end
 
 function TileView:on_scroll(units, ctrl)
+    if ctrl then
+        -- Ctrl+Scroll: Zoom in/out
+        TileViewSettings.scale =
+            math.max(1, math.min(TileViewSettings.scale + units, 8))
+    end
 end
 
 function TileView:on_text_input(text)

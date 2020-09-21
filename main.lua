@@ -9,6 +9,7 @@ package.path = './Modules/?.lua;' .. package.path
 local lg = love.graphics
 local lk = love.keyboard
 local Serialization = require'Serialization'
+local Settings = require'Settings'
 local UI = require'UI'
 
 -- # State
@@ -66,7 +67,7 @@ function love.draw()
 end
 
 function love.quit()
-    love.filesystem.write('Widget Settings.lua',
-        Serialization.to_lua_module(UI.Widget.settings)
+    love.filesystem.write('Settings.lua',
+        Serialization.to_lua_module(Settings)
     )
 end
