@@ -45,7 +45,7 @@ end
 -- The remaining callbacks defined here are thin wrappers around widget code.
 
 function love.draw()
-    main_widget:draw(0, 0, lg.getDimensions())
+    main_widget:draw(0, 0, love.graphics.getDimensions())
 end
 
 function love.keypressed(key)
