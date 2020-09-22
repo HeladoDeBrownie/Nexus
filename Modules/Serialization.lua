@@ -62,7 +62,9 @@ function Serialization.apply_schema(value, schema)
         else
             -- We are dealing with a terminal element.
 
-            if type(value) == schema.type then
+            if type(schema.type) == 'function' and schema.type(value) then
+                return value
+            elseif type(value) == schema.type then
                 return value
             elseif schema.default == nil then
                 error(SCHEMA_ERROR:format(value, schema.type))

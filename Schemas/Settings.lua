@@ -1,13 +1,17 @@
+local function is_integer(value)
+    return type(value) == 'number' and value == math.floor(value)
+end
+
 return {
     UI = {
-        global_scale = {type = 'number', default = 2},
+        global_scale = {type = is_integer, default = 2},
 
         Console = {
-            scale = {type = 'number', default = 1},
+            scale = {type = is_integer, default = 1},
         },
 
         TileView = {
-            scale = {type = 'number', default = 2},
+            scale = {type = is_integer, default = 2},
         },
     },
 }
