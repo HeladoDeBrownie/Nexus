@@ -4,22 +4,37 @@
     logic happens in the UI modules (Modules/UI/*).
 --]]
 
--- # State
+--# Modules
+
+local Serialization
+local Settings
+
+--# State
 
 -- Almost all state is handled in widget code.
 local main_widget
 
--- # Helpers
+--# Helpers
 
 local function is_ctrl_down()
     return love.keyboard.isDown'lctrl' or love.keyboard.isDown'rctrl'
 end
 
--- # Callbacks
+--# Callbacks
 
 function love.load()
     -- Look for modules in the Modules directory.
     package.path = './Modules/?.lua;' .. package.path
+
+    -- The serialization module is used both in this callback and in love.quit.
+    Serialization = require'Serialization'
+
+    --[[
+        Safely require and, if necessary, patch the user settings. This only
+        needs to be done the first time it's required on any given run, so any
+        further uses of the settings module don't need to use safe_require.
+    --]]
+    Settings = Serialization.safe_require('Settings', require'Schemas/Settings')
 
     --[[
         Use nearest neighbor scaling in order to preserve pixel fidelity. Do
@@ -31,6 +46,7 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
+    -- Create the UI.
     local UI = require'UI'
     main_widget = UI.Overlay.new(UI.TileView.new(), UI.Console.new'> ')
 end
@@ -38,11 +54,11 @@ end
 function love.quit()
     -- Write any changes to the settings to the save directory.
     love.filesystem.write('Settings.lua',
-        require'Serialization'.to_lua_module(require'Settings')
+        Serialization.to_lua_module(Settings)
     )
 end
 
--- The remaining callbacks defined here are thin wrappers around widget code.
+-- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
     main_widget:draw(0, 0, love.graphics.getDimensions())
