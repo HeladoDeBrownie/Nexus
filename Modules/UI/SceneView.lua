@@ -71,7 +71,7 @@ function SceneView:on_scroll(units, ctrl)
     if ctrl then
         -- Ctrl+Scroll: Zoom in/out
         SceneViewSettings.scale =
-            math.max(1, math.min(SceneViewSettings.scale + units, 8))
+            math.max(2, math.min(SceneViewSettings.scale + units, 8))
     end
 end
 

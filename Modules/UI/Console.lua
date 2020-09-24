@@ -114,7 +114,7 @@ function Console:on_scroll(units, ctrl)
     if ctrl then
         -- Ctrl+Scroll: Zoom in/out
         ConsoleSettings.scale =
-            math.max(1, math.min(ConsoleSettings.scale + units, 8))
+            math.max(2, math.min(ConsoleSettings.scale + units, 8))
     end
 end
 
