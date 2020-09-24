@@ -26,6 +26,9 @@ function love.load()
     -- Look for modules in the Modules directory.
     package.path = './Modules/?.lua;' .. package.path
 
+    -- Make make_class available to all modules.
+    make_class = require'make_class'
+
     -- The serialization module is used both in this callback and in love.quit.
     Serialization = require'Serialization'
 
