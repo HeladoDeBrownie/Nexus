@@ -3,6 +3,6 @@
 return {
     Console = require'UI/Console',
     Overlay = require'UI/Overlay',
-    TileView = require'UI/TileView',
+    SceneView = require'UI/SceneView',
     Widget = require'UI/Widget',
 }

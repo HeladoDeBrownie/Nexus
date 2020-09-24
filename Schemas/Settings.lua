@@ -10,7 +10,7 @@ return {
             scale = {type = is_integer, default = 1},
         },
 
-        TileView = {
+        SceneView = {
             scale = {type = is_integer, default = 2},
         },
     },

@@ -48,7 +48,10 @@ function love.load()
 
     -- Create the UI.
     local UI = require'UI'
-    main_widget = UI.Overlay.new(UI.TileView.new(), UI.Console.new'> ')
+    main_widget = UI.Overlay.new(
+        UI.SceneView.new(require'Scene'.new()),
+        UI.Console.new'> '
+    )
 end
 
 function love.quit()
