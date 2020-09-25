@@ -1,75 +1,62 @@
-local lg = love.graphics
-local UISettings = require'Settings'.UI
-local Widget = require'UI/Widget'
+return make_class{
+    superclass = require'UI/Widget',
 
-local Overlay = setmetatable({}, {__index = Widget})
-local private = setmetatable({}, {__mode = 'k'})
-local overlay_metatable = {__index = Overlay}
+    new = function (self, super, under_widget, over_widget)
+        super()
+        self.under_widget = under_widget
+        self.over_widget = over_widget
+        self.overlay_active = false
+        self.just_switched = false
+    end,
 
-function Overlay.new(under_widget, over_widget)
-    local result = setmetatable(Widget.new(), overlay_metatable)
+    methods = {
+        get_active_widget = function (self)
+            if self.overlay_active then
+                return self.over_widget
+            else
+                return self.under_widget
+            end
+        end,
 
-    private[result] = {
-        under_widget = under_widget,
-        over_widget = over_widget,
-        overlay_active = false,
-        just_switched = false,
-    }
+        draw = function (self, x, y, width, height)
+            self.under_widget:draw(x, y, width, height)
 
-    return result
-end
+            if self.overlay_active then
+                self.over_widget:draw(x, y, width, math.floor(height / 3))
+            end
+        end,
 
-function Overlay:get_active_widget()
-    local self_ = private[self]
+        on_key = function (self, ...)
+            local key, ctrl = ...
+            local active_widget = self:get_active_widget()
 
-    if self_.overlay_active then
-        return self_.over_widget
-    else
-        return self_.under_widget
-    end
-end
+            if self.overlay_active then
+                if not ctrl and key == 'escape' then
+                    self.overlay_active = false
+                    self.just_switched = true
+                else
+                    self.just_switched = false
+                    return active_widget:on_key(...)
+                end
+            else
+                if not ctrl and key == '`' then
+                    self.overlay_active = true
+                    self.just_switched = true
+                else
+                    self.just_switched = false
+                    return active_widget:on_key(...)
+                end
+            end
+        end,
 
-function Overlay:draw(x, y, width, height)
-    local self_ = private[self]
-    self_.under_widget:draw(x, y, width, height)
+        on_scroll = function (self, ...)
+            return self:get_active_widget():on_scroll(...)
+        end,
 
-    if self_.overlay_active then
-        self_.over_widget:draw(x, y, width, math.floor(height / 3))
-    end
-end
-
-function Overlay:on_key(...)
-    local key, ctrl = ...
-    local self_ = private[self]
-    local active_widget = self:get_active_widget()
-
-    if self_.overlay_active then
-        if not ctrl and key == 'escape' then
-            self_.overlay_active = false
-            self_.just_switched = true
-        else
-            self_.just_switched = false
-            return active_widget:on_key(...)
-        end
-    else
-        if not ctrl and key == '`' then
-            self_.overlay_active = true
-            self_.just_switched = true
-        else
-            self_.just_switched = false
-            return active_widget:on_key(...)
-        end
-    end
-end
-
-function Overlay:on_scroll(...)
-    return self:get_active_widget():on_scroll(...)
-end
-
-function Overlay:on_text_input(...)
-    if not private[self].just_switched then
-        return self:get_active_widget():on_text_input(...)
-    end
-end
-
-return Overlay
+        on_text_input = function (self, ...)
+            if not self.just_switched then
+                return self:get_active_widget():on_text_input(...)
+            end
+        end,
+    },
+}
