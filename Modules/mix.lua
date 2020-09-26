@@ -48,6 +48,7 @@ local TYPE_ERROR_FORMAT = 'Mixins must be tables, but mix was passed %q.'
 --# State
 
 local private = setmetatable({}, {__mode = 'k'})
+local patched = setmetatable({}, {__mode = 'k'})
 
 --# Export
 
@@ -62,7 +63,7 @@ return function (mixins)
 
         -- Copy all of the mixin's fields to the combined mixin.
         for field_name, field_value in pairs(mixin) do
-            if type(field_value) == 'function' then
+            if not patched[mixin] and type(field_value) == 'function' then
                 -- Patch functions so that they have private access when able.
                 combined_mixin[field_name] = function (self, ...)
                     -- self could be one of three things:
@@ -97,6 +98,9 @@ return function (mixins)
 
         return object
     end
+
+    -- Save that we've patched this mixin's methods so we don't repatch them.
+    patched[combined_mixin] = true
 
     return combined_mixin
 end
