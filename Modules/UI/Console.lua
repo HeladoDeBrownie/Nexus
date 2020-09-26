@@ -2,17 +2,15 @@ local Console = {}
 
 --# Requires
 
+local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
-
---# State
-
-local ConsoleSettings = require'Settings'.UI.Console
 
 --# Methods
 
 function Console:initialize(prompt_string)
     Widget.initialize(self)
+    Scalable.initialize(self, require'Settings'.UI.Console)
 
     self.environment = setmetatable({
         print = function (...)
@@ -47,7 +45,7 @@ function Console:print(with_final_line_break, ...)
 end
 
 function Console:on_draw(x, y, width, height)
-    love.graphics.scale(ConsoleSettings.scale)
+    self:apply_scale()
 
     -- The console's text is the scrollback followed by the current
     -- input.
@@ -118,18 +116,10 @@ function Console:on_key(key, ctrl)
     end
 end
 
-function Console:on_scroll(units, ctrl)
-    if ctrl then
-        -- Ctrl+Scroll: Zoom in/out
-        ConsoleSettings.scale =
-            math.max(2, math.min(ConsoleSettings.scale + units, 8))
-    end
-end
-
 function Console:on_text_input(text)
     self.input_buffer:append(text)
 end
 
 --# Export
 
-return mix{Widget, Console}
+return mix{Widget, Scalable, Console}

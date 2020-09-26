@@ -2,13 +2,13 @@ local SceneView = {}
 
 --# Requires
 
+local Scalable = require'UI/Scalable'
 local Widget = require'UI/Widget'
 
 --# State
 
 local sprite = love.graphics.newImage'Assets/Untitled.png'
 local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
-local SceneViewSettings = require'Settings'.UI.SceneView
 
 --# Helpers
 
@@ -20,6 +20,7 @@ end
 
 function SceneView:initialize(scene)
     Widget.initialize(self)
+    Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.scene = scene
 
     self:set_palette(
@@ -31,7 +32,7 @@ function SceneView:initialize(scene)
 end
 
 function SceneView:on_draw(x, y, width, height)
-    love.graphics.scale(SceneViewSettings.scale)
+    self:apply_scale()
 
     local base_x, base_y = love.graphics.inverseTransformPoint(
         width / 2,
@@ -66,14 +67,6 @@ function SceneView:on_key(key, ctrl)
     end
 end
 
-function SceneView:on_scroll(units, ctrl)
-    if ctrl then
-        -- Ctrl+Scroll: Zoom in/out
-        SceneViewSettings.scale =
-            math.max(2, math.min(SceneViewSettings.scale + units, 8))
-    end
-end
-
 --# Export
 
-return mix{Widget, SceneView}
+return mix{Widget, Scalable, SceneView}

@@ -58,7 +58,9 @@ function Overlay:on_scroll(...)
 end
 
 function Overlay:on_text_input(...)
-    return self:get_active_widget():on_text_input(...)
+    if not self.just_switched then
+        return self:get_active_widget():on_text_input(...)
+    end
 end
 
 --# Export
