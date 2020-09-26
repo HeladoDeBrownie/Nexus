@@ -1,29 +1,35 @@
+local TextBuffer = {}
+
+--# Requires
+
 local utf8 = require'utf8'
 
-return make_class{
-    new = function (self)
-        self.text = ''
-    end,
+--# Methods
 
-    methods = {
-        read = function (self)
-            return self.text
-        end,
+function TextBuffer:initialize()
+    self:clear()
+end
 
-        clear = function (self)
-            self.text = ''
-        end,
+function TextBuffer:read()
+    return self.text
+end
 
-        append = function (self, text)
-            self.text = self.text .. text
-        end,
+function TextBuffer:append(text)
+    self.text = self.text .. text
+end
 
-        backspace = function (self)
-            local text = self.text
+function TextBuffer:backspace()
+    local text = self.text
 
-            if utf8.len(text) > 0 then
-                self.text = text:sub(1, utf8.offset(text, -1) - 1)
-            end
-        end,
-    },
-}
+    if utf8.len(text) > 0 then
+        self.text = text:sub(1, utf8.offset(text, -1) - 1)
+    end
+end
+
+function TextBuffer:clear()
+    self.text = ''
+end
+
+--# Export
+
+return mix{TextBuffer}
