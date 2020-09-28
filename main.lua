@@ -9,10 +9,15 @@
 local Serialization
 local Settings
 
+--# Constants
+
+local SECONDS_PER_TICK = 1 / 30
+
 --# State
 
--- Almost all state is handled in widget code.
 local main_widget
+local scene
+local time
 
 --# Helpers
 
@@ -49,12 +54,31 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
+    scene = require'Scene'.new()
+    time = 0.0
+
     -- Create the UI.
+
     local UI = require'UI'
+    local console = UI.Console.new'> '
+
+    function print(...)
+        console:print(...)
+    end
+
     main_widget = UI.Overlay.new(
-        UI.SceneView.new(require'Scene'.new()),
-        UI.Console.new'> '
+        UI.SceneView.new(scene),
+        console
     )
+end
+
+function love.update(time_delta)
+    time = time + time_delta
+
+    while time >= SECONDS_PER_TICK do
+        time = time - SECONDS_PER_TICK
+        scene:tick()
+    end
 end
 
 function love.quit()

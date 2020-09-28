@@ -6,6 +6,10 @@ function Scene:initialize()
     self.x, self.y = 0, 0
 end
 
+function Scene:tick()
+    print'tick!'
+end
+
 function Scene:get_player_position()
     return self.x, self.y
 end

@@ -12,17 +12,12 @@ function Console:initialize(prompt_string)
     Widget.initialize(self)
     Scalable.initialize(self, require'Settings'.UI.Console)
 
-    self.environment = setmetatable({
-        print = function (...)
-            return self:print(true, ...)
-        end,
-    }, {__index = _G})
+    self.environment = setmetatable({}, {__index = _G})
 
     self.prompt_string = prompt_string
     self.scrollback = TextBuffer.new()
     self.input_buffer = TextBuffer.new()
     self.font = require'Font'.new(require'Assets/Carpincho Mono')
-    self:print(false, prompt_string)
 
     self:set_palette(
         {0, 0, 0, 1},
@@ -32,15 +27,11 @@ function Console:initialize(prompt_string)
     )
 end
 
-function Console:print(with_final_line_break, ...)
+function Console:print(...)
     local arguments = {...}
 
     for index = 1, select('#', ...) do
         self.scrollback:append(tostring(arguments[index]) .. '\n')
-    end
-
-    if not with_final_line_break then
-        self.scrollback:backspace()
     end
 end
 
@@ -49,7 +40,10 @@ function Console:on_draw(x, y, width, height)
 
     -- The console's text is the scrollback followed by the current
     -- input.
-    local text = self.scrollback:read() .. self.input_buffer:read()
+    local text =
+        self.scrollback:read() ..
+        self.prompt_string ..
+        self.input_buffer:read()
 
     -- Scroll so that the latest text is on-screen and then some.
 
@@ -82,7 +76,7 @@ function Console:on_key(key, ctrl)
         elseif key == 'return' then
             -- Return: Run command
             local input = input_buffer:read()
-            self:print(true, input)
+            self:print(input)
 
             local chunk, load_error_message = load(
                 input_buffer:read(),
@@ -101,17 +95,16 @@ function Console:on_key(key, ctrl)
             end
 
             if chunk == nil then
-                self:print(true, load_error_message)
+                self:print(load_error_message)
             else
                 local function handle_result(_, ...)
-                    self:print(true, ...)
+                    self:print(...)
                 end
 
                 handle_result(pcall(chunk))
             end
 
             input_buffer:clear()
-            self:print(false, self.prompt_string)
         end
     end
 end
