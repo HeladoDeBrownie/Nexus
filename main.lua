@@ -32,7 +32,7 @@ function love.load()
     package.path = './Modules/?.lua;' .. package.path
 
     -- Make mix available to all modules.
-    mix = require'mix'
+    _G.mix = require'mix'
 
     -- The serialization module is used both in this callback and in love.quit.
     Serialization = require'Serialization'
