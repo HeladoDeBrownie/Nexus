@@ -21,7 +21,8 @@ local private = setmetatable({}, {__mode = 'k'})
     Calling Mixin.mix performs a simple copy of all fields from all the given
     tables into a new, combined table.
 
-    None of the field values are altered in the process. Whenever more than one of the tables has the same field name, the table that comes later in the
+    None of the field values are altered in the process. Whenever more than one
+    of the tables has the same field name, the table that comes later in the
     list is given precedence.
 ]]
 function Mixin.mix(mixins)
