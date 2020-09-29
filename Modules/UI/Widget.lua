@@ -43,4 +43,4 @@ function Widget:on_text_input(text) end
 
 --# Export
 
-return mix{Widget}
+return Widget

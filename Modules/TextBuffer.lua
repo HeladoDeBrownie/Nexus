@@ -32,4 +32,4 @@ end
 
 --# Export
 
-return mix{TextBuffer}
+return augment(TextBuffer)

@@ -15,9 +15,9 @@ function Console:initialize(prompt_string)
     self.environment = setmetatable({}, {__index = _G})
 
     self.prompt_string = prompt_string
-    self.scrollback = TextBuffer.new()
-    self.input_buffer = TextBuffer.new()
-    self.font = require'Font'.new(require'Assets/Carpincho Mono')
+    self.scrollback = TextBuffer:new()
+    self.input_buffer = TextBuffer:new()
+    self.font = require'Font':new(require'Assets/Carpincho Mono')
 
     self:set_palette(
         {0, 0, 0, 1},
@@ -115,4 +115,4 @@ end
 
 --# Export
 
-return mix{Widget, Scalable, Console}
+return augment(mix{Widget, Scalable, Console})

@@ -42,4 +42,4 @@ end
 
 --# Export
 
-return mix{Scalable}
+return Scalable

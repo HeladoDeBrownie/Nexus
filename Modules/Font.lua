@@ -68,4 +68,4 @@ end
 
 --# Export
 
-return mix{Font}
+return augment(Font)

@@ -65,4 +65,4 @@ end
 
 --# Export
 
-return mix{Widget, Overlay}
+return augment(mix{Widget, Overlay})

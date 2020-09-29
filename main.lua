@@ -31,8 +31,10 @@ function love.load()
     -- Look for modules in the Modules directory.
     package.path = './Modules/?.lua;' .. package.path
 
-    -- Make mix available to all modules.
-    _G.mix = require'mix'
+    -- Make the mixin library available to all modules.
+    local Mixin = require'Mixin'
+    _G.augment = Mixin.augment
+    _G.mix = Mixin.mix
 
     -- The serialization module is used both in this callback and in love.quit.
     Serialization = require'Serialization'
@@ -54,16 +56,16 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
-    scene = require'Scene'.new()
+    scene = require'Scene':new()
     time = 0.0
 
     -- Create the UI.
 
     local UI = require'UI'
-    local console = UI.Console.new'> '
+    local console = UI.Console:new'> '
 
-    main_widget = UI.Overlay.new(
-        UI.SceneView.new(scene),
+    main_widget = UI.Overlay:new(
+        UI.SceneView:new(scene),
         console
     )
 

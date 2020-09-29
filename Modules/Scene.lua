@@ -21,4 +21,4 @@ end
 
 --# Export
 
-return mix{Scene}
+return augment(Scene)

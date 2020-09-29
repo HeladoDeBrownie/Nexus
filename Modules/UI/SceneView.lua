@@ -69,4 +69,4 @@ end
 
 --# Export
 
-return mix{Widget, Scalable, SceneView}
+return augment(mix{Widget, Scalable, SceneView})
