@@ -62,14 +62,19 @@ function love.load()
     local UI = require'UI'
     local console = UI.Console.new'> '
 
-    function print(...)
-        console:print(...)
-    end
-
     main_widget = UI.Overlay.new(
         UI.SceneView.new(scene),
         console
     )
+
+    -- Copy prints to both standard output and the in-game console.
+
+    local print = _G.print
+
+    function _G.print(...)
+        print(...)
+        console:print(...)
+    end
 end
 
 function love.update(time_delta)
