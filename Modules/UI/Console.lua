@@ -76,7 +76,7 @@ function Console:on_key(key, ctrl)
         elseif key == 'return' then
             -- Return: Run command
             local input = input_buffer:read()
-            self:print(input)
+            self:print(self.prompt_string .. input)
 
             local chunk, load_error_message = load(
                 input_buffer:read(),
