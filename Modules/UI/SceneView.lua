@@ -31,7 +31,7 @@ function SceneView:initialize(scene)
     )
 end
 
-function SceneView:on_draw(x, y, width, height)
+function SceneView:draw_widget(x, y, width, height)
     self:apply_scale()
 
     local base_x, base_y = love.graphics.inverseTransformPoint(
