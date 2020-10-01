@@ -47,6 +47,7 @@ function SceneView:draw_widget(x, y, width, height)
         math.floor(base_y - player_sy - 6)
     )
 
+    love.graphics.draw(self.scene:get_chunk(0, 0))
     love.graphics.draw(sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, x + 24, y + 36)
 end
