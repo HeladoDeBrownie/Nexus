@@ -22,11 +22,23 @@ function SceneView:initialize(scene)
     Widget.initialize(self)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.scene = scene
+    self:apply_background_palette()
+end
+
+function SceneView:apply_background_palette()
+    local background_color = {0, 0, 0, 1}
+
+    self:set_palette(
+        background_color,
+        background_color,
+        background_color,
+        background_color
+    )
 end
 
 function SceneView:apply_tile_palette()
     self:set_palette(
-        {rgb24_to_love_color(  0,   0,   0)},
+        {0, 0, 0, 0},
         {rgb24_to_love_color( 50,  50,  50)},
         {rgb24_to_love_color(150, 150, 150)},
         {rgb24_to_love_color(250, 250, 250)}
@@ -35,7 +47,7 @@ end
 
 function SceneView:apply_entity_palette()
     self:set_palette(
-        {rgb24_to_love_color(243, 243, 243)},
+        {0, 0, 0, 0},
         {rgb24_to_love_color(  0, 228,  54)},
         {rgb24_to_love_color(  0, 135,  81)},
         {rgb24_to_love_color( 95,  87,  79)}
@@ -63,6 +75,7 @@ function SceneView:draw_widget(x, y, width, height)
     self:apply_entity_palette()
     love.graphics.draw(sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, x + 24, y + 36)
+    self:apply_background_palette()
 end
 
 function SceneView:on_key(key, ctrl)
