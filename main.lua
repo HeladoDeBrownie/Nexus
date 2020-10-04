@@ -84,7 +84,12 @@ function love.update(time_delta)
 
     while time >= SECONDS_PER_TICK do
         time = time - SECONDS_PER_TICK
-        scene:tick()
+        scene:tick{
+            up = love.keyboard.isDown'w',
+            left = love.keyboard.isDown'a',
+            down = love.keyboard.isDown's',
+            right = love.keyboard.isDown'd',
+        }
     end
 end
 

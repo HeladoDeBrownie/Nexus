@@ -63,7 +63,7 @@ function SceneView:draw_widget(x, y, width, height)
     )
 
     local player_x, player_y = self.scene:get_player_position()
-    local player_sx, player_sy = x + 12 * player_x, y + 12 * player_y
+    local player_sx, player_sy = x + player_x, y + player_y
 
     love.graphics.translate(
         math.floor(base_x - player_sx - 6),
@@ -76,22 +76,6 @@ function SceneView:draw_widget(x, y, width, height)
     love.graphics.draw(sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, x + 24, y + 36)
     self:apply_background_palette()
-end
-
-function SceneView:on_key(key, ctrl)
-    local scene = self.scene
-
-    if not ctrl then
-        if key == 'w' then
-            scene:go( 0, -1)
-        elseif key == 'a' then
-            scene:go(-1,  0)
-        elseif key == 's' then
-            scene:go( 0,  1)
-        elseif key == 'd' then
-            scene:go( 1,  0)
-        end
-    end
 end
 
 --# Export
