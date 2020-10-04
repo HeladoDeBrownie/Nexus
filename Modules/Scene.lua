@@ -13,19 +13,19 @@ end
 
 function Scene:tick(buttons)
     if buttons.up then
-        self:go( 0, -2)
+        self:go( 0, -1)
     end
 
     if buttons.left then
-        self:go(-2,  0)
+        self:go(-1,  0)
     end
 
     if buttons.down then
-        self:go( 0,  2)
+        self:go( 0,  1)
     end
 
     if buttons.right then
-        self:go( 2,  0)
+        self:go( 1,  0)
     end
 end
 

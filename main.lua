@@ -11,7 +11,7 @@ local Settings
 
 --# Constants
 
-local SECONDS_PER_TICK = 1 / 30
+local SECONDS_PER_TICK = 1 / 60
 
 --# State
 
