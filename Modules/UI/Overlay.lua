@@ -63,6 +63,11 @@ function Overlay:on_text_input(...)
     end
 end
 
+function Overlay:tick(...)
+    self.over_widget:tick(...)
+    return self.under_widget:tick(...)
+end
+
 --# Export
 
 return augment(mix{Widget, Overlay})

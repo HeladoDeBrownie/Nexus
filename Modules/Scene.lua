@@ -11,24 +11,6 @@ function Scene:initialize()
     self.x, self.y = 0, 0
 end
 
-function Scene:tick(buttons)
-    if buttons.up then
-        self:go( 0, -1)
-    end
-
-    if buttons.left then
-        self:go(-1,  0)
-    end
-
-    if buttons.down then
-        self:go( 0,  1)
-    end
-
-    if buttons.right then
-        self:go( 1,  0)
-    end
-end
-
 function Scene:get_player_position()
     return self.x, self.y
 end

@@ -36,6 +36,7 @@ function Widget:draw_widget(x, y, width, height) end
 function Widget:on_key(key, down, ctrl) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
+function Widget:tick() end
 
 --# Export
 

@@ -22,6 +22,7 @@ function SceneView:initialize(scene)
     Widget.initialize(self)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.scene = scene
+    self.keys_down = {}
     self:apply_background_palette()
 end
 
@@ -76,6 +77,28 @@ function SceneView:draw_widget(x, y, width, height)
     love.graphics.draw(sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, x + 24, y + 36)
     self:apply_background_palette()
+end
+
+function SceneView:on_key(key, down, _)
+    self.keys_down[key] = down or nil
+end
+
+function SceneView:tick()
+    if self.keys_down['w'] then
+        self.scene:go( 0, -1)
+    end
+
+    if self.keys_down['a'] then
+        self.scene:go(-1,  0)
+    end
+
+    if self.keys_down['s'] then
+        self.scene:go( 0,  1)
+    end
+
+    if self.keys_down['d'] then
+        self.scene:go( 1,  0)
+    end
 end
 
 --# Export
