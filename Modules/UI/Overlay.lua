@@ -31,11 +31,11 @@ function Overlay:draw(x, y, width, height)
 end
 
 function Overlay:on_key(...)
-    local key, ctrl = ...
+    local key, down, ctrl = ...
     local active_widget = self:get_active_widget()
 
     if self.overlay_active then
-        if not ctrl and key == 'escape' then
+        if down and not ctrl and key == 'escape' then
             self.overlay_active = false
             self.just_switched = true
         else
@@ -43,7 +43,7 @@ function Overlay:on_key(...)
             return active_widget:on_key(...)
         end
     else
-        if not ctrl and key == '`' then
+        if down and not ctrl and key == '`' then
             self.overlay_active = true
             self.just_switched = true
         else

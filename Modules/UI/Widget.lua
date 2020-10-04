@@ -33,7 +33,7 @@ end
 -- provided with no-op defaults so that they can reliably be called.
 
 function Widget:draw_widget(x, y, width, height) end
-function Widget:on_key(key, ctrl) end
+function Widget:on_key(key, down, ctrl) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
 

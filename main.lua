@@ -107,7 +107,11 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    main_widget:on_key(key, is_ctrl_down())
+    main_widget:on_key(key, true, is_ctrl_down())
+end
+
+function love.keyreleased(key)
+    main_widget:on_key(key, false, is_ctrl_down())
 end
 
 function love.textinput(text)

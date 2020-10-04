@@ -58,53 +58,55 @@ function Console:draw_widget(x, y, width, height)
     self.font:print(text)
 end
 
-function Console:on_key(key, ctrl)
-    local input_buffer = self.input_buffer
+function Console:on_key(key, down, ctrl)
+    if down then
+        local input_buffer = self.input_buffer
 
-    if ctrl then
-        if key == 'v' then
-            -- Ctrl+V: Paste
-            input_buffer:append(love.system.getClipboardText())
-        elseif key == 'return' then
-            -- Ctrl+Return: Insert newline
-            input_buffer:append'\n'
-        end
-    else
-        if key == 'backspace' then
-            -- Backspace: Delete last character
-            input_buffer:backspace()
-        elseif key == 'return' then
-            -- Return: Run command
-            local input = input_buffer:read()
-            self:print(self.prompt_string .. input)
+        if ctrl then
+            if key == 'v' then
+                -- Ctrl+V: Paste
+                input_buffer:append(love.system.getClipboardText())
+            elseif key == 'return' then
+                -- Ctrl+Return: Insert newline
+                input_buffer:append'\n'
+            end
+        else
+            if key == 'backspace' then
+                -- Backspace: Delete last character
+                input_buffer:backspace()
+            elseif key == 'return' then
+                -- Return: Run command
+                local input = input_buffer:read()
+                self:print(self.prompt_string .. input)
 
-            local chunk, load_error_message = load(
-                input_buffer:read(),
-                'player input',
-                't',
-                self.environment
-            )
-
-            if chunk == nil then
-                chunk, load_error_message = load(
-                    'return ' .. input_buffer:read(),
+                local chunk, load_error_message = load(
+                    input_buffer:read(),
                     'player input',
                     't',
                     self.environment
                 )
-            end
 
-            if chunk == nil then
-                self:print(load_error_message)
-            else
-                local function handle_result(_, ...)
-                    self:print(...)
+                if chunk == nil then
+                    chunk, load_error_message = load(
+                        'return ' .. input_buffer:read(),
+                        'player input',
+                        't',
+                        self.environment
+                    )
                 end
 
-                handle_result(pcall(chunk))
-            end
+                if chunk == nil then
+                    self:print(load_error_message)
+                else
+                    local function handle_result(_, ...)
+                        self:print(...)
+                    end
 
-            input_buffer:clear()
+                    handle_result(pcall(chunk))
+                end
+
+                input_buffer:clear()
+            end
         end
     end
 end
