@@ -6,7 +6,7 @@ local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
 
---# Methods
+--# Interface
 
 function Console:initialize(prompt_string)
     Widget.initialize(self)
@@ -114,7 +114,5 @@ end
 function Console:on_text_input(text)
     self.input_buffer:append(text)
 end
-
---# Export
 
 return augment(mix{Widget, Scalable, Console})

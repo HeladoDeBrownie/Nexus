@@ -5,7 +5,7 @@ local Scalable = {}
 Scalable.minimum_scale = 2
 Scalable.maximum_scale = 8
 
---# Methods
+--# Interface
 
 function Scalable:initialize(settings, minimum_scale, maximum_scale)
     self.minimum_scale = minimum_scale
@@ -39,7 +39,5 @@ function Scalable:on_scroll(units, ctrl)
         self:adjust_scale(units)
     end
 end
-
---# Export
 
 return Scalable

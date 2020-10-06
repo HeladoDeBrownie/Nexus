@@ -5,7 +5,7 @@ local Scene = {}
 -- STUB
 local chunk = love.graphics.newImage'Assets/Test Chunk.png'
 
---# Methods
+--# Interface
 
 function Scene:initialize()
     self.x, self.y = 0, 0
@@ -26,7 +26,5 @@ function Scene:go(delta_x, delta_y)
     self.x = self.x + delta_x
     self.y = self.y + delta_y
 end
-
---# Export
 
 return augment(Scene)

@@ -4,7 +4,7 @@ local TextBuffer = {}
 
 local utf8 = require'utf8'
 
---# Methods
+--# Interface
 
 function TextBuffer:initialize()
     self:clear()
@@ -29,7 +29,5 @@ end
 function TextBuffer:clear()
     self.text = ''
 end
-
---# Export
 
 return augment(TextBuffer)

@@ -48,8 +48,8 @@ function love.load()
 
     --[[
         Use nearest neighbor scaling in order to preserve pixel fidelity. Do
-        this before loading any modules so that the setting is in place when
-        images are loaded.
+        this before loading any modules with images so that the setting is in
+        place when images are loaded.
     --]]
     love.graphics.setDefaultFilter('nearest', 'nearest')
 

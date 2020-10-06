@@ -16,7 +16,7 @@ local function rgb24_to_love_color(red, green, blue)
     return red / 255, green / 255, blue / 255, 1
 end
 
---# Methods
+--# Interface
 
 function SceneView:initialize(scene)
     Widget.initialize(self)
@@ -100,7 +100,5 @@ function SceneView:tick()
         self.scene:go( 1,  0)
     end
 end
-
---# Export
 
 return augment(mix{Widget, Scalable, SceneView})

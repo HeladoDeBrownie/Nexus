@@ -5,7 +5,7 @@
 
 local Widget = {}
 
---# Methods
+--# Interface
 
 function Widget:initialize()
     self.shader = love.graphics.newShader'palette_swap.glsl'
@@ -37,7 +37,5 @@ function Widget:on_key(key, down, ctrl) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
 function Widget:tick() end
-
---# Export
 
 return Widget

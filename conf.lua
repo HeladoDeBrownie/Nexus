@@ -1,13 +1,19 @@
 function love.conf(configuration)
     require'Modules/deep_merge'(configuration, {
+        version = '11.3',
+        identity = 'helado de brownie_Nexus',
         accelerometerjoystick = false,
         gammacorrect = true,
-        identity = 'helado de brownie_Nexus',
+
+        modules = {
+            physics = false,
+        },
 
         window = {
-            icon = 'Assets/Icon.png',
-            resizable = true,
             title = 'Nexus',
+            icon = 'Assets/Icon.png',
+            width = 960, height = 640,
+            resizable = true,
         },
     })
 end

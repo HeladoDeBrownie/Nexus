@@ -8,7 +8,7 @@ local utf8 = require'utf8'
 
 local MISSING_GLYPH = '\0'
 
---# Methods
+--# Interface
 
 function Font:initialize(metadata)
     local image = love.graphics.newImage(metadata.file_name)
@@ -65,7 +65,5 @@ function Font:compute_height(text, width)
 
     return number_of_rows * self.metadata.glyph_height
 end
-
---# Export
 
 return augment(Font)

@@ -4,7 +4,7 @@ local Overlay = {}
 
 local Widget = require'UI/Widget'
 
---# Methods
+--# Interface
 
 function Overlay:initialize(under_widget, over_widget)
     Widget.initialize(self)
@@ -67,7 +67,5 @@ function Overlay:tick(...)
     self.over_widget:tick(...)
     return self.under_widget:tick(...)
 end
-
---# Export
 
 return augment(mix{Widget, Overlay})
