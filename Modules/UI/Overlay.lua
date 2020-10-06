@@ -4,6 +4,10 @@ local Overlay = {}
 
 local Widget = require'UI/Widget'
 
+--# Constants
+
+local TICKS_UNTIL_EXTENDED = 16
+
 --# Interface
 
 function Overlay:initialize(under_widget, over_widget)
@@ -12,6 +16,7 @@ function Overlay:initialize(under_widget, over_widget)
     self.over_widget = over_widget
     self.overlay_active = false
     self.just_switched = false
+    self.overlay_position = 0 -- fraction out of TICKS_UNTIL_EXTENDED
 end
 
 function Overlay:get_active_widget()
@@ -25,9 +30,9 @@ end
 function Overlay:draw(x, y, width, height)
     self.under_widget:draw(x, y, width, height)
 
-    if self.overlay_active then
-        self.over_widget:draw(x, y, width, math.floor(height / 3))
-    end
+    self.over_widget:draw(x, y, width, math.floor(
+        self.overlay_position * height / (3 * TICKS_UNTIL_EXTENDED)
+    ))
 end
 
 function Overlay:on_key(...)
@@ -64,6 +69,15 @@ function Overlay:on_text_input(...)
 end
 
 function Overlay:tick(...)
+    if self.overlay_active then
+        self.overlay_position = math.min(
+            self.overlay_position + 1,
+            TICKS_UNTIL_EXTENDED
+        )
+    else
+        self.overlay_position = math.max(self.overlay_position - 1, 0)
+    end
+
     self.over_widget:tick(...)
     return self.under_widget:tick(...)
 end
