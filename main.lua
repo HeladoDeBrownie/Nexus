@@ -19,12 +19,6 @@ local main_widget
 local scene
 local time
 
---# Helpers
-
-local function is_ctrl_down()
-    return love.keyboard.isDown'lctrl' or love.keyboard.isDown'rctrl'
-end
-
 --# Callbacks
 
 function love.load()
@@ -102,11 +96,11 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    main_widget:on_key(key, true, is_ctrl_down())
+    main_widget:on_key(key, true)
 end
 
 function love.keyreleased(key)
-    main_widget:on_key(key, false, is_ctrl_down())
+    main_widget:on_key(key, false)
 end
 
 function love.textinput(text)

@@ -8,6 +8,7 @@ local Widget = {}
 --# Requires
 
 local utf8 = require'utf8'
+local is_ctrl_down = require'Helpers'.is_ctrl_down
 
 --# Interface
 
@@ -16,20 +17,24 @@ function Widget:initialize()
     self.shader = love.graphics.newShader'palette_swap.glsl'
 end
 
-function Widget:on_key(key, down, ctrl)
+function Widget:on_key(key, down)
     if down then
         local key_combination =
             key:gsub(utf8.charpattern, string.upper, 1)
 
-        if ctrl then
+        if is_ctrl_down() then
             key_combination = 'Ctrl+' .. key_combination
         end
 
         local binding = self.bindings[key_combination]
 
-        if binding ~= nil then
+        if binding == nil then
+            return self:on_unbound_key(key, down)
+        else
             return binding(self)
         end
+    else
+        return self:on_unbound_key(key, down)
     end
 end
 
@@ -61,6 +66,7 @@ end
 function Widget:draw_widget(x, y, width, height) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
+function Widget:on_unbound_key(key, down) end
 function Widget:tick() end
 
 return Widget

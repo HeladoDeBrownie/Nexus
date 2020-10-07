@@ -3,6 +3,7 @@ local Overlay = {}
 --# Requires
 
 local Widget = require'UI/Widget'
+local is_ctrl_down = require'Helpers'.is_ctrl_down
 
 --# Constants
 
@@ -36,7 +37,8 @@ function Overlay:draw(x, y, width, height)
 end
 
 function Overlay:on_key(...)
-    local key, down, ctrl = ...
+    local key, down = ...
+    local ctrl = is_ctrl_down()
     local active_widget = self:get_active_widget()
 
     if self.overlay_active then

@@ -79,7 +79,7 @@ function SceneView:draw_widget(x, y, width, height)
     self:apply_background_palette()
 end
 
-function SceneView:on_key(key, down, _)
+function SceneView:on_unbound_key(key, down)
     self.keys_down[key] = down or nil
 end
 
