@@ -59,7 +59,7 @@ function love.load()
     local console = UI.Console:new'> '
 
     main_widget = UI.Overlay:new(
-        UI.SceneView:new(scene),
+        UI.SpriteEditor:new(),
         console
     )
 
