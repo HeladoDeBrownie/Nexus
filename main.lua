@@ -4,10 +4,11 @@
     logic happens in the UI modules (Modules/UI/*).
 --]]
 
---# Modules
+--# Requires
 
 local Serialization
 local Settings
+local is_ctrl_down
 
 --# Constants
 
@@ -39,6 +40,8 @@ function love.load()
         further uses of the settings module don't need to use safe_require.
     --]]
     Settings = Serialization.safe_require('Settings', require'Schemas/Settings')
+
+    is_ctrl_down = require'Helpers'.is_ctrl_down
 
     --[[
         Use nearest neighbor scaling in order to preserve pixel fidelity. Do
