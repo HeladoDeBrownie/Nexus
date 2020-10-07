@@ -5,10 +5,36 @@
 
 local Widget = {}
 
+--# Requires
+
+local utf8 = require'utf8'
+
 --# Interface
 
 function Widget:initialize()
+    self.bindings = {}
     self.shader = love.graphics.newShader'palette_swap.glsl'
+end
+
+function Widget:on_key(key, down, ctrl)
+    if down then
+        local key_combination =
+            key:gsub(utf8.charpattern, string.upper, 1)
+
+        if ctrl then
+            key_combination = 'Ctrl+' .. key_combination
+        end
+
+        local binding = self.bindings[key_combination]
+
+        if binding ~= nil then
+            return binding(self)
+        end
+    end
+end
+
+function Widget:bind(key_combination, handler)
+    self.bindings[key_combination] = handler
 end
 
 function Widget:set_palette(color0, color1, color2, color3)
@@ -33,7 +59,6 @@ end
 -- provided with no-op defaults so that they can reliably be called.
 
 function Widget:draw_widget(x, y, width, height) end
-function Widget:on_key(key, down, ctrl) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
 function Widget:tick() end
