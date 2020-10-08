@@ -55,4 +55,8 @@ function SpriteEditor:draw_widget(x, y, width, height)
     end
 end
 
+function SpriteEditor:on_press(x, y)
+    print(x, y)
+end
+
 return augment(mix{Widget, SpriteEditor})

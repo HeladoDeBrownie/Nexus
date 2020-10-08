@@ -64,6 +64,7 @@ end
 -- provided with no-op defaults so that they can reliably be called.
 
 function Widget:draw_widget(x, y, width, height) end
+function Widget:on_press(x, y) end
 function Widget:on_scroll(units, ctrl) end
 function Widget:on_text_input(text) end
 function Widget:on_unbound_key(key, down) end

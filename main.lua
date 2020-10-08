@@ -106,6 +106,10 @@ function love.keyreleased(key)
     main_widget:on_key(key, false)
 end
 
+function love.mousepressed(x, y)
+    main_widget:on_press(x, y)
+end
+
 function love.textinput(text)
     main_widget:on_text_input(text)
 end

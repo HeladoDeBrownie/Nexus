@@ -60,6 +60,10 @@ function Overlay:on_key(...)
     end
 end
 
+function Overlay:on_press(...)
+    return self:get_active_widget():on_press(...)
+end
+
 function Overlay:on_scroll(...)
     return self:get_active_widget():on_scroll(...)
 end
