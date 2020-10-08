@@ -48,8 +48,8 @@ function SpriteEditor:draw_widget(x, y, width, height)
             love.graphics.setColor(GRAYSCALE_PALETTE[self.pixels[x][y]])
 
             love.graphics.rectangle('fill',
-                (x - 1) * x_increment, (y - 1) * y_increment,
-                x_increment, y_increment
+                (x - 1) * x_increment + 1, (y - 1) * y_increment + 1,
+                x_increment - 2, y_increment - 2
             )
         end
     end
