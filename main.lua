@@ -23,7 +23,9 @@ local time
 
 function love.load()
     -- Look for modules in the Modules directory.
-    package.path = './Modules/?.lua;' .. package.path
+    love.filesystem.setRequirePath(
+        'Modules/?.lua;' .. love.filesystem.getRequirePath()
+    )
 
     -- Make the mixin library available to all modules.
     local Mixin = require'Mixin'
