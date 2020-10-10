@@ -65,6 +65,8 @@ function love.load()
         console
     )
 
+    love.resize(love.graphics.getDimensions())
+
     -- Copy prints to both standard output and the in-game console.
 
     local print = _G.print
@@ -94,7 +96,7 @@ end
 -- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
-    main_widget:draw(0, 0, love.graphics.getDimensions())
+    main_widget:draw()
 end
 
 function love.keypressed(key)
@@ -103,6 +105,13 @@ end
 
 function love.keyreleased(key)
     main_widget:on_key(key, false)
+end
+
+function love.resize(window_width, window_height)
+    main_widget:set_geometry{
+        screen_x = 0, screen_y = 0,
+        width = window_width, height = window_height,
+    }
 end
 
 function love.textinput(text)

@@ -40,7 +40,8 @@ function Console:print(...)
     end
 end
 
-function Console:draw_widget(x, y, width, height)
+function Console:draw_widget()
+    local _, _, width, height = self:get_geometry()
     self:apply_scale()
 
     -- The console's text is the scrollback followed by the current

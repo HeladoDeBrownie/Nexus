@@ -55,7 +55,8 @@ function SceneView:apply_entity_palette()
     )
 end
 
-function SceneView:draw_widget(x, y, width, height)
+function SceneView:draw_widget()
+    local screen_x, screen_y, width, height = self:get_geometry()
     self:apply_scale()
 
     local base_x, base_y = love.graphics.inverseTransformPoint(
@@ -64,7 +65,7 @@ function SceneView:draw_widget(x, y, width, height)
     )
 
     local player_x, player_y = self.scene:get_player_position()
-    local player_sx, player_sy = x + player_x, y + player_y
+    local player_sx, player_sy = screen_x + player_x, screen_y + player_y
 
     love.graphics.translate(
         math.floor(base_x - player_sx - 6),
@@ -75,7 +76,7 @@ function SceneView:draw_widget(x, y, width, height)
     love.graphics.draw(self.scene:get_chunk(0, 0))
     self:apply_entity_palette()
     love.graphics.draw(sprite, player_sx, player_sy)
-    love.graphics.draw(sprite2, x + 24, y + 36)
+    love.graphics.draw(sprite2, screen_x + 24, screen_y + 36)
     self:apply_background_palette()
 end
 
