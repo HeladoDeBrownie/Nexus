@@ -20,6 +20,7 @@ local GRAYSCALE_PALETTE = {
 
 function SpriteEditor:initialize()
     Widget.initialize(self)
+    self.active_color = 1
     self.pixels = {}
 
     for x = 1, SPRITE_WIDTH do
@@ -57,8 +58,13 @@ function SpriteEditor:draw_widget()
     end
 end
 
-function SpriteEditor:on_press(x, y)
-    print(x, y)
+function SpriteEditor:on_press(press_x, press_y)
+    local _, _, width, height = self:get_geometry()
+    local x_increment = width / SPRITE_WIDTH
+    local y_increment = height / SPRITE_HEIGHT
+    local pixel_x = math.floor(press_x / x_increment) + 1
+    local pixel_y = math.floor(press_y / y_increment) + 1
+    self.pixels[pixel_x][pixel_y] = self.active_color
 end
 
 return augment(mix{Widget, SpriteEditor})
