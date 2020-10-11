@@ -61,15 +61,18 @@ function Widget:on_key(key, down)
         if binding == nil then
             return self:on_unbound_key(key, down)
         else
-            return binding(self)
+            return binding.handler(self, binding.extra_data)
         end
     else
         return self:on_unbound_key(key, down)
     end
 end
 
-function Widget:bind(key_combination, handler)
-    self.bindings[key_combination] = handler
+function Widget:bind(key_combination, handler, extra_data)
+    self.bindings[key_combination] = {
+        handler = handler,
+        extra_data = extra_data,
+    }
 end
 
 function Widget:set_palette(color0, color1, color2, color3)

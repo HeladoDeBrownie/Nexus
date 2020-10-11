@@ -49,6 +49,15 @@ function SpriteEditor:initialize(love_image_data, love_image)
         {0.3, 0.3, 0.3, 1},
         {0.6, 0.6, 0.6, 1}
     )
+
+    self:bind('0', SpriteEditor.set_active_color, 0)
+    self:bind('1', SpriteEditor.set_active_color, 1)
+    self:bind('2', SpriteEditor.set_active_color, 2)
+    self:bind('3', SpriteEditor.set_active_color, 3)
+end
+
+function SpriteEditor:set_active_color(new_active_color)
+    self.active_color = new_active_color
 end
 
 function SpriteEditor:compile_image()
