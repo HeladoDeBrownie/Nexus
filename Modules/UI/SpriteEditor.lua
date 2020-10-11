@@ -40,7 +40,9 @@ function SpriteEditor:initialize()
     )
 end
 
-function SpriteEditor:draw_widget(x, y, width, height)
+function SpriteEditor:draw_widget()
+    local x, y, width, height = self:get_geometry()
+
     for x = 1, SPRITE_WIDTH do
         for y = 1, SPRITE_HEIGHT do
             local x_increment = width / SPRITE_WIDTH

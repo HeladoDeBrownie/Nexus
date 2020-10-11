@@ -24,7 +24,9 @@ local time
 
 function love.load()
     -- Look for modules in the Modules directory.
-    package.path = './Modules/?.lua;' .. package.path
+    love.filesystem.setRequirePath(
+        'Modules/?.lua;' .. love.filesystem.getRequirePath()
+    )
 
     -- Make the mixin library available to all modules.
     local Mixin = require'Mixin'
@@ -66,6 +68,8 @@ function love.load()
         console
     )
 
+    love.resize(love.graphics.getDimensions())
+
     -- Copy prints to both standard output and the in-game console.
 
     local print = _G.print
@@ -95,7 +99,7 @@ end
 -- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
-    main_widget:draw(0, 0, love.graphics.getDimensions())
+    main_widget:draw()
 end
 
 function love.keypressed(key)
@@ -108,6 +112,13 @@ end
 
 function love.mousepressed(x, y)
     main_widget:on_press(x, y)
+end
+
+function love.resize(window_width, window_height)
+    main_widget:set_geometry{
+        screen_x = 0, screen_y = 0,
+        width = window_width, height = window_height,
+    }
 end
 
 function love.textinput(text)

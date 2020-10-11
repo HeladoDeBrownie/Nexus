@@ -4,7 +4,7 @@ end
 
 local function is_integer_between(low, high)
     return function (value)
-        return is_integer and value >= low and value <= high
+        return is_integer(value) and value >= low and value <= high
     end
 end
 
