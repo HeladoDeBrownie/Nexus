@@ -79,10 +79,14 @@ function SpriteEditor:on_press(press_x, press_y)
     local pixel_x = math.floor(press_x / x_increment)
     local pixel_y = math.floor(press_y / y_increment)
 
-    self.love_image_data:setPixel(pixel_x, pixel_y,
-        color_tuple_from_palette_index(self.active_color))
+    if 0 <= pixel_x and pixel_x < SPRITE_WIDTH and
+       0 <= pixel_y and pixel_y < SPRITE_HEIGHT
+    then
+        self.love_image_data:setPixel(pixel_x, pixel_y,
+            color_tuple_from_palette_index(self.active_color))
 
-    self:compile_image()
+        self:compile_image()
+    end
 end
 
 return augment(mix{Widget, SpriteEditor})

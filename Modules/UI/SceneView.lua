@@ -18,11 +18,12 @@ end
 
 --# Interface
 
-function SceneView:initialize(scene)
+function SceneView:initialize(scene, player_sprite)
     Widget.initialize(self)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.scene = scene
     self.keys_down = {}
+    self.player_sprite = player_sprite
     self:apply_background_palette()
 end
 
@@ -75,7 +76,7 @@ function SceneView:draw_widget()
     self:apply_tile_palette()
     love.graphics.draw(self.scene:get_chunk(0, 0))
     self:apply_entity_palette()
-    love.graphics.draw(sprite, player_sx, player_sy)
+    love.graphics.draw(self.player_sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, screen_x + 24, screen_y + 36)
     self:apply_background_palette()
 end

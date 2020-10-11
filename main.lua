@@ -62,10 +62,12 @@ function love.load()
 
     local UI = require'UI'
     local console = UI.Console:new'> '
+    local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
+    local player_sprite = love.graphics.newImage(player_sprite_data)
 
     main_widget = UI.Overlay:new(
-        UI.SpriteEditor:new(love.image.newImageData'Assets/Untitled.png'),
-        console
+        UI.SceneView:new(scene, player_sprite),
+        UI.SpriteEditor:new(player_sprite_data, player_sprite)
     )
 
     love.resize(love.graphics.getDimensions())
