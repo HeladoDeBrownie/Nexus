@@ -64,7 +64,7 @@ function love.load()
     local console = UI.Console:new'> '
 
     main_widget = UI.Overlay:new(
-        UI.SpriteEditor:new(),
+        UI.SpriteEditor:new(love.image.newImageData'Assets/Untitled.png'),
         console
     )
 
