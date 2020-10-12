@@ -13,38 +13,17 @@ local is_ctrl_down = require'Helpers'.is_ctrl_down
 --# Interface
 
 function Widget:initialize()
-    self.geometry = {
-        screen_x = 0, screen_y = 0,
-        width = 100, height = 100,
-    }
-
+    self.widget_canvas = love.graphics.newCanvas()
     self.bindings = {}
     self.shader = love.graphics.newShader'palette_swap.glsl'
 end
 
-function Widget:get_geometry()
-    local geometry = self.geometry
-    return geometry.screen_x, geometry.screen_y, geometry.width, geometry.height
+function Widget:get_canvas()
+    return self.widget_canvas
 end
 
-function Widget:set_geometry(new_geometry)
-    local geometry = self.geometry
-
-    if new_geometry.screen_x ~= nil then
-        geometry.screen_x = new_geometry.screen_x
-    end
-
-    if new_geometry.screen_y ~= nil then
-        geometry.screen_y = new_geometry.screen_y
-    end
-
-    if new_geometry.width ~= nil then
-        geometry.width = new_geometry.width
-    end
-
-    if new_geometry.height ~= nil then
-        geometry.height = new_geometry.height
-    end
+function Widget:get_dimensions()
+    return self.widget_canvas:getDimensions()
 end
 
 function Widget:on_key(key, down)
@@ -80,17 +59,22 @@ function Widget:set_palette(color0, color1, color2, color3)
 end
 
 function Widget:draw()
-    local screen_x, screen_y, width, height = self:get_geometry()
     love.graphics.push'all'
+    love.graphics.setCanvas(self.widget_canvas)
     love.graphics.setShader(self.shader)
     self:draw_background()
     self:draw_widget()
     love.graphics.pop()
 end
 
+function Widget:resize(width, height)
+    self.widget_canvas = love.graphics.newCanvas(width, height)
+    self:draw()
+end
+
 function Widget:draw_background()
     love.graphics.setColor(0, 0, 0, 0)
-    love.graphics.rectangle('fill', self:get_geometry())
+    love.graphics.rectangle('fill', 0, 0, self:get_dimensions())
     love.graphics.setColor(1, 1, 1)
 end
 

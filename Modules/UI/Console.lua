@@ -41,7 +41,7 @@ function Console:print(...)
 end
 
 function Console:draw_widget()
-    local _, _, width, height = self:get_geometry()
+    local width, height = self:get_dimensions()
     self:apply_scale()
 
     -- The console's text is the scrollback followed by the current

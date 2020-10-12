@@ -65,7 +65,7 @@ function SpriteEditor:compile_image()
 end
 
 function SpriteEditor:draw_widget()
-    local x, y, width, height = self:get_geometry()
+    local width, height = self:get_dimensions()
 
     for x = 0, SPRITE_WIDTH - 1 do
         for y = 0, SPRITE_HEIGHT - 1 do
@@ -82,7 +82,7 @@ function SpriteEditor:draw_widget()
 end
 
 function SpriteEditor:on_press(press_x, press_y)
-    local _, _, width, height = self:get_geometry()
+    local width, height = self:get_dimensions()
     local x_increment = width / SPRITE_WIDTH
     local y_increment = height / SPRITE_HEIGHT
     local pixel_x = math.floor(press_x / x_increment)

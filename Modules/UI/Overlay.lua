@@ -29,8 +29,20 @@ function Overlay:get_active_widget()
 end
 
 function Overlay:draw()
+    local _, height = self:get_dimensions()
+    love.graphics.push'all'
+    love.graphics.setCanvas(self.widget_canvas)
     self.under_widget:draw()
+    love.graphics.draw(self.under_widget:get_canvas())
     self.over_widget:draw()
+
+    love.graphics.draw(self.over_widget:get_canvas(), 0,
+        math.floor(
+            (-1 + self.overlay_position / TICKS_UNTIL_EXTENDED) *
+            height / 3
+        ))
+
+    love.graphics.pop()
 end
 
 function Overlay:on_key(...)
@@ -83,27 +95,15 @@ function Overlay:tick(...)
         self.overlay_position = math.max(self.overlay_position - 1, 0)
     end
 
-    if self.overlay_position ~= initial_overlay_position then
-        self:set_geometry{}
-    end
-
     self.over_widget:tick(...)
     return self.under_widget:tick(...)
 end
 
-function Overlay:set_geometry(...)
-    Widget.set_geometry(self, ...)
-    self.under_widget:set_geometry(...)
-    local screen_x, screen_y, width, height = self:get_geometry()
-
-    self.over_widget:set_geometry{
-        screen_x = screen_x,
-        screen_y = screen_y,
-        width = width,
-        height = math.floor(
-            self.overlay_position * height / (3 * TICKS_UNTIL_EXTENDED)
-        ),
-    }
+function Overlay:resize(...)
+    Widget.resize(self, ...)
+    self.under_widget:resize(...)
+    local width, height = ...
+    self.over_widget:resize(width, math.floor(height / 3))
 end
 
 return augment(mix{Widget, Overlay})

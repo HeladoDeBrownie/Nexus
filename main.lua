@@ -102,6 +102,7 @@ end
 
 function love.draw()
     main_widget:draw()
+    love.graphics.draw(main_widget:get_canvas())
 end
 
 function love.keypressed(key)
@@ -117,10 +118,7 @@ function love.mousepressed(x, y)
 end
 
 function love.resize(window_width, window_height)
-    main_widget:set_geometry{
-        screen_x = 0, screen_y = 0,
-        width = window_width, height = window_height,
-    }
+    main_widget:resize(window_width, window_height)
 end
 
 function love.textinput(text)
