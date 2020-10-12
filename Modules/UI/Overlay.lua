@@ -31,7 +31,7 @@ end
 function Overlay:draw()
     local _, height = self:get_dimensions()
     love.graphics.push'all'
-    love.graphics.setCanvas(self.widget_canvas)
+    love.graphics.setCanvas(self.canvas)
     self.under_widget:draw()
     love.graphics.draw(self.under_widget:get_canvas())
     self.over_widget:draw()
