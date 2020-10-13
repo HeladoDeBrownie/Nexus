@@ -21,10 +21,10 @@ function Console:initialize(prompt_string)
     self.font = require'Font':new(require'Assets/Carpincho Mono')
 
     self:set_palette(
-        {Color:new(0, 0, 0):to_normalized_rgba()},
-        {0.25, 0.25, 0.25, 1},
-        {0.5, 0.5, 0.5, 1},
-        {1, 1, 1, 1}
+        {Color:new(0, 0,   0):to_normalized_rgba()},
+        {Color:new(0, 0,  25):to_normalized_rgba()},
+        {Color:new(0, 0,  50):to_normalized_rgba()},
+        {Color:new(0, 0, 100):to_normalized_rgba()}
     )
 
     self:bind('Backspace', Console.backspace)
