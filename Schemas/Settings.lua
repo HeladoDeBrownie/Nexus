@@ -1,14 +1,8 @@
-local function is_integer(value)
-    return type(value) == 'number' and value == math.floor(value)
-end
+--# Helpers
 
-local function is_integer_between(low, high)
-    return function (value)
-        return is_integer(value) and value >= low and value <= high
-    end
-end
+local is_scale = require'Predicates'.is_integer_in_range(2, 8)
 
-local is_scale = is_integer_between(2, 8)
+--# Interface
 
 return {
     UI = {
