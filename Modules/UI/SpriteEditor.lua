@@ -2,6 +2,7 @@ local SpriteEditor = {}
 
 --# Requires
 
+local Color = require'Color'
 local Widget = require'UI/Widget'
 
 --# Constants
@@ -44,10 +45,10 @@ function SpriteEditor:initialize(love_image_data, love_image)
     self:compile_image()
 
     self:set_palette(
-        {0, 0, 0, 1},
-        {0.1, 0.1, 0.1, 1},
-        {0.3, 0.3, 0.3, 1},
-        {0.6, 0.6, 0.6, 1}
+        {Color:new(0, 0,   0):to_normalized_rgba()},
+        {Color:new(0, 0,  25):to_normalized_rgba()},
+        {Color:new(0, 0,  50):to_normalized_rgba()},
+        {Color:new(0, 0, 100):to_normalized_rgba()}
     )
 
     self:bind('0', SpriteEditor.set_active_color, 0)

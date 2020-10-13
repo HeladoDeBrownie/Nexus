@@ -2,6 +2,7 @@ local SceneView = {}
 
 --# Requires
 
+local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local Widget = require'UI/Widget'
 
@@ -9,12 +10,6 @@ local Widget = require'UI/Widget'
 
 local sprite = love.graphics.newImage'Assets/Untitled.png'
 local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
-
---# Helpers
-
-local function rgb24_to_love_color(red, green, blue)
-    return red / 255, green / 255, blue / 255, 1
-end
 
 --# Interface
 
@@ -28,7 +23,7 @@ function SceneView:initialize(scene, player_sprite)
 end
 
 function SceneView:apply_background_palette()
-    local background_color = {0, 0, 0, 1}
+    local background_color = {Color:new(0, 0, 0):to_normalized_rgba()}
 
     self:set_palette(
         background_color,
@@ -40,19 +35,19 @@ end
 
 function SceneView:apply_tile_palette()
     self:set_palette(
-        {0, 0, 0, 0},
-        {rgb24_to_love_color( 50,  50,  50)},
-        {rgb24_to_love_color(150, 150, 150)},
-        {rgb24_to_love_color(250, 250, 250)}
+        {Color.TRANSPARENT:to_normalized_rgba()},
+        {Color:new(0, 0,  19):to_normalized_rgba()},
+        {Color:new(0, 0,  58):to_normalized_rgba()},
+        {Color:new(0, 0,  98):to_normalized_rgba()}
     )
 end
 
 function SceneView:apply_entity_palette()
     self:set_palette(
-        {0, 0, 0, 0},
-        {rgb24_to_love_color(  0, 228,  54)},
-        {rgb24_to_love_color(  0, 135,  81)},
-        {rgb24_to_love_color( 95,  87,  79)}
+        {Color.TRANSPARENT:to_normalized_rgba()},
+        {Color:new(134, 100,  89):to_normalized_rgba()},
+        {Color:new(156, 100,  52):to_normalized_rgba()},
+        {Color:new( 30,  16,  37):to_normalized_rgba()}
     )
 end
 

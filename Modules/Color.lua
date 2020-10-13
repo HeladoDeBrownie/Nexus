@@ -55,6 +55,12 @@ function Color:to_normalized_rgba()
     return r_ + base, g_ + base, b_ + base, 1
 end
 
+Color.TRANSPARENT = {}
+
+function Color.TRANSPARENT:to_normalized_rgba()
+    return 0, 0, 0, 0
+end
+
 --#
 
 return augment(Color)
