@@ -67,7 +67,7 @@ function love.load()
 
     main_widget = UI.Overlay:new(
         UI.SceneView:new(scene, player_sprite),
-        UI.SpriteEditor:new(player_sprite_data, player_sprite)
+        console
     )
 
     love.resize(love.graphics.getDimensions())

@@ -2,6 +2,7 @@ local Console = {}
 
 --# Requires
 
+local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
@@ -20,7 +21,7 @@ function Console:initialize(prompt_string)
     self.font = require'Font':new(require'Assets/Carpincho Mono')
 
     self:set_palette(
-        {0, 0, 0, 1},
+        {Color:new(0, 0, 0):to_normalized_rgba()},
         {0.25, 0.25, 0.25, 1},
         {0.5, 0.5, 0.5, 1},
         {1, 1, 1, 1}
