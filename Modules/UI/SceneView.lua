@@ -6,6 +6,24 @@ local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local Widget = require'UI/Widget'
 
+--# Constants
+
+local COLOR_SCHEME = require'ColorScheme':new(
+    Color:new(0, 0, 0),
+
+    {
+        Color:new(  0,   0,  19),
+        Color:new(  0,   0,  58),
+        Color:new(  0,   0,  98),
+    },
+
+    {
+        Color:new(134, 100,  89),
+        Color:new(156, 100,  52),
+        Color:new( 30,  16,  37),
+    }
+)
+
 --# State
 
 local sprite = love.graphics.newImage'Assets/Untitled.png'
@@ -23,32 +41,11 @@ function SceneView:initialize(scene, player_sprite)
 end
 
 function SceneView:apply_background_palette()
-    local background_color = {Color:new(0, 0, 0):to_normalized_rgba()}
-
-    self:set_palette(
-        background_color,
-        background_color,
-        background_color,
-        background_color
-    )
+    self:set_palette(COLOR_SCHEME:to_normalized_rgba'background')
 end
 
-function SceneView:apply_tile_palette()
-    self:set_palette(
-        {Color.TRANSPARENT:to_normalized_rgba()},
-        {Color:new(0, 0,  19):to_normalized_rgba()},
-        {Color:new(0, 0,  58):to_normalized_rgba()},
-        {Color:new(0, 0,  98):to_normalized_rgba()}
-    )
-end
-
-function SceneView:apply_entity_palette()
-    self:set_palette(
-        {Color.TRANSPARENT:to_normalized_rgba()},
-        {Color:new(134, 100,  89):to_normalized_rgba()},
-        {Color:new(156, 100,  52):to_normalized_rgba()},
-        {Color:new( 30,  16,  37):to_normalized_rgba()}
-    )
+function SceneView:apply_foreground_palette()
+    self:set_palette(COLOR_SCHEME:to_normalized_rgba'foreground')
 end
 
 function SceneView:draw_widget()
@@ -68,9 +65,8 @@ function SceneView:draw_widget()
         math.floor(base_y - player_sy - 6)
     )
 
-    self:apply_tile_palette()
     love.graphics.draw(self.scene:get_chunk(0, 0))
-    self:apply_entity_palette()
+    self:apply_foreground_palette()
     love.graphics.draw(self.player_sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, 24, 36)
     self:apply_background_palette()
