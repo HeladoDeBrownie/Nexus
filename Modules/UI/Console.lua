@@ -27,15 +27,18 @@ function Console:initialize(prompt_string)
         {Color:new(0, 0, 100):to_normalized_rgba()}
     )
 
-    self:bind('Backspace', Console.backspace)
-    self:bind('Return', Console.run_command)
-    self:bind('Ctrl+Return', Console.insert_newline)
-    self:bind('Ctrl+V', Console.paste)
+    self:bind('Backspace',      Console.backspace)
+    self:bind('Return',         Console.run_command)
+    self:bind('Ctrl+Return',    Console.insert_newline)
+    self:bind('Ctrl+V',         Console.paste)
 end
 
 function Console:print(...)
     local arguments = {...}
 
+    -- select('#', ...) must be used here instead of #arguments because we want
+    -- to handle nils, but the # operator has undefined behavior on sequences
+    -- that include them.
     for index = 1, select('#', ...) do
         self.scrollback:append(tostring(arguments[index]) .. '\n')
     end
@@ -45,23 +48,22 @@ function Console:draw_widget()
     local width, height = self:get_dimensions()
     self:apply_scale()
 
-    -- The console's text is the scrollback followed by the current
-    -- input.
+    -- Display the console's text scrolled so that the prompt is in view and
+    -- there's at least one blank line after it to act as a visual buffer.
+
     local text =
         self.scrollback:read() ..
         self.prompt_string ..
-        self.input_buffer:read()
-
-    -- Scroll so that the latest text is on-screen and then some.
+        self.input_buffer:read() ..
+        '\n'
 
     local _, transformed_height =
         love.graphics.inverseTransformPoint(0, height)
 
     love.graphics.translate(0, math.min(0,
-        transformed_height - self.font:compute_height(text, width) - 12)
+        transformed_height - self.font:compute_height(text, width))
     )
 
-    -- Display the text.
     self.font:print(text)
 end
 
