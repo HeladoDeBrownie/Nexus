@@ -24,9 +24,10 @@ end
 
 --# Interface
 
-function Widget:initialize()
+function Widget:initialize(color_scheme)
     self.bindings = {}
     self.canvas = love.graphics.newCanvas()
+    self.color_scheme = color_scheme
     self.shader = love.graphics.newShader'palette_swap.glsl'
 end
 
@@ -38,14 +39,18 @@ function Widget:get_dimensions()
     return self.canvas:getDimensions()
 end
 
+function Widget:apply_palette(background_or_foreground)
+    if self.color_scheme ~= nil then
+        self.shader:sendColor('palette',
+            self.color_scheme:to_normalized_rgba(background_or_foreground)
+        )
+    end
+end
+
 function Widget:resize(width, height)
     -- Canvas dimensions cannot be changed after they're created, so instead
     -- discard the old canvas and create a new one of the correct size.
     self.canvas = love.graphics.newCanvas(width, height)
-end
-
-function Widget:set_palette(color0, color1, color2, color3)
-    self.shader:sendColor('palette', color0, color1, color2, color3)
 end
 
 --## Input
@@ -83,8 +88,10 @@ function Widget:draw()
     love.graphics.push'all'
     love.graphics.setCanvas(self.canvas)
     love.graphics.setShader(self.shader)
+    self:apply_palette'background'
     self:draw_background()
-    self:draw_widget()
+    self:apply_palette'foreground'
+    self:draw_foreground()
     love.graphics.pop()
 end
 
@@ -104,7 +111,7 @@ end
 --]]
 
 -- Called by Widget.draw after setting up the draw state.
-function Widget:draw_widget() end
+function Widget:draw_foreground() end
 
 -- Called when a mouse or touch press occurs.
 function Widget:on_press(x, y) end

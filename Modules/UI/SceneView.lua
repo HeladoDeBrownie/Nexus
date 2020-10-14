@@ -32,23 +32,14 @@ local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
 --# Interface
 
 function SceneView:initialize(scene, player_sprite)
-    Widget.initialize(self)
+    Widget.initialize(self, COLOR_SCHEME)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.scene = scene
     self.keys_down = {}
     self.player_sprite = player_sprite
-    self:apply_background_palette()
 end
 
-function SceneView:apply_background_palette()
-    self:set_palette(COLOR_SCHEME:to_normalized_rgba'background')
-end
-
-function SceneView:apply_foreground_palette()
-    self:set_palette(COLOR_SCHEME:to_normalized_rgba'foreground')
-end
-
-function SceneView:draw_widget()
+function SceneView:draw_foreground()
     local width, height = self:get_dimensions()
     self:apply_scale()
 
@@ -65,11 +56,11 @@ function SceneView:draw_widget()
         math.floor(base_y - player_sy - 6)
     )
 
+    self:apply_palette'background'
     love.graphics.draw(self.scene:get_chunk(0, 0))
-    self:apply_foreground_palette()
+    self:apply_palette'foreground'
     love.graphics.draw(self.player_sprite, player_sx, player_sy)
     love.graphics.draw(sprite2, 24, 36)
-    self:apply_background_palette()
 end
 
 function SceneView:on_unbound_key(key, down)

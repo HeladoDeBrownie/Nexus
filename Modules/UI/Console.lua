@@ -7,6 +7,24 @@ local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
 
+--# Constants
+
+Console.color_scheme = require'ColorScheme':new(
+    Color:new(0, 0, 0),
+
+    {
+        Color:new(  0,   0,   0),
+        Color:new(  0,   0,   0),
+        Color:new(  0,   0,   0),
+    },
+
+    {
+        Color:new(  0,   0,  25),
+        Color:new(  0,   0,  50),
+        Color:new(  0,   0, 100),
+    }
+)
+
 --# Interface
 
 function Console:initialize(prompt_string)
@@ -19,13 +37,6 @@ function Console:initialize(prompt_string)
     self.scrollback = TextBuffer:new()
     self.input_buffer = TextBuffer:new()
     self.font = require'Font':new(require'Assets/Carpincho Mono')
-
-    self:set_palette(
-        {Color:new(0, 0,   0):to_normalized_rgba()},
-        {Color:new(0, 0,  25):to_normalized_rgba()},
-        {Color:new(0, 0,  50):to_normalized_rgba()},
-        {Color:new(0, 0, 100):to_normalized_rgba()}
-    )
 
     self:bind('Backspace',      Console.backspace)
     self:bind('Return',         Console.run_command)
@@ -44,7 +55,7 @@ function Console:print(...)
     end
 end
 
-function Console:draw_widget()
+function Console:draw_foreground()
     local width, height = self:get_dimensions()
     self:apply_scale()
 

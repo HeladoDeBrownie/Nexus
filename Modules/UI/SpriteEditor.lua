@@ -10,6 +10,22 @@ local Widget = require'UI/Widget'
 local SPRITE_WIDTH = 12
 local SPRITE_HEIGHT = 12
 
+SpriteEditor.color_scheme = require'ColorScheme':new(
+    Color:new(0, 0, 0),
+
+    {
+        Color:new(  0,   0,   0),
+        Color:new(  0,   0,   0),
+        Color:new(  0,   0,   0),
+    },
+
+    {
+        Color:new(  0,   0,  25),
+        Color:new(  0,   0,  50),
+        Color:new(  0,   0, 100),
+    }
+)
+
 --# Helpers
 
 local function color_tuple_from_palette_index(palette_index)
@@ -44,13 +60,6 @@ function SpriteEditor:initialize(love_image_data, love_image)
 
     self:compile_image()
 
-    self:set_palette(
-        {Color:new(0, 0,   0):to_normalized_rgba()},
-        {Color:new(0, 0,  25):to_normalized_rgba()},
-        {Color:new(0, 0,  50):to_normalized_rgba()},
-        {Color:new(0, 0, 100):to_normalized_rgba()}
-    )
-
     self:bind('0', SpriteEditor.set_active_color, 0)
     self:bind('1', SpriteEditor.set_active_color, 1)
     self:bind('2', SpriteEditor.set_active_color, 2)
@@ -65,7 +74,7 @@ function SpriteEditor:compile_image()
     self.love_image:replacePixels(self.love_image_data)
 end
 
-function SpriteEditor:draw_widget()
+function SpriteEditor:draw_foreground()
     local width, height = self:get_dimensions()
 
     for x = 0, SPRITE_WIDTH - 1 do
