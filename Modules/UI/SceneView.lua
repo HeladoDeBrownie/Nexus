@@ -69,8 +69,8 @@ function SceneView:draw_foreground()
         love.graphics.setShader()
         love.graphics.replaceTransform(IDENTITY_TRANSFORM)
         love.graphics.setBlendMode'replace'
-        love.graphics.draw(self.player_sprite, player_x, player_y)
         love.graphics.draw(sprite2, 24, 36)
+        love.graphics.draw(self.player_sprite, player_x, player_y)
         love.graphics.pop()
     end)
 
