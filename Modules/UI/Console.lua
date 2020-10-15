@@ -128,7 +128,9 @@ function Console:run_command()
         self:print(load_error_message)
     else
         local function handle_result(_, ...)
-            self:print(...)
+            if select('#', ...) > 0 then
+                self:print(...)
+            end
         end
 
         handle_result(pcall(chunk))
