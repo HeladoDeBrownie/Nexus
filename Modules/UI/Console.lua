@@ -46,13 +46,22 @@ end
 
 function Console:print(...)
     local arguments = {...}
+    local output = ''
 
     -- select('#', ...) must be used here instead of #arguments because we want
     -- to handle nils, but the # operator has undefined behavior on sequences
     -- that include them.
     for index = 1, select('#', ...) do
-        self.scrollback:append(tostring(arguments[index]) .. '\n')
+        local output_item = tostring(arguments[index])
+
+        if output == '' then
+            output = output_item
+        else
+            output = output .. '\t' .. output_item
+        end
     end
+
+    self.scrollback:append(output .. '\n')
 end
 
 function Console:draw_foreground()
