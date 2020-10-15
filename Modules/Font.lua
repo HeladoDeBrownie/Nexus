@@ -45,7 +45,7 @@ function Font:print(text)
         elseif character == '\t' then
             local new_x = 0
 
-            while new_x < x do
+            while new_x <= x do
                 new_x = new_x + 8 * self.metadata.glyph_width
             end
 
