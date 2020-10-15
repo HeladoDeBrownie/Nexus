@@ -42,6 +42,14 @@ function Font:print(text)
         if character == '\n' then
             x = 0
             y = y + self.metadata.glyph_height
+        elseif character == '\t' then
+            local new_x = 0
+
+            while new_x < x do
+                new_x = new_x + 8 * self.metadata.glyph_width
+            end
+
+            x = new_x
         else
             local quad = self.love_quads[character]
 
