@@ -40,40 +40,44 @@ function SceneView:initialize(scene, player_sprite)
     self.scene = scene
     self.keys_down = {}
     self.player_sprite = player_sprite
+    self.transform = love.math.newTransform()
 end
 
-function SceneView:draw_foreground()
+function SceneView:before_drawing()
+    Widget.before_drawing(self)
+    self.transform:reset()
     local width, height = self:get_dimensions()
-    self:apply_scale()
-
-    local base_x, base_y = love.graphics.inverseTransformPoint(
-        width / 2,
-        height / 2
-    )
-
     local player_x, player_y = self.scene:get_player_position()
     local player_sx, player_sy = player_x, player_y
+    self.transform:scale(self:get_scale())
+    local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
 
-    love.graphics.translate(
+    self.transform:translate(
         math.floor(base_x - player_sx - 6),
         math.floor(base_y - player_sy - 6)
     )
+end
 
-    self:apply_palette'background'
+function SceneView:draw_background()
+    Widget.draw_background(self)
+    love.graphics.replaceTransform(self.transform)
     love.graphics.draw(self.scene:get_chunk(0, 0))
-    self:apply_palette'foreground'
+end
+
+function SceneView:draw_foreground()
+    love.graphics.replaceTransform(self.transform)
 
     self.entities_canvas:renderTo(function ()
         love.graphics.push'all'
         love.graphics.clear()
         love.graphics.setShader()
-        love.graphics.replaceTransform(IDENTITY_TRANSFORM)
         love.graphics.setBlendMode'replace'
         love.graphics.draw(sprite2, 24, 36)
-        love.graphics.draw(self.player_sprite, player_x, player_y)
+        love.graphics.draw(self.player_sprite, self.scene:get_player_position())
         love.graphics.pop()
     end)
 
+    love.graphics.replaceTransform(IDENTITY_TRANSFORM)
     love.graphics.draw(self.entities_canvas)
 end
 

@@ -44,13 +44,17 @@ end
 -- screen drawing, use love.graphics.draw with Widget.get_canvas.
 function Widget:draw()
     love.graphics.push'all'
-    love.graphics.setCanvas(self.canvas)
-    love.graphics.setShader(self.shader)
+    self:before_drawing()
     self:apply_palette'background'
     self:draw_background()
     self:apply_palette'foreground'
     self:draw_foreground()
     love.graphics.pop()
+end
+
+function Widget:before_drawing()
+    love.graphics.setCanvas(self.canvas)
+    love.graphics.setShader(self.shader)
 end
 
 -- Fill the entire widget with the background color.
