@@ -12,6 +12,7 @@ function love.conf(configuration)
         window = {
             title = 'Nexus',
             icon = 'Assets/Icon.png',
+            minwidth = 480, minheight = 320,
             width = 960, height = 640,
             resizable = true,
         },
