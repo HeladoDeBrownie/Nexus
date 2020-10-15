@@ -46,7 +46,7 @@ function Color:to_normalized_rgba()
     elseif 4 < hue_ and hue_ <= 5 then
         r_, g_, b_ = x, 0, chroma
     elseif 5 < hue_ and hue_ <= 6 then
-        r_, g_, b_ = chroma, 0, hue
+        r_, g_, b_ = chroma, 0, x
     else
         r_, g_, b_ = 0, 0, 0
     end
