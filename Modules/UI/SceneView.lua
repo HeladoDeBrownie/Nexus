@@ -9,18 +9,18 @@ local Widget = require'UI/Widget'
 --# Constants
 
 local COLOR_SCHEME = require'ColorScheme':new(
-    Color:new(0, 0, 0),
+    Color:new(315,  15,  90),
 
     {
-        Color:new(  0,   0,  19),
-        Color:new(  0,   0,  58),
-        Color:new(  0,   0,  98),
+        Color:new(285,  30,  80),
+        Color:new(255,  45,  70),
+        Color:new(240,  60,  60),
     },
 
     {
-        Color:new(134, 100,  89),
-        Color:new(156, 100,  52),
-        Color:new( 30,  16,  37),
+        Color:new(180,  15,  90),
+        Color:new(210,  45,  70),
+        Color:new(240,  75,  50),
     }
 )
 
