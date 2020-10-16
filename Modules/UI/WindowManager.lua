@@ -9,6 +9,12 @@ local Widget = require'UI/Widget'
 function WindowManager:initialize(root_widget)
     Widget.initialize(self)
     self.root_widget = root_widget
+    self.windowed_widgets = {}
+end
+
+function WindowManager:open_window(windowed_widget)
+    table.insert(self.windowed_widgets, windowed_widget)
+    windowed_widget:resize(100, 100)
 end
 
 function WindowManager:draw()
@@ -16,6 +22,13 @@ function WindowManager:draw()
     love.graphics.setCanvas(self.canvas)
     self.root_widget:draw()
     love.graphics.draw(self.root_widget:get_canvas())
+    local width, height = self:get_dimensions()
+
+    for _, widget in ipairs(self.windowed_widgets) do
+        widget:draw()
+        love.graphics.draw(widget:get_canvas(), width - 150, height - 150)
+    end
+
     love.graphics.pop()
 end
 

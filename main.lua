@@ -61,15 +61,14 @@ function love.load()
     -- Create the UI.
 
     local UI = require'UI'
-    local console = UI.Console:new'> '
     local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
     local player_sprite = love.graphics.newImage(player_sprite_data)
-
-    main_widget = UI.Overlay:new(
-        UI.WindowManager:new(UI.SceneView:new(scene, player_sprite)),
-        console
-    )
-
+    local scene_view = UI.SceneView:new(scene, player_sprite)
+    local window_manager = UI.WindowManager:new(scene_view)
+    local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
+    window_manager:open_window(sprite_editor)
+    local console = UI.Console:new'> '
+    main_widget = UI.Overlay:new(window_manager, console)
     love.resize(love.graphics.getDimensions())
 
     -- Copy prints to both standard output and the in-game console.
