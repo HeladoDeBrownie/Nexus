@@ -66,7 +66,7 @@ function love.load()
     local player_sprite = love.graphics.newImage(player_sprite_data)
 
     main_widget = UI.Overlay:new(
-        UI.SceneView:new(scene, player_sprite),
+        UI.WindowManager:new(UI.SceneView:new(scene, player_sprite)),
         console
     )
 
