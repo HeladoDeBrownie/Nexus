@@ -27,13 +27,13 @@ Console.color_scheme = require'ColorScheme':new(
 
 --# Interface
 
-function Console:initialize(prompt_string)
+function Console:initialize(environment, prompt_string)
     Widget.initialize(self)
     Scalable.initialize(self, require'Settings'.UI.Console)
 
-    self.environment = setmetatable({}, {__index = _G})
+    self.environment = setmetatable(environment or {}, {__index = _G})
 
-    self.prompt_string = prompt_string
+    self.prompt_string = prompt_string or '> '
     self.scrollback = TextBuffer:new()
     self.input_buffer = TextBuffer:new()
     self.font = require'Font':new(require'Assets/Carpincho Mono')

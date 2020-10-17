@@ -67,8 +67,10 @@ function love.load()
     local window_manager = UI.WindowManager:new(scene_view)
     local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
     window_manager:open_window(sprite_editor)
-    local console = UI.Console:new'> '
+    local console_environment = {}
+    local console = UI.Console:new(console_environment)
     main_widget = UI.Overlay:new(window_manager, console)
+    console_environment.main_widget = main_widget
     love.resize(love.graphics.getDimensions())
 
     -- Copy prints to both standard output and the in-game console.
