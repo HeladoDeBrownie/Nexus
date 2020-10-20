@@ -15,7 +15,13 @@ local MAXIMUM_PLAYERS = 32
 --# Methods
 
 function Session:initialize()
+    self.socket = nil
     self.status = 'offline'
+end
+
+-- For debug purposes only. This method will likely be removed.
+function Session:get_socket()
+    return self.socket
 end
 
 function Session:is_online()
@@ -28,15 +34,20 @@ end
 
 function Session:host(port)
     port = port or DEFAULT_PORT
-    error'TODO'
+    self.socket = socket.bind('*', port)
+    self.status = 'hosting'
 end
 
 function Session:join(host, port)
     port = port or DEFAULT_PORT
-    error'TODO'
+    self.socket = socket.connect(host, port)
+    self.status = 'visiting'
 end
 
-function Session:disconnect() end
+function Session:disconnect()
+    self.socket = nil
+    self.status = 'offline'
+end
 
 function Session:process() end
 
