@@ -18,6 +18,7 @@ local SECONDS_PER_TICK = 1 / 60
 
 local main_widget
 local scene
+local session
 local time
 
 --# Callbacks
@@ -57,6 +58,7 @@ function love.load()
 
     scene = require'Scene':new()
     time = 0.0
+    session = require'Session':new()
 
     -- Create the UI.
 
@@ -84,6 +86,7 @@ function love.load()
 end
 
 function love.update(time_delta)
+    session:process()
     time = time + time_delta
 
     while time >= SECONDS_PER_TICK do
