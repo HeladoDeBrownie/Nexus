@@ -2,7 +2,7 @@ local Session = {}
 
 --# Requires
 
-local socket = require'socket'
+local Socket = require'socket'
 
 --# Constants
 
@@ -34,13 +34,19 @@ end
 
 function Session:host(port)
     port = port or DEFAULT_PORT
-    self.socket = socket.bind('*', port)
+    local socket = Socket.bind('*', port)
+    socket:settimeout(0)
+    self.socket = socket
+    self.visitors = {}
     self.status = 'hosting'
 end
 
 function Session:join(host, port)
+    host = host or 'localhost'
     port = port or DEFAULT_PORT
-    self.socket = socket.connect(host, port)
+    local socket = Socket.connect(host, port)
+    socket:settimeout(0)
+    self.socket = socket
     self.status = 'visiting'
 end
 
@@ -49,6 +55,22 @@ function Session:disconnect()
     self.status = 'offline'
 end
 
-function Session:process() end
+function Session:process()
+    if self.status == 'hosting' then
+        local new_visitor = self.socket:accept()
+
+        if new_visitor ~= nil then
+            table.insert(self.visitors, new_visitor)
+        end
+
+        local random_number = love.math.random(9)
+
+        for _, visitor in ipairs(self.visitors) do
+            visitor:send(tostring(random_number) .. '\n')
+        end
+    elseif self.status == 'visiting' then
+        print((self.socket:receive()))
+    end
+end
 
 return augment(Session)
