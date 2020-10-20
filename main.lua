@@ -16,10 +16,9 @@ local SECONDS_PER_TICK = 1 / 60
 
 --# State
 
-local main_widget
-local scene
-local session
-local time
+-- This module's state is contained in a table so it can be passed to the
+-- console easily.
+local Main = {}
 
 --# Callbacks
 
@@ -56,23 +55,22 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
-    scene = require'Scene':new()
-    time = 0.0
-    session = require'Session':new()
+    Main.scene = require'Scene':new()
+    Main.time = 0.0
+    Main.session = require'Session':new()
 
     -- Create the UI.
 
     local UI = require'UI'
     local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
     local player_sprite = love.graphics.newImage(player_sprite_data)
-    local scene_view = UI.SceneView:new(scene, player_sprite)
+    local scene_view = UI.SceneView:new(Main.scene, player_sprite)
     local window_manager = UI.WindowManager:new(scene_view)
     local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
     window_manager:open_window(sprite_editor)
-    local console_environment = {}
+    local console_environment = {Main = Main}
     local console = UI.Console:new(console_environment)
-    main_widget = UI.Overlay:new(window_manager, console)
-    console_environment.main_widget = main_widget
+    Main.main_widget = UI.Overlay:new(window_manager, console)
     love.resize(love.graphics.getDimensions())
 
     -- Copy prints to both standard output and the in-game console.
@@ -86,12 +84,12 @@ function love.load()
 end
 
 function love.update(time_delta)
-    session:process()
-    time = time + time_delta
+    Main.session:process()
+    Main.time = Main.time + time_delta
 
-    while time >= SECONDS_PER_TICK do
-        time = time - SECONDS_PER_TICK
-        main_widget:tick()
+    while Main.time >= SECONDS_PER_TICK do
+        Main.time = Main.time - SECONDS_PER_TICK
+        Main.main_widget:tick()
     end
 end
 
@@ -105,30 +103,30 @@ end
 -- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
-    main_widget:draw()
-    love.graphics.draw(main_widget:get_canvas())
+    Main.main_widget:draw()
+    love.graphics.draw(Main.main_widget:get_canvas())
 end
 
 function love.keypressed(key)
-    main_widget:on_key(key, true)
+    Main.main_widget:on_key(key, true)
 end
 
 function love.keyreleased(key)
-    main_widget:on_key(key, false)
+    Main.main_widget:on_key(key, false)
 end
 
 function love.mousepressed(x, y)
-    main_widget:on_press(x, y)
+    Main.main_widget:on_press(x, y)
 end
 
 function love.resize(window_width, window_height)
-    main_widget:resize(window_width, window_height)
+    Main.main_widget:resize(window_width, window_height)
 end
 
 function love.textinput(text)
-    main_widget:on_text_input(text)
+    Main.main_widget:on_text_input(text)
 end
 
 function love.wheelmoved(_, y)
-    main_widget:on_scroll(y, is_ctrl_down())
+    Main.main_widget:on_scroll(y, is_ctrl_down())
 end
