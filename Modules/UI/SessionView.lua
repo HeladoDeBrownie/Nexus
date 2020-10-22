@@ -29,7 +29,6 @@ local IDENTITY_TRANSFORM = love.math.newTransform()
 --# State
 
 local sprite = love.graphics.newImage'Assets/Untitled.png'
-local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
 
 --# Interface
 
@@ -76,8 +75,13 @@ function SessionView:draw_foreground()
         love.graphics.clear()
         love.graphics.setShader()
         love.graphics.setBlendMode'replace'
-        love.graphics.draw(sprite2, 24, 36)
-        love.graphics.draw(self.player_sprite, self:get_scene():get_entity_position(1))
+        local scene = self:get_scene()
+
+        for _, x, y in scene:each_entity() do
+            love.graphics.draw(self.player_sprite, x, y)
+        end
+
+        love.graphics.draw(self.player_sprite, scene:get_entity_position(self.session:get_player_id()))
         love.graphics.pop()
     end)
 
