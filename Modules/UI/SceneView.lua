@@ -41,7 +41,6 @@ function SceneView:initialize(session, player_sprite)
     self.keys_down = {}
     self.player_sprite = player_sprite
     self.transform = love.math.newTransform()
-    self:get_scene():add_entity(0, 0)
 end
 
 function SceneView:get_scene()
@@ -52,7 +51,7 @@ function SceneView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
-    local player_x, player_y = self:get_scene():get_entity_position(1)
+    local player_x, player_y = self:get_scene():get_entity_position(self.session:get_player_id())
     local player_sx, player_sy = player_x, player_y
     self.transform:scale(self:get_scale())
     local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
@@ -96,23 +95,25 @@ function SceneView:resize(...)
 end
 
 function SceneView:tick()
-    local scene = self:get_scene()
+    local delta_x, delta_y = 0, 0
 
     if self.keys_down['w'] then
-        scene:move_entity(1, 0, -1)
+        delta_y = delta_y - 1
     end
 
     if self.keys_down['a'] then
-        scene:move_entity(1, -1,  0)
+        delta_x = delta_x - 1
     end
 
     if self.keys_down['s'] then
-        scene:move_entity(1, 0,  1)
+        delta_y = delta_y + 1
     end
 
     if self.keys_down['d'] then
-        scene:move_entity(1, 1,  0)
+        delta_x = delta_x + 1
     end
+
+    self:get_scene():move_entity(self.session:get_player_id(), delta_x, delta_y)
 end
 
 return augment(mix{Widget, Scalable, SceneView})

@@ -20,10 +20,15 @@ function Session:initialize(scene)
     self.socket = nil
     self.status = 'offline'
     self.scene = scene or require'Scene':new()
+    self.player_id = self.scene:add_entity(0, 0)
 end
 
 function Session:get_scene()
     return self.scene
+end
+
+function Session:get_player_id()
+    return self.player_id
 end
 
 -- For debug purposes only. This method will likely be removed.
