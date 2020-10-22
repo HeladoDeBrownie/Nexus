@@ -1,4 +1,4 @@
-local SceneView = {}
+local SessionView = {}
 
 --# Requires
 
@@ -33,9 +33,9 @@ local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
 
 --# Interface
 
-function SceneView:initialize(session, player_sprite)
+function SessionView:initialize(session, player_sprite)
     Widget.initialize(self, COLOR_SCHEME)
-    Scalable.initialize(self, require'Settings'.UI.SceneView)
+    Scalable.initialize(self, require'Settings'.UI.SessionView)
     self.entities_canvas = love.graphics.newCanvas()
     self.session = session
     self.keys_down = {}
@@ -43,11 +43,11 @@ function SceneView:initialize(session, player_sprite)
     self.transform = love.math.newTransform()
 end
 
-function SceneView:get_scene()
+function SessionView:get_scene()
     return self.session:get_scene()
 end
 
-function SceneView:before_drawing()
+function SessionView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
@@ -62,13 +62,13 @@ function SceneView:before_drawing()
     )
 end
 
-function SceneView:draw_background()
+function SessionView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
     love.graphics.draw(self:get_scene():get_chunk(0, 0))
 end
 
-function SceneView:draw_foreground()
+function SessionView:draw_foreground()
     love.graphics.replaceTransform(self.transform)
 
     self.entities_canvas:renderTo(function ()
@@ -85,16 +85,16 @@ function SceneView:draw_foreground()
     love.graphics.draw(self.entities_canvas)
 end
 
-function SceneView:on_unbound_key(key, down)
+function SessionView:on_unbound_key(key, down)
     self.keys_down[key] = down or nil
 end
 
-function SceneView:resize(...)
+function SessionView:resize(...)
     Widget.resize(self, ...)
     self.entities_canvas = love.graphics.newCanvas(...)
 end
 
-function SceneView:tick()
+function SessionView:tick()
     local delta_x, delta_y = 0, 0
 
     if self.keys_down['w'] then
@@ -116,4 +116,4 @@ function SceneView:tick()
     self:get_scene():move_entity(self.session:get_player_id(), delta_x, delta_y)
 end
 
-return augment(mix{Widget, Scalable, SceneView})
+return augment(mix{Widget, Scalable, SessionView})

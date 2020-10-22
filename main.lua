@@ -55,7 +55,6 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
-    Main.scene = require'Scene':new()
     Main.time = 0.0
     Main.session = require'Session':new()
 
@@ -64,8 +63,8 @@ function love.load()
     local UI = require'UI'
     local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
     local player_sprite = love.graphics.newImage(player_sprite_data)
-    local scene_view = UI.SceneView:new(Main.session, player_sprite)
-    local window_manager = UI.WindowManager:new(scene_view)
+    local session_view = UI.SessionView:new(Main.session, player_sprite)
+    local window_manager = UI.WindowManager:new(session_view)
     local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
     window_manager:open_window(sprite_editor)
     local console_environment = {Main = Main}
