@@ -33,21 +33,26 @@ local sprite2 = love.graphics.newImage'Assets/Untitled2.png'
 
 --# Interface
 
-function SceneView:initialize(scene, player_sprite)
+function SceneView:initialize(session, player_sprite)
     Widget.initialize(self, COLOR_SCHEME)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.entities_canvas = love.graphics.newCanvas()
-    self.scene = scene
+    self.session = session
     self.keys_down = {}
     self.player_sprite = player_sprite
     self.transform = love.math.newTransform()
+    self:get_scene():add_entity(0, 0)
+end
+
+function SceneView:get_scene()
+    return self.session:get_scene()
 end
 
 function SceneView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
-    local player_x, player_y = self.scene:get_player_position()
+    local player_x, player_y = self:get_scene():get_entity_position(1)
     local player_sx, player_sy = player_x, player_y
     self.transform:scale(self:get_scale())
     local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
@@ -61,7 +66,7 @@ end
 function SceneView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
-    love.graphics.draw(self.scene:get_chunk(0, 0))
+    love.graphics.draw(self:get_scene():get_chunk(0, 0))
 end
 
 function SceneView:draw_foreground()
@@ -73,7 +78,7 @@ function SceneView:draw_foreground()
         love.graphics.setShader()
         love.graphics.setBlendMode'replace'
         love.graphics.draw(sprite2, 24, 36)
-        love.graphics.draw(self.player_sprite, self.scene:get_player_position())
+        love.graphics.draw(self.player_sprite, self:get_scene():get_entity_position(1))
         love.graphics.pop()
     end)
 
@@ -91,20 +96,22 @@ function SceneView:resize(...)
 end
 
 function SceneView:tick()
+    local scene = self:get_scene()
+
     if self.keys_down['w'] then
-        self.scene:go( 0, -1)
+        scene:move_entity(1, 0, -1)
     end
 
     if self.keys_down['a'] then
-        self.scene:go(-1,  0)
+        scene:move_entity(1, -1,  0)
     end
 
     if self.keys_down['s'] then
-        self.scene:go( 0,  1)
+        scene:move_entity(1, 0,  1)
     end
 
     if self.keys_down['d'] then
-        self.scene:go( 1,  0)
+        scene:move_entity(1, 1,  0)
     end
 end
 

@@ -6,17 +6,24 @@ local Socket = require'socket'
 
 --# Constants
 
+local DEFAULT_HOST = 'localhost'
+
 -- This number spells HELNX, short for “helado Nexus”. It would have been NEXUS
 -- (63987), but that would have placed it in the ephemeral ports range.
 local DEFAULT_PORT = 43569
 
 local MAXIMUM_PLAYERS = 32
 
---# Methods
+--# Interface
 
-function Session:initialize()
+function Session:initialize(scene)
     self.socket = nil
     self.status = 'offline'
+    self.scene = scene or require'Scene':new()
+end
+
+function Session:get_scene()
+    return self.scene
 end
 
 -- For debug purposes only. This method will likely be removed.
@@ -42,7 +49,7 @@ function Session:host(port)
 end
 
 function Session:join(host, port)
-    host = host or 'localhost'
+    host = host or DEFAULT_HOST
     port = port or DEFAULT_PORT
     local socket = Socket.connect(host, port)
     socket:settimeout(0)
