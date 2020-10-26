@@ -21,6 +21,7 @@ function Session:initialize(scene)
     self.status = 'offline'
     self.scene = scene or require'Scene':new()
     self.player_id = self.scene:add_entity(0, 0)
+    self.slots = {}
 end
 
 function Session:get_scene()
@@ -49,7 +50,6 @@ function Session:host(port)
     local socket = Socket.bind('*', port)
     socket:settimeout(0)
     self.socket = socket
-    self.visitors = {}
     self.status = 'hosting'
 end
 
@@ -72,16 +72,33 @@ function Session:process()
         local new_visitor = self.socket:accept()
 
         if new_visitor ~= nil then
-            table.insert(self.visitors, new_visitor)
+            local slot_id = self:allocate_slot_id()
+
+            if slot_id ~= nil then
+                self.slots[slot_id] = new_visitor
+            end
         end
 
         local random_number = love.math.random(9)
 
-        for _, visitor in ipairs(self.visitors) do
-            visitor:send(tostring(random_number) .. '\n')
+        for slot_id = 1, MAXIMUM_PLAYERS do
+            local visitor = self.slots[slot_id]
+
+            if visitor ~= nil then
+                visitor:send(tostring(random_number) .. '\n')
+            end
         end
+
     elseif self.status == 'visiting' then
         print((self.socket:receive()))
+    end
+end
+
+function Session:allocate_slot_id()
+    for slot_id = 1, MAXIMUM_PLAYERS do
+        if self.slots[slot_id] == nil then
+            return slot_id
+        end
     end
 end
 
