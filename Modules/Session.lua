@@ -85,7 +85,11 @@ function Session:process()
             local visitor = self.slots[slot_id]
 
             if visitor ~= nil then
-                visitor:send(tostring(random_number) .. '\n')
+                local result = visitor:send(tostring(random_number) .. '\n')
+
+                if result == nil then
+                    self.slots[slot_id] = nil
+                end
             end
         end
 
