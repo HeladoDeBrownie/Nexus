@@ -85,16 +85,23 @@ function Session:process()
             local visitor = self.slots[slot_id]
 
             if visitor ~= nil then
-                local result, reason = visitor:send(tostring(random_number) .. '\n')
+                local result, error_message = visitor:send(tostring(random_number) .. '\n')
 
-                if result == nil and reason == 'closed' then
+                if result == nil and error_message == 'closed' then
                     self.slots[slot_id] = nil
                 end
             end
         end
-
     elseif self.status == 'visiting' then
-        print((self.socket:receive()))
+        local raw_message, error_message = self.socket:receive()
+
+        if raw_message == nil then
+            if error_message == 'closed' then
+                self:disconnect()
+            end
+        else
+            print(raw_message)
+        end
     end
 end
 
