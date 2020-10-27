@@ -7,7 +7,7 @@ local function render_place_message(x, y)
 end
 
 local function parse_place_message(message)
-    local x, y = message:match'^PLACE (%d+) (%d+)$'
+    local x, y = message:match'^PLACE (-?%d+) (-?%d+)$'
 
     if x ~= nil then
         return {
