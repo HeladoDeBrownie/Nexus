@@ -2,6 +2,7 @@ local Session = {}
 
 --# Requires
 
+local NetworkProtocol = require'NetworkProtocol'
 local Socket = require'socket'
 
 --# Constants
@@ -75,32 +76,47 @@ function Session:process()
             local slot_id = self:allocate_slot_id()
 
             if slot_id ~= nil then
+                new_visitor:settimeout(0)
                 self.slots[slot_id] = new_visitor
             end
         end
-
-        local random_number = love.math.random(9)
 
         for slot_id = 1, MAXIMUM_PLAYERS do
             local visitor = self.slots[slot_id]
 
             if visitor ~= nil then
-                local result, error_message = visitor:send(tostring(random_number) .. '\n')
+                local raw_message, error_message = visitor:receive()
 
-                if result == nil and error_message == 'closed' then
-                    self.slots[slot_id] = nil
+                if raw_message == nil then
+                    if error_message == 'closed' then
+                        self.slots[slot_id] = nil
+                    end
+                else
+                    local message = NetworkProtocol.parse_message(raw_message)
+
+                    if message.type == 'place' then
+                        self.scene:place_entity(
+                            self.player_id,
+                            message.x,
+                            message.y
+                        )
+                    end
                 end
             end
         end
     elseif self.status == 'visiting' then
-        local raw_message, error_message = self.socket:receive()
+        local x, y = self.scene:get_entity_position(self.player_id)
 
-        if raw_message == nil then
+        local result, error_message = self.socket:send(NetworkProtocol.render_message{
+            type = 'place',
+            x = x,
+            y = y,
+        } .. '\n')
+
+        if result == nil then
             if error_message == 'closed' then
                 self:disconnect()
             end
-        else
-            print(raw_message)
         end
     end
 end
