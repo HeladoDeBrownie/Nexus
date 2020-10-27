@@ -78,6 +78,11 @@ function Session:process()
             if slot_id ~= nil then
                 new_visitor:settimeout(0)
                 self.slots[slot_id] = new_visitor
+
+                new_visitor:send(NetworkProtocol.render_message{
+                    type = 'welcome',
+                    slot_id = slot_id,
+                })
             end
         end
 
