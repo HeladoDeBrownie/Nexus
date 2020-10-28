@@ -29,7 +29,10 @@ end
 
 function Scene:get_entity_position(entity_id)
     local entity = self.entities[entity_id]
-    return entity.x, entity.y
+
+    if entity ~= nil then
+        return entity.x, entity.y
+    end
 end
 
 function Scene:each_entity()

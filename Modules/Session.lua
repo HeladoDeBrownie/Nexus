@@ -13,7 +13,7 @@ local DEFAULT_HOST = 'localhost'
 -- (63987), but that would have placed it in the ephemeral ports range.
 local DEFAULT_PORT = 43569
 
-local MAXIMUM_PLAYERS = 1
+local MAXIMUM_PLAYERS = 4
 
 --# Interface
 
@@ -66,7 +66,7 @@ function Session:join(host, port)
     port = port or DEFAULT_PORT
     local socket = Socket.connect(host, port)
     socket:settimeout(0)
-    self:reinitialize()
+    --self:initialize()
     self.socket = socket
     self.status = 'visiting'
 end
@@ -89,6 +89,7 @@ function Session:process()
 
             if slot_id ~= nil then
                 new_visitor:settimeout(0)
+                self:connect_slot(new_visitor)
 
                 new_visitor:send(NetworkProtocol.render_message{
                     type = 'welcome',
@@ -98,10 +99,11 @@ function Session:process()
         end
 
         for slot_id = 1, MAXIMUM_PLAYERS do
-            local visitor = self.slots[slot_id]
+            local slot = self.slots[slot_id]
+            print(slot)
 
-            if visitor ~= nil and visitor.socket ~= nil then
-                local raw_message, error_message = visitor.socket:receive()
+            if slot ~= nil and slot.socket ~= nil then
+                local raw_message, error_message = slot.socket:receive()
 
                 if raw_message == nil then
                     if error_message == 'closed' then
@@ -112,7 +114,7 @@ function Session:process()
 
                     if message.type == 'place' then
                         self.scene:place_entity(
-                            self.player_id,
+                            slot.entity_id,
                             message.x,
                             message.y
                         )
@@ -121,17 +123,19 @@ function Session:process()
             end
         end
     elseif self.status == 'visiting' then
-        local x, y = self.scene:get_entity_position(self.player_id)
+        local x, y = self:get_local_player_entity_position()
 
-        local result, error_message = self.socket:send(NetworkProtocol.render_message{
-            type = 'place',
-            x = x,
-            y = y,
-        } .. '\n')
+        if x ~= nil and y ~= nil then
+            local result, error_message = self.socket:send(NetworkProtocol.render_message{
+                type = 'place',
+                x = x,
+                y = y,
+            } .. '\n')
 
-        if result == nil then
-            if error_message == 'closed' then
-                self:disconnect()
+            if result == nil then
+                if error_message == 'closed' then
+                    self:disconnect()
+                end
             end
         end
     end
@@ -167,7 +171,13 @@ function Session:get_local_player_entity_id()
 end
 
 function Session:get_local_player_entity_position()
-    return self.scene:get_entity_position(self:get_local_player_entity_id())
+    local x, y = self.scene:get_entity_position(self:get_local_player_entity_id())
+
+    if x == nil or y == nil then
+        return 0, 0
+    else
+        return x, y
+    end
 end
 
 return augment(Session)
