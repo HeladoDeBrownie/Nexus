@@ -50,7 +50,7 @@ function SessionView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
-    local player_x, player_y = self:get_scene():get_entity_position(self.session:get_player_id())
+    local player_x, player_y = self.session:get_local_player_entity_position()
     local player_sx, player_sy = player_x, player_y
     self.transform:scale(self:get_scale())
     local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
@@ -81,7 +81,7 @@ function SessionView:draw_foreground()
             love.graphics.draw(self.player_sprite, x, y)
         end
 
-        love.graphics.draw(self.player_sprite, scene:get_entity_position(self.session:get_player_id()))
+        love.graphics.draw(self.player_sprite, self.session:get_local_player_entity_position())
         love.graphics.pop()
     end)
 
@@ -117,7 +117,7 @@ function SessionView:tick()
         delta_x = delta_x + 1
     end
 
-    self:get_scene():move_entity(self.session:get_player_id(), delta_x, delta_y)
+    self:get_scene():move_entity(self.session:get_local_player_entity_id(), delta_x, delta_y)
 end
 
 return augment(mix{Widget, Scalable, SessionView})

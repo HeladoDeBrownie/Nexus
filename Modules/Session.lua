@@ -17,11 +17,15 @@ local MAXIMUM_PLAYERS = 1
 
 --# Interface
 
-function Session:initialize(scene)
+function Session:initialize()
+    self:reinitialize()
+    self.slot_id = self:connect_slot()
+end
+
+function Session:reinitialize()
     self.socket = nil
     self.status = 'offline'
-    self.scene = scene or require'Scene':new()
-    self.player_id = self.scene:add_entity(0, 0)
+    self.scene = require'Scene':new()
     self.slots = {}
 end
 
@@ -29,13 +33,16 @@ function Session:get_scene()
     return self.scene
 end
 
-function Session:get_player_id()
-    return self.player_id
+function Session:get_slot_id()
+    return self.slot_id
 end
 
--- For debug purposes only. This method will likely be removed.
-function Session:get_socket()
-    return self.socket
+function Session:get_entity_id(slot_id)
+    local slot = self.slots[slot_id]
+
+    if slot ~= nil then
+        return slot.entity_id
+    end
 end
 
 function Session:is_online()
@@ -59,13 +66,18 @@ function Session:join(host, port)
     port = port or DEFAULT_PORT
     local socket = Socket.connect(host, port)
     socket:settimeout(0)
+    self:reinitialize()
     self.socket = socket
     self.status = 'visiting'
 end
 
 function Session:disconnect()
-    self.socket = nil
-    self.status = 'offline'
+    if self.status == 'visiting' then
+        self:initialize()
+    else
+        self.socket = nil
+        self.status = 'offline'
+    end
 end
 
 function Session:process()
@@ -73,11 +85,10 @@ function Session:process()
         local new_visitor = self.socket:accept()
 
         if new_visitor ~= nil then
-            local slot_id = self:allocate_slot_id()
+            local slot_id = self:connect_slot(new_visitor)
 
             if slot_id ~= nil then
                 new_visitor:settimeout(0)
-                self.slots[slot_id] = new_visitor
 
                 new_visitor:send(NetworkProtocol.render_message{
                     type = 'welcome',
@@ -89,8 +100,8 @@ function Session:process()
         for slot_id = 1, MAXIMUM_PLAYERS do
             local visitor = self.slots[slot_id]
 
-            if visitor ~= nil then
-                local raw_message, error_message = visitor:receive()
+            if visitor ~= nil and visitor.socket ~= nil then
+                local raw_message, error_message = visitor.socket:receive()
 
                 if raw_message == nil then
                     if error_message == 'closed' then
@@ -126,12 +137,37 @@ function Session:process()
     end
 end
 
+function Session:connect_slot(socket)
+    local slot_id = self:allocate_slot_id()
+
+    if slot_id ~= nil then
+        local entity_id = self.scene:add_entity(0, 0)
+
+        if entity_id ~= nil then
+            self.slots[slot_id] = {
+                entity_id = entity_id,
+                socket = socket,
+            }
+        end
+    end
+
+    return slot_id
+end
+
 function Session:allocate_slot_id()
     for slot_id = 1, MAXIMUM_PLAYERS do
         if self.slots[slot_id] == nil then
             return slot_id
         end
     end
+end
+
+function Session:get_local_player_entity_id()
+    return self:get_entity_id(self:get_slot_id())
+end
+
+function Session:get_local_player_entity_position()
+    return self.scene:get_entity_position(self:get_local_player_entity_id())
 end
 
 return augment(Session)
