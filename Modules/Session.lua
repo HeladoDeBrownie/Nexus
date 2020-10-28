@@ -99,7 +99,6 @@ function Session:process()
 
         for slot_id = 1, MAXIMUM_PLAYERS do
             local slot = self.slots[slot_id]
-            print(slot)
 
             if slot ~= nil and slot.socket ~= nil then
                 local raw_message, error_message = slot.socket:receive()
@@ -122,9 +121,13 @@ function Session:process()
             end
         end
     elseif self.status == 'visiting' then
+        local slot = self.slots[self:get_slot_id()]
+        local last_x, last_y = slot.last_x, slot.last_y
         local x, y = self:get_local_player_entity_position()
 
-        if x ~= nil and y ~= nil then
+        if x ~= nil and y ~= nil and last_x ~= x or last_y ~= y then
+            slot.last_x, slot.last_y = x, y
+
             local result, error_message = self.socket:send(NetworkProtocol.render_message{
                 type = 'place',
                 x = x,
