@@ -4,6 +4,7 @@ local Session = {}
 
 local NetworkProtocol = require'NetworkProtocol'
 local Socket = require'socket'
+local yield = coroutine.yield
 
 --# Constants
 
@@ -14,6 +15,120 @@ local DEFAULT_HOST = 'localhost'
 local DEFAULT_PORT = 43569
 
 local MAXIMUM_PLAYERS = 4
+
+--# Helpers
+
+local function co_server_connection(client_socket, scene)
+    local entity_id = scene:add_entity(0, 0)
+    yield()
+
+    while true do
+        local raw_message, error_message = client_socket:receive()
+
+        if raw_message == nil then
+            if error_message ~= 'timeout' then
+                scene:remove_entity(entity_id)
+                error(error_message)
+            end
+        else
+            local message = NetworkProtocol.parse_message(raw_message)
+
+            if message.type == 'place' then
+                local x, y = message.x, message.y
+                scene:place_entity(entity_id, x, y)
+            end
+        end
+
+        yield()
+    end
+end
+
+local function co_server_accept(server_socket, threads, scene)
+    yield()
+
+    while true do
+        local client_socket, error_message = server_socket:accept()
+
+        if client_socket == nil then
+            if error_message ~= 'timeout' then
+                error(error_message)
+            end
+        else
+            client_socket:settimeout(0)
+            local connection_thread = coroutine.create(co_server_connection)
+            coroutine.resume(connection_thread, client_socket, scene)
+            table.insert(threads, connection_thread)
+        end
+
+        yield()
+    end
+end
+
+local function co_server(port, scene)
+    local server_socket, error_message = Socket.bind('*', port)
+
+    if server_socket == nil then
+        error(error_message)
+    else
+        server_socket:settimeout(0)
+        local threads = {}
+        local accept_thread = coroutine.create(co_server_accept)
+        coroutine.resume(accept_thread, server_socket, threads, scene)
+        table.insert(threads, accept_thread)
+        yield()
+
+        while true do
+            for index, thread in ipairs(threads) do
+                local success, error_message = coroutine.resume(thread)
+
+                if not success then
+                    table.remove(threads, index)
+                    print(error_message)
+                end
+            end
+
+            yield()
+        end
+    end
+end
+
+local function co_client(host, port, scene)
+    local socket = Socket.connect(host, port)
+
+    if socket == nil then
+        error(error_message)
+    else
+        socket:settimeout(0)
+        local entity_id = scene:add_entity(0, 0)
+        local last_x, last_y = nil, nil
+        yield()
+
+        while true do
+            local x, y = scene:get_entity_position(entity_id)
+
+            if x ~= last_x or y ~= last_y then
+                local result, error_message = socket:send(
+                    NetworkProtocol.render_message{
+                        type = 'place',
+                        x = x,
+                        y = y,
+                    }
+                .. '\n')
+
+                if result == nil then
+                    if error_message == 'closed' then
+                        break
+                    end
+                end
+            end
+
+            yield()
+        end
+    end
+end
+
+_G.co_server = co_server
+_G.co_client = co_client
 
 --# Interface
 
