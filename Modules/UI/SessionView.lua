@@ -32,39 +32,60 @@ local sprite = love.graphics.newImage'Assets/Untitled.png'
 
 --# Interface
 
-function SessionView:initialize(session, player_sprite)
+function SessionView:initialize(scene, player_sprite)
     Widget.initialize(self, COLOR_SCHEME)
     Scalable.initialize(self, require'Settings'.UI.SessionView)
     self.entities_canvas = love.graphics.newCanvas()
-    self.session = session
+    self.scene = scene
     self.keys_down = {}
     self.player_sprite = player_sprite
     self.transform = love.math.newTransform()
+    self.viewpoint_entity = nil
 end
 
 function SessionView:get_scene()
-    return self.session:get_scene()
+    return self.scene
+end
+
+function SessionView:set_scene(new_scene)
+    self.scene = new_scene
+    self.viewpoint_entity = nil
+end
+
+function SessionView:get_viewpoint_entity()
+    return self.viewpoint_entity
+end
+
+function SessionView:set_viewpoint_entity(new_viewpoint_entity)
+    self.viewpoint_entity = new_viewpoint_entity
+end
+
+function SessionView:get_viewpoint_position()
+    if self.viewpoint_entity == nil then
+        return 0, 0
+    else
+        return self.scene:get_entity_position(self.viewpoint_entity)
+    end
 end
 
 function SessionView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
-    local player_x, player_y = self.session:get_local_player_entity_position()
-    local player_sx, player_sy = player_x, player_y
+    local viewpoint_x, viewpoint_y = self:get_viewpoint_position()
     self.transform:scale(self:get_scale())
     local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
 
     self.transform:translate(
-        math.floor(base_x - player_sx - 6),
-        math.floor(base_y - player_sy - 6)
+        math.floor(base_x - viewpoint_x - 6),
+        math.floor(base_y - viewpoint_y - 6)
     )
 end
 
 function SessionView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
-    love.graphics.draw(self:get_scene():get_chunk(0, 0))
+    love.graphics.draw(self.scene:get_chunk(0, 0))
 end
 
 function SessionView:draw_foreground()
@@ -81,7 +102,7 @@ function SessionView:draw_foreground()
             love.graphics.draw(self.player_sprite, x, y)
         end
 
-        love.graphics.draw(self.player_sprite, self.session:get_local_player_entity_position())
+        love.graphics.draw(self.player_sprite, self:get_viewpoint_position())
         love.graphics.pop()
     end)
 
@@ -99,25 +120,29 @@ function SessionView:resize(...)
 end
 
 function SessionView:tick()
-    local delta_x, delta_y = 0, 0
+    local viewpoint_entity = self.viewpoint_entity
 
-    if self.keys_down['w'] then
-        delta_y = delta_y - 1
+    if viewpoint_entity ~= nil then
+        local delta_x, delta_y = 0, 0
+
+        if self.keys_down['w'] then
+            delta_y = delta_y - 1
+        end
+
+        if self.keys_down['a'] then
+            delta_x = delta_x - 1
+        end
+
+        if self.keys_down['s'] then
+            delta_y = delta_y + 1
+        end
+
+        if self.keys_down['d'] then
+            delta_x = delta_x + 1
+        end
+
+        self.scene:move_entity(viewpoint_entity, delta_x, delta_y)
     end
-
-    if self.keys_down['a'] then
-        delta_x = delta_x - 1
-    end
-
-    if self.keys_down['s'] then
-        delta_y = delta_y + 1
-    end
-
-    if self.keys_down['d'] then
-        delta_x = delta_x + 1
-    end
-
-    self:get_scene():move_entity(self.session:get_local_player_entity_id(), delta_x, delta_y)
 end
 
 return augment(mix{Widget, Scalable, SessionView})

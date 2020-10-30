@@ -63,7 +63,8 @@ function love.load()
     local UI = require'UI'
     local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
     local player_sprite = love.graphics.newImage(player_sprite_data)
-    local session_view = UI.SessionView:new(Main.session, player_sprite)
+    local session_view = UI.SessionView:new(Main.session:get_scene(), player_sprite)
+    session_view:set_viewpoint_entity(Main.session:get_entity_id(Main.session:get_slot_id()))
     local window_manager = UI.WindowManager:new(session_view)
     local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
     window_manager:open_window(sprite_editor)
