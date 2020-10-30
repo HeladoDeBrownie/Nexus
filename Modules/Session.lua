@@ -132,9 +132,12 @@ _G.co_client = co_client
 
 --# Interface
 
-function Session:initialize()
+function Session:initialize(scene_view)
     self:reinitialize()
+    self.scene_view = scene_view
+    self.scene_view:set_scene(self.scene)
     self.slot_id = self:connect_slot()
+    self.scene_view:set_viewpoint_entity(self.slots[self.slot_id].entity_id)
 end
 
 function Session:reinitialize()

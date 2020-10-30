@@ -56,15 +56,14 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
 
     Main.time = 0.0
-    Main.session = require'Session':new()
 
     -- Create the UI.
 
     local UI = require'UI'
     local player_sprite_data = love.image.newImageData'Assets/Untitled.png'
     local player_sprite = love.graphics.newImage(player_sprite_data)
-    local scene_view = UI.SceneView:new(Main.session:get_scene(), player_sprite)
-    scene_view:set_viewpoint_entity(Main.session:get_entity_id(Main.session:get_slot_id()))
+    local scene_view = UI.SceneView:new(nil, player_sprite)
+    --scene_view:set_viewpoint_entity(Main.session:get_entity_id(Main.session:get_slot_id()))
     local window_manager = UI.WindowManager:new(scene_view)
     local sprite_editor = UI.SpriteEditor:new(player_sprite_data, player_sprite)
     window_manager:open_window(sprite_editor)
@@ -72,6 +71,8 @@ function love.load()
     local console = UI.Console:new(console_environment)
     Main.main_widget = UI.Overlay:new(window_manager, console)
     love.resize(love.graphics.getDimensions())
+
+    Main.session = require'Session':new(scene_view)
 
     -- Copy prints to both standard output and the in-game console.
 
