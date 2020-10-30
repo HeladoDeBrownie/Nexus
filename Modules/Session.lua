@@ -3,6 +3,7 @@ local Session = {}
 --# Requires
 
 local NetworkProtocol = require'NetworkProtocol'
+local Scene = require'Scene'
 local Socket = require'socket'
 local yield = coroutine.yield
 
@@ -92,14 +93,17 @@ local function co_server(port, scene)
     end
 end
 
-local function co_client(host, port, scene)
+local function co_client(host, port, scene_view)
     local socket = Socket.connect(host, port)
 
     if socket == nil then
         error(error_message)
     else
         socket:settimeout(0)
+        local scene = Scene:new()
         local entity_id = scene:add_entity(0, 0)
+        scene_view:set_scene(scene)
+        scene_view:set_viewpoint_entity(entity_id)
         local last_x, last_y = nil, nil
         yield()
 
@@ -149,6 +153,10 @@ end
 
 function Session:get_scene()
     return self.scene
+end
+
+function Session:get_scene_view()
+    return self.scene_view
 end
 
 function Session:get_slot_id()
