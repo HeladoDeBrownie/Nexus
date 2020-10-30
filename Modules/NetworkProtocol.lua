@@ -4,8 +4,8 @@ local NetworkProtocol = {}
 
 --## Renderers
 
-local function render_welcome_message(slot_id)
-    return ('WELCOME %s'):format(slot_id)
+local function render_welcome_message(origin)
+    return ('WELCOME %s'):format(origin)
 end
 
 local function render_place_message(x, y)
@@ -15,12 +15,12 @@ end
 --## Parsers
 
 local function parse_welcome_message(message)
-    local slot_id = message:match'^WELCOME (.*)$'
+    local origin = message:match'^WELCOME (.*)$'
 
-    if slot_id ~= nil then
+    if origin ~= nil then
         return {
             type = 'welcome',
-            slot_id = slot_id,
+            origin = origin,
         }
     end
 end
@@ -47,8 +47,8 @@ function NetworkProtocol.render_message(message_table)
     end
 
     if message_table.type == 'welcome' then
-        local slot_id = message_table.slot_id
-        return origin_prefix .. render_welcome_message(slot_id)
+        local origin = message_table.origin
+        return origin_prefix .. render_welcome_message(origin)
     elseif message_table.type == 'place' then
         local x, y = message_table.x, message_table.y
         return origin_prefix .. render_place_message(x, y)

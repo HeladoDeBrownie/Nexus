@@ -11,8 +11,8 @@ function Scene:initialize()
     self.next_entity_id = 1
 end
 
-function Scene:add_entity(initial_x, initial_y)
-    local new_entity_id = self:allocate_entity_id()
+function Scene:add_entity(initial_x, initial_y, entity_id)
+    local new_entity_id = entity_id or self:allocate_entity_id()
     self.entities[new_entity_id] = {x = initial_x, y = initial_y}
     return new_entity_id
 end
