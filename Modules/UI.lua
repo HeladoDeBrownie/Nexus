@@ -5,7 +5,7 @@ return {
     Console = require'UI/Console',
     Overlay = require'UI/Overlay',
     Scalable = require'UI/Scalable',
-    SessionView = require'UI/SessionView',
+    SceneView = require'UI/SceneView',
     SpriteEditor = require'UI/SpriteEditor',
     Widget = require'UI/Widget',
     WindowManager = require'UI/WindowManager',

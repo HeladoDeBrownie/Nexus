@@ -1,4 +1,4 @@
-local SessionView = {}
+local SceneView = {}
 
 --# Requires
 
@@ -32,9 +32,9 @@ local sprite = love.graphics.newImage'Assets/Untitled.png'
 
 --# Interface
 
-function SessionView:initialize(scene, player_sprite)
+function SceneView:initialize(scene, player_sprite)
     Widget.initialize(self, COLOR_SCHEME)
-    Scalable.initialize(self, require'Settings'.UI.SessionView)
+    Scalable.initialize(self, require'Settings'.UI.SceneView)
     self.entities_canvas = love.graphics.newCanvas()
     self.scene = scene
     self.keys_down = {}
@@ -43,24 +43,24 @@ function SessionView:initialize(scene, player_sprite)
     self.viewpoint_entity = nil
 end
 
-function SessionView:get_scene()
+function SceneView:get_scene()
     return self.scene
 end
 
-function SessionView:set_scene(new_scene)
+function SceneView:set_scene(new_scene)
     self.scene = new_scene
     self.viewpoint_entity = nil
 end
 
-function SessionView:get_viewpoint_entity()
+function SceneView:get_viewpoint_entity()
     return self.viewpoint_entity
 end
 
-function SessionView:set_viewpoint_entity(new_viewpoint_entity)
+function SceneView:set_viewpoint_entity(new_viewpoint_entity)
     self.viewpoint_entity = new_viewpoint_entity
 end
 
-function SessionView:get_viewpoint_position()
+function SceneView:get_viewpoint_position()
     if self.viewpoint_entity == nil then
         return 0, 0
     else
@@ -68,7 +68,7 @@ function SessionView:get_viewpoint_position()
     end
 end
 
-function SessionView:before_drawing()
+function SceneView:before_drawing()
     Widget.before_drawing(self)
     self.transform:reset()
     local width, height = self:get_dimensions()
@@ -82,13 +82,13 @@ function SessionView:before_drawing()
     )
 end
 
-function SessionView:draw_background()
+function SceneView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
     love.graphics.draw(self.scene:get_chunk(0, 0))
 end
 
-function SessionView:draw_foreground()
+function SceneView:draw_foreground()
     love.graphics.replaceTransform(self.transform)
 
     self.entities_canvas:renderTo(function ()
@@ -110,16 +110,16 @@ function SessionView:draw_foreground()
     love.graphics.draw(self.entities_canvas)
 end
 
-function SessionView:on_unbound_key(key, down)
+function SceneView:on_unbound_key(key, down)
     self.keys_down[key] = down or nil
 end
 
-function SessionView:resize(...)
+function SceneView:resize(...)
     Widget.resize(self, ...)
     self.entities_canvas = love.graphics.newCanvas(...)
 end
 
-function SessionView:tick()
+function SceneView:tick()
     local viewpoint_entity = self.viewpoint_entity
 
     if viewpoint_entity ~= nil then
@@ -145,4 +145,4 @@ function SessionView:tick()
     end
 end
 
-return augment(mix{Widget, Scalable, SessionView})
+return augment(mix{Widget, Scalable, SceneView})
