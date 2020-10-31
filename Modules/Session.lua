@@ -82,6 +82,18 @@ local function co_server(scene, port)
             if client_socket ~= nil then
                 local client_thread = coroutine.create(co_server_connection)
                 local client_queue = Queue:new()
+
+                for _, client in ipairs(clients) do
+                    local x, y = scene:get_entity_position(client.origin)
+
+                    client_queue:push{
+                        type = 'place',
+                        x = x,
+                        y = y,
+                        origin = client.origin,
+                    }
+                end
+
                 local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
 
                 table.insert(clients, {
