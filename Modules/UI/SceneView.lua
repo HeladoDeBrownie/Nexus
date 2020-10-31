@@ -96,13 +96,15 @@ function SceneView:draw_foreground()
         love.graphics.clear()
         love.graphics.setShader()
         love.graphics.setBlendMode'replace'
-        local scene = self:get_scene()
 
-        for _, x, y in scene:each_entity() do
-            love.graphics.draw(self.player_sprite, x, y)
+        for _, entity in self.scene:each_entity() do
+            love.graphics.draw(self.player_sprite, entity.x, entity.y)
         end
 
-        love.graphics.draw(self.player_sprite, self:get_viewpoint_position())
+        if self:get_viewpoint_entity() ~= nil then
+            love.graphics.draw(self.player_sprite, self:get_viewpoint_position())
+        end
+
         love.graphics.pop()
     end)
 

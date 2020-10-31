@@ -36,16 +36,7 @@ function Scene:get_entity_position(entity_id)
 end
 
 function Scene:each_entity()
-    return function (_, index)
-        index = index + 1
-        local entity = self.entities[index]
-
-        if entity == nil then
-            return nil, nil, nil
-        else
-            return index, entity.x, entity.y
-        end
-    end, nil, 0
+    return pairs(self.entities)
 end
 
 function Scene:get_chunk(chunk_x, chunk_y)
@@ -61,8 +52,13 @@ end
 
 function Scene:place_entity(entity_id, x, y)
     local entity = self.entities[entity_id]
-    entity.x = x
-    entity.y = y
+
+    if entiy == nil then
+        self:add_entity(x, y, entity_id)
+    else
+        entity.x = x
+        entity.y = y
+    end
 end
 
 return augment(Scene)
