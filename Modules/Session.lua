@@ -18,6 +18,14 @@ local DEFAULT_PORT = 43569
 
 --# Helpers
 
+local function try_resume(success, ...)
+    if not success then
+        error((...))
+    else
+        return ...
+    end
+end
+
 local function co_server_connection(client_socket, message_queue, scene)
     client_socket:settimeout(0)
     local entity_id = scene:add_entity(0, 0)
@@ -78,16 +86,16 @@ local function co_server(scene, port)
         server_socket:settimeout(0)
         local clients = {}
         local accept_thread = coroutine.create(co_server_accept)
-        coroutine.resume(accept_thread, server_socket)
+        try_resume(coroutine.resume(accept_thread, server_socket))
         yield()
 
         while true do
-            local _, client_socket = coroutine.resume(accept_thread)
+            local client_socket = try_resume(coroutine.resume(accept_thread))
 
             if client_socket ~= nil then
                 local client_thread = coroutine.create(co_server_connection)
                 local client_queue = Queue:new()
-                coroutine.resume(client_thread, client_socket, client_queue, scene)
+                try_resume(coroutine.resume(client_thread, client_socket, client_queue, scene))
 
                 table.insert(clients, {
                     thread = client_thread,
@@ -96,12 +104,7 @@ local function co_server(scene, port)
             end
 
             for index, client in ipairs(clients) do
-                local success, error_message = coroutine.resume(client.thread)
-
-                if not success then
-                    table.remove(clients, index)
-                    print(error_message)
-                end
+                try_resume(coroutine.resume(client.thread))
             end
 
             yield()
@@ -194,13 +197,13 @@ end
 
 function Session:host(port)
     self.thread = coroutine.create(co_server)
-    coroutine.resume(self.thread, self.scene, port)
+    try_resume(coroutine.resume(self.thread, self.scene, port))
     self.status = 'hosting'
 end
 
 function Session:join(host, port)
     self.thread = coroutine.create(co_client)
-    coroutine.resume(self.thread, self.scene_view, host, port)
+    try_resume(coroutine.resume(self.thread, self.scene_view, host, port))
     self.status = 'visiting'
 end
 
@@ -215,10 +218,10 @@ end
 
 function Session:process()
     if self.thread ~= nil then
-        local succeeded, error_message = coroutine.resume(self.thread)
-
-        if not succeeded then
-            error(error_message)
+        if coroutine.status(self.thread) == 'dead' then
+            self.thread = nil
+        else
+            try_resume(coroutine.resume(self.thread))
         end
     end
 end
