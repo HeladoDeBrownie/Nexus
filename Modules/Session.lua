@@ -67,14 +67,6 @@ local function co_server_connection(client_socket, message_queue, scene)
     end
 end
 
-local function co_server_accept(server_socket)
-    yield()
-
-    while true do
-        yield(try_socket(server_socket:accept()))
-    end
-end
-
 local function co_server(scene, port)
     port = port or DEFAULT_PORT
     local server_socket, error_message = Socket.bind('*', port)
@@ -84,12 +76,10 @@ local function co_server(scene, port)
     else
         server_socket:settimeout(0)
         local clients = {}
-        local accept_thread = coroutine.create(co_server_accept)
-        try_coroutine(coroutine.resume(accept_thread, server_socket))
         yield()
 
         while true do
-            local client_socket = try_coroutine(coroutine.resume(accept_thread))
+            local client_socket = try_socket(server_socket:accept())
 
             if client_socket ~= nil then
                 local client_thread = coroutine.create(co_server_connection)
@@ -167,9 +157,6 @@ local function co_client(scene_view, host, port)
         end
     end
 end
-
-_G.co_server = co_server
-_G.co_client = co_client
 
 --# Interface
 
