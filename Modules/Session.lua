@@ -18,11 +18,21 @@ local DEFAULT_PORT = 43569
 
 --# Helpers
 
-local function try_resume(success, ...)
+local function try_coroutine(success, ...)
     if not success then
         error((...))
     else
         return ...
+    end
+end
+
+local function try_socket(result, error_message)
+    if result == nil then
+        if error_message ~= 'timeout' then
+            error(error_message)
+        end
+    else
+        return result
     end
 end
 
@@ -38,14 +48,9 @@ local function co_server_connection(client_socket, message_queue, scene)
     yield()
 
     while true do
-        local raw_message, error_message = client_socket:receive()
+        local raw_message, error_message = try_socket(client_socket:receive())
 
-        if raw_message == nil then
-            if error_message ~= 'timeout' then
-                scene:remove_entity(entity_id)
-                error(error_message)
-            end
-        else
+        if raw_message ~= nil then
             local message = NetworkProtocol.parse_message(raw_message)
 
             if message.type == 'place' then
@@ -66,13 +71,7 @@ local function co_server_accept(server_socket)
     yield()
 
     while true do
-        local client_socket, error_message = server_socket:accept()
-
-        if client_socket == nil and error_message ~= 'timeout' then
-            error(error_message)
-        else
-            yield(client_socket)
-        end
+        yield(try_socket(server_socket:accept()))
     end
 end
 
@@ -86,16 +85,16 @@ local function co_server(scene, port)
         server_socket:settimeout(0)
         local clients = {}
         local accept_thread = coroutine.create(co_server_accept)
-        try_resume(coroutine.resume(accept_thread, server_socket))
+        try_coroutine(coroutine.resume(accept_thread, server_socket))
         yield()
 
         while true do
-            local client_socket = try_resume(coroutine.resume(accept_thread))
+            local client_socket = try_coroutine(coroutine.resume(accept_thread))
 
             if client_socket ~= nil then
                 local client_thread = coroutine.create(co_server_connection)
                 local client_queue = Queue:new()
-                try_resume(coroutine.resume(client_thread, client_socket, client_queue, scene))
+                try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, scene))
 
                 table.insert(clients, {
                     thread = client_thread,
@@ -104,7 +103,7 @@ local function co_server(scene, port)
             end
 
             for index, client in ipairs(clients) do
-                try_resume(coroutine.resume(client.thread))
+                try_coroutine(coroutine.resume(client.thread))
             end
 
             yield()
@@ -128,13 +127,9 @@ local function co_client(scene_view, host, port)
         yield()
 
         while true do
-            local raw_message, error_message = socket:receive()
+            local raw_message = try_socket(socket:receive())
 
-            if raw_message == nil then
-                if error_message ~= 'timeout' then
-                    error(error_message)
-                end
-            else
+            if raw_message ~= nil then
                 local message = NetworkProtocol.parse_message(raw_message)
 
                 if message.type == 'welcome' then
@@ -197,13 +192,13 @@ end
 
 function Session:host(port)
     self.thread = coroutine.create(co_server)
-    try_resume(coroutine.resume(self.thread, self.scene, port))
+    try_coroutine(coroutine.resume(self.thread, self.scene, port))
     self.status = 'hosting'
 end
 
 function Session:join(host, port)
     self.thread = coroutine.create(co_client)
-    try_resume(coroutine.resume(self.thread, self.scene_view, host, port))
+    try_coroutine(coroutine.resume(self.thread, self.scene_view, host, port))
     self.status = 'visiting'
 end
 
@@ -221,7 +216,7 @@ function Session:process()
         if coroutine.status(self.thread) == 'dead' then
             self.thread = nil
         else
-            try_resume(coroutine.resume(self.thread))
+            try_coroutine(coroutine.resume(self.thread))
         end
     end
 end
