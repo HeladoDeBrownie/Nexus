@@ -193,7 +193,7 @@ function Session:initialize(scene_view)
     self.scene = Scene:new()
     self.scene_view = scene_view
     self.scene_view:set_scene(self.scene)
-    --self.scene_view:set_viewpoint_entity(self.scene:add_entity(0, 0))
+    self.scene_view:set_viewpoint_entity(self.scene:add_entity(0, 0))
 end
 
 function Session:get_scene()
