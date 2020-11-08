@@ -48,13 +48,15 @@ local function co_server_connection(client_socket, output_queue, session_queue, 
     yield(entity_id)
 
     while true do
-        local raw_message, error_message = try_socket(client_socket:receive())
+        repeat
+            local raw_message, error_message = try_socket(client_socket:receive())
 
-        if raw_message ~= nil then
-            local message = NetworkProtocol.parse_message(raw_message)
-            message.origin = entity_id
-            session_queue:push(message)
-        end
+            if raw_message ~= nil then
+                local message = NetworkProtocol.parse_message(raw_message)
+                message.origin = entity_id
+                session_queue:push(message)
+            end
+        until raw_message == nil
 
         if not output_queue:is_empty() then
             client_socket:send(NetworkProtocol.render_message(output_queue:pop()) .. '\n')
@@ -90,34 +92,29 @@ local function co_server(scene, port)
 
                 local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
 
-                table.insert(clients, {
+                clients[origin] = {
                     thread = client_thread,
                     queue = client_queue,
                     origin = origin,
-                })
+                }
             end
 
-            for index, client in ipairs(clients) do
+            for index, client in pairs(clients) do
                 try_coroutine(coroutine.resume(client.thread))
             end
 
             while not session_queue:is_empty() do
                 local message = session_queue:pop()
+                local origin = message.origin
 
                 if message.type == 'place' then
-                    local origin, x, y = message.origin, message.x, message.y
+                    local x, y = message.x, message.y
                     scene:place_entity(origin, x, y)
-
-                    for _, client in ipairs(clients) do
-                        if origin ~= client.origin then
-                            client.queue:push{
-                                type = 'place',
-                                x = x,
-                                y = y,
-                                origin = origin,
-                            }
-                        end
-                    end
+                elseif message.type == 'scene?' then
+                    clients[origin].queue:push{
+                        type = 'scene',
+                        data = scene:serialize(),
+                    }
                 end
             end
 
@@ -142,23 +139,28 @@ local function co_client(scene_view, host, port)
         yield()
 
         while true do
-            local raw_message = try_socket(socket:receive())
+            repeat
+                local raw_message = try_socket(socket:receive())
 
-            if raw_message ~= nil then
-                local message = NetworkProtocol.parse_message(raw_message)
+                if raw_message ~= nil then
+                    local message = NetworkProtocol.parse_message(raw_message)
 
-                if message.type == 'welcome' then
-                    entity_id = message.origin
-                    scene:add_entity(0, 0, entity_id)
-                    scene_view:set_viewpoint_entity(entity_id)
-                elseif message.type == 'place' then
-                    local x, y = message.x, message.y
-                    scene:place_entity(message.origin, x, y)
-                elseif message.type == 'scene' then
-                    local data = message.data
-                    scene:deserialize(data)
+                    if message.type == 'welcome' then
+                        entity_id = message.origin
+                        scene:add_entity(0, 0, entity_id)
+                        scene_view:set_viewpoint_entity(entity_id)
+                    elseif message.type == 'place' then
+                        local x, y = message.x, message.y
+                        scene:place_entity(message.origin, x, y)
+                    elseif message.type == 'scene' then
+                        local data = message.data
+                        local x, y = scene:get_entity_position(entity_id)
+                        scene:deserialize(data)
+                        scene:place_entity(entity_id, x, y)
+                        try_socket(socket:send(NetworkProtocol.render_message{type = 'scene?'} .. '\n'))
+                    end
                 end
-            end
+            until raw_message == nil
 
             if entity_id ~= nil then
                 local x, y = scene:get_entity_position(entity_id)
@@ -205,7 +207,6 @@ function Session:host(port)
     self.host_thread = coroutine.create(co_server)
     try_coroutine(coroutine.resume(self.host_thread, self.scene, port))
     self.status = 'hosting'
-    self:join('localhost', port)
 end
 
 function Session:join(host, port)
