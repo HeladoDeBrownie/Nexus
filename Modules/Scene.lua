@@ -61,4 +61,20 @@ function Scene:place_entity(entity_id, x, y)
     end
 end
 
+function Scene:serialize()
+    local data = ''
+
+    for entity_id, entity in self:each_entity() do
+        data = data .. ('%s=%s,%s;'):format(entity_id, entity.x, entity.y)
+    end
+
+    return data
+end
+
+function Scene:deserialize(data)
+    for entity_id, x, y in data:gmatch'(.-)=(.-),(.-);' do
+        self:place_entity(entity_id, x, y)
+    end
+end
+
 return augment(Scene)

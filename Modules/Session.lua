@@ -83,16 +83,10 @@ local function co_server(scene, port)
                 local client_thread = coroutine.create(co_server_connection)
                 local client_queue = Queue:new()
 
-                for _, client in ipairs(clients) do
-                    local x, y = scene:get_entity_position(client.origin)
-
-                    client_queue:push{
-                        type = 'place',
-                        x = x,
-                        y = y,
-                        origin = client.origin,
-                    }
-                end
+                client_queue:push{
+                    type = 'scene',
+                    data = scene:serialize(),
+                }
 
                 local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
 
@@ -160,6 +154,9 @@ local function co_client(scene_view, host, port)
                 elseif message.type == 'place' then
                     local x, y = message.x, message.y
                     scene:place_entity(message.origin, x, y)
+                elseif message.type == 'scene' then
+                    local data = message.data
+                    scene:deserialize(data)
                 end
             end
 
