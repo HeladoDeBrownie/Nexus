@@ -2,8 +2,8 @@ local Scene = {}
 
 --# Constants
 
-local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Test Chunk.png'
-local PLACEHOLDER_SPRITE = love.graphics.newImage'Assets/Untitled.png'
+local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Placeholder Chunk.png'
+local PLACEHOLDER_SPRITE = love.graphics.newImage'Assets/Placeholder Sprite.png'
 
 --# Interface
 
