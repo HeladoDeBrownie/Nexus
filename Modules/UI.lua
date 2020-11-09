@@ -8,5 +8,4 @@ return {
     SceneView = require'UI/SceneView',
     SpriteEditor = require'UI/SpriteEditor',
     Widget = require'UI/Widget',
-    WindowManager = require'UI/WindowManager',
 }
