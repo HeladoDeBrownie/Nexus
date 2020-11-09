@@ -72,6 +72,8 @@ function Scene:serialize()
 end
 
 function Scene:deserialize(data)
+    self.entities = {}
+
     for entity_id, x, y in data:gmatch'(.-)=(.-),(.-);' do
         self:place_entity(entity_id, x, y)
     end
