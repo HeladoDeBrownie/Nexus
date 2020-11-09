@@ -26,21 +26,18 @@ local COLOR_SCHEME = require'ColorScheme':new(
 
 local IDENTITY_TRANSFORM = love.math.newTransform()
 
---# State
-
-local sprite = love.graphics.newImage'Assets/Untitled.png'
-
 --# Interface
 
-function SceneView:initialize(scene, player_sprite)
+function SceneView:initialize(scene)
     Widget.initialize(self, COLOR_SCHEME)
     Scalable.initialize(self, require'Settings'.UI.SceneView)
-    self.entities_canvas = love.graphics.newCanvas()
     self.scene = scene
     self.keys_down = {}
-    self.player_sprite = player_sprite
-    self.transform = love.math.newTransform()
     self.viewpoint_entity = nil
+
+    -- transient draw state
+    self.entities_canvas = love.graphics.newCanvas()
+    self.transform = love.math.newTransform()
 end
 
 function SceneView:get_scene()
@@ -97,12 +94,15 @@ function SceneView:draw_foreground()
         love.graphics.setShader()
         love.graphics.setBlendMode'replace'
 
-        for _, entity in self.scene:each_entity() do
-            love.graphics.draw(self.player_sprite, entity.x, entity.y)
+        for entity_id in self.scene:each_entity() do
+            local sprite, x, y = self.scene:get_entity_data(entity_id)
+            love.graphics.draw(sprite, x, y)
         end
 
-        if self:get_viewpoint_entity() ~= nil then
-            love.graphics.draw(self.player_sprite, self:get_viewpoint_position())
+        local viewpoint_entity_id = self:get_viewpoint_entity()
+
+        if viewpoint_entity_id ~= nil then
+            love.graphics.draw(self.scene:get_entity_data(viewpoint_entity_id))
         end
 
         love.graphics.pop()

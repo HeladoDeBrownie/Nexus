@@ -2,7 +2,8 @@ local Scene = {}
 
 --# Constants
 
-local chunk = love.graphics.newImage'Assets/Test Chunk.png'
+local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Test Chunk.png'
+local PLACEHOLDER_SPRITE = love.graphics.newImage'Assets/Untitled.png'
 
 --# Interface
 
@@ -27,6 +28,12 @@ function Scene:allocate_entity_id()
     return entity_id
 end
 
+function Scene:get_entity_data(entity_id)
+    local sprite = self:get_entity_sprite(entity_id)
+    local x, y = self:get_entity_position(entity_id)
+    return sprite, x, y
+end
+
 function Scene:get_entity_position(entity_id)
     local entity = self.entities[entity_id]
 
@@ -35,13 +42,17 @@ function Scene:get_entity_position(entity_id)
     end
 end
 
+function Scene:get_entity_sprite(entity_id)
+    return PLACEHOLDER_SPRITE
+end
+
 function Scene:each_entity()
     return pairs(self.entities)
 end
 
 function Scene:get_chunk(chunk_x, chunk_y)
     if chunk_x == 0 and chunk_y == 0 then
-        return chunk
+        return PLACEHOLDER_CHUNK
     end
 end
 
