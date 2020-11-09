@@ -48,6 +48,7 @@ end
 function RingBuffer:push(new_element)
     self.table[self.end_index] = new_element
     self.end_index = normalize_index(self, self.end_index + 1)
+    self.table[self.end_index] = nil
 
     if self.end_index == self.start_index then
         self.start_index = normalize_index(self, self.start_index + 1)
