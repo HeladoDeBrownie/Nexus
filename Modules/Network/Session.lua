@@ -68,132 +68,121 @@ end
 
 local function co_server(scene, port)
     port = port or DEFAULT_PORT
-    local server_socket, error_message = Socket.bind('*', port)
+    local server_socket, error_message = try_socket(Socket.bind('*', port))
+    server_socket:settimeout(0)
+    local clients = {}
+    local session_queue = Queue:new()
+    yield()
 
-    if server_socket == nil then
-        error(error_message)
-    else
-        server_socket:settimeout(0)
-        local clients = {}
-        local session_queue = Queue:new()
-        yield()
+    while true do
+        local client_socket = try_socket(server_socket:accept())
 
-        while true do
-            local client_socket = try_socket(server_socket:accept())
+        if client_socket ~= nil then
+            local client_thread = coroutine.create(co_server_connection)
+            local client_queue = Queue:new()
 
-            if client_socket ~= nil then
-                local client_thread = coroutine.create(co_server_connection)
-                local client_queue = Queue:new()
+            client_queue:push{
+                type = 'scene',
+                data = scene:serialize(),
+            }
 
-                client_queue:push{
+            local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
+
+            clients[origin] = {
+                thread = client_thread,
+                queue = client_queue,
+                origin = origin,
+            }
+        end
+
+        for index, client in pairs(clients) do
+            try_coroutine(coroutine.resume(client.thread))
+        end
+
+        while not session_queue:is_empty() do
+            local message = session_queue:pop()
+            local origin = message.origin
+
+            if message.type == 'place' then
+                local x, y = message.x, message.y
+                scene:place_entity(origin, x, y)
+            elseif message.type == 'scene?' then
+                clients[origin].queue:push{
                     type = 'scene',
                     data = scene:serialize(),
                 }
-
-                local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
-
-                clients[origin] = {
-                    thread = client_thread,
-                    queue = client_queue,
-                    origin = origin,
-                }
             end
-
-            for index, client in pairs(clients) do
-                try_coroutine(coroutine.resume(client.thread))
-            end
-
-            while not session_queue:is_empty() do
-                local message = session_queue:pop()
-                local origin = message.origin
-
-                if message.type == 'place' then
-                    local x, y = message.x, message.y
-                    scene:place_entity(origin, x, y)
-                elseif message.type == 'scene?' then
-                    clients[origin].queue:push{
-                        type = 'scene',
-                        data = scene:serialize(),
-                    }
-                end
-            end
-
-            yield()
         end
+
+        yield()
     end
 end
 
 local function co_client(scene_view, host, port)
     host = host or DEFAULT_HOST
     port = port or DEFAULT_PORT
-    local socket = Socket.connect(host, port)
+    local socket = try_socket(Socket.connect(host, port))
+    socket:settimeout(0)
+    local scene = Scene:new()
+    scene_view:set_scene(scene)
+    local entity_id = nil
+    local last_x, last_y = nil, nil
+    yield()
 
-    if socket == nil then
-        error(error_message)
-    else
-        socket:settimeout(0)
-        local scene = Scene:new()
-        scene_view:set_scene(scene)
-        local entity_id = nil
-        local last_x, last_y = nil, nil
-        yield()
+    while true do
+        repeat
+            local raw_message = try_socket(socket:receive())
 
-        while true do
-            repeat
-                local raw_message = try_socket(socket:receive())
+            if raw_message ~= nil then
+                local message = Protocol.parse_message(raw_message)
 
-                if raw_message ~= nil then
-                    local message = Protocol.parse_message(raw_message)
+                if message.type == 'welcome' then
+                    entity_id = message.origin
+                    scene:add_entity(0, 0, entity_id)
+                    scene_view:set_viewpoint_entity(entity_id)
+                elseif message.type == 'place' then
+                    local x, y = message.x, message.y
+                    scene:place_entity(message.origin, x, y)
+                elseif message.type == 'scene' then
+                    local data = message.data
 
-                    if message.type == 'welcome' then
-                        entity_id = message.origin
-                        scene:add_entity(0, 0, entity_id)
-                        scene_view:set_viewpoint_entity(entity_id)
-                    elseif message.type == 'place' then
-                        local x, y = message.x, message.y
-                        scene:place_entity(message.origin, x, y)
-                    elseif message.type == 'scene' then
-                        local data = message.data
-
-                        if entity_id ~= nil then
-                            local x, y = scene:get_entity_position(entity_id)
-                            scene:deserialize(data)
-                            scene:place_entity(entity_id, x, y)
-                        else
-                            scene:deserialize(data)
-                        end
-
-                        try_socket(socket:send(Protocol.render_message{type = 'scene?'} .. '\n'))
+                    if entity_id ~= nil then
+                        local x, y = scene:get_entity_position(entity_id)
+                        scene:deserialize(data)
+                        scene:place_entity(entity_id, x, y)
+                    else
+                        scene:deserialize(data)
                     end
+
+                    try_socket(socket:send(Protocol.render_message{type = 'scene?'} .. '\n'))
                 end
-            until raw_message == nil
+            end
+        until raw_message == nil
 
-            if entity_id ~= nil then
-                local x, y = scene:get_entity_position(entity_id)
+        if entity_id ~= nil then
+            local x, y = scene:get_entity_position(entity_id)
 
-                if x ~= last_x or y ~= last_y then
-                    try_socket(socket:send(
-                        Protocol.render_message{
-                            type = 'place',
-                            x = x,
-                            y = y,
-                        }
-                    .. '\n'))
-                end
-
-                last_x, last_y = x, y
+            if x ~= last_x or y ~= last_y then
+                try_socket(socket:send(
+                    Protocol.render_message{
+                        type = 'place',
+                        x = x,
+                        y = y,
+                    }
+                .. '\n'))
             end
 
-            yield()
+            last_x, last_y = x, y
         end
+
+        yield()
     end
 end
 
 --# Interface
 
 function Session:initialize(scene_view)
-    self.host_thread = nil
-    self.visitor_thread = nil
+    self.thread = nil
     self.status = 'offline'
     self.scene = Scene:new()
     self.scene_view = scene_view
@@ -210,14 +199,14 @@ function Session:get_scene_view()
 end
 
 function Session:host(port)
-    self.host_thread = coroutine.create(co_server)
-    try_coroutine(coroutine.resume(self.host_thread, self.scene, port))
+    self.thread = coroutine.create(co_server)
+    try_coroutine(coroutine.resume(self.thread, self.scene, port))
     self.status = 'hosting'
 end
 
 function Session:join(host, port)
-    self.visitor_thread = coroutine.create(co_client)
-    try_coroutine(coroutine.resume(self.visitor_thread, self.scene_view, host, port))
+    self.thread = coroutine.create(co_client)
+    try_coroutine(coroutine.resume(self.thread, self.scene_view, host, port))
     self.status = 'visiting'
 end
 
@@ -225,26 +214,17 @@ function Session:disconnect()
     if self.status == 'visiting' then
         self:initialize(self.scene_view)
     else
-        self.host_thread = nil
-        self.visitor_thread = nil
+        self.thread = nil
         self.status = 'offline'
     end
 end
 
 function Session:process()
-    if self.host_thread ~= nil then
-        if coroutine.status(self.host_thread) == 'dead' then
+    if self.thread ~= nil then
+        if coroutine.status(self.thread) == 'dead' then
             self:disconnect()
         else
-            try_coroutine(coroutine.resume(self.host_thread))
-        end
-    end
-
-    if self.visitor_thread ~= nil then
-        if coroutine.status(self.visitor_thread) == 'dead' then
-            self:disconnect()
-        else
-            try_coroutine(coroutine.resume(self.visitor_thread))
+            try_coroutine(coroutine.resume(self.thread))
         end
     end
 end
