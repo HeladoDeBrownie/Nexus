@@ -2,7 +2,7 @@ local Session = {}
 
 --# Requires
 
-local NetworkProtocol = require'NetworkProtocol'
+local Protocol = require'Network/Protocol'
 local Queue = require'Queue'
 local Scene = require'Scene'
 local Socket = require'socket'
@@ -52,14 +52,14 @@ local function co_server_connection(client_socket, output_queue, session_queue, 
             local raw_message, error_message = try_socket(client_socket:receive())
 
             if raw_message ~= nil then
-                local message = NetworkProtocol.parse_message(raw_message)
+                local message = Protocol.parse_message(raw_message)
                 message.origin = entity_id
                 session_queue:push(message)
             end
         until raw_message == nil
 
         if not output_queue:is_empty() then
-            client_socket:send(NetworkProtocol.render_message(output_queue:pop()) .. '\n')
+            client_socket:send(Protocol.render_message(output_queue:pop()) .. '\n')
         end
 
         yield()
@@ -143,7 +143,7 @@ local function co_client(scene_view, host, port)
                 local raw_message = try_socket(socket:receive())
 
                 if raw_message ~= nil then
-                    local message = NetworkProtocol.parse_message(raw_message)
+                    local message = Protocol.parse_message(raw_message)
 
                     if message.type == 'welcome' then
                         entity_id = message.origin
@@ -163,7 +163,7 @@ local function co_client(scene_view, host, port)
                             scene:deserialize(data)
                         end
 
-                        try_socket(socket:send(NetworkProtocol.render_message{type = 'scene?'} .. '\n'))
+                        try_socket(socket:send(Protocol.render_message{type = 'scene?'} .. '\n'))
                     end
                 end
             until raw_message == nil
@@ -173,7 +173,7 @@ local function co_client(scene_view, host, port)
 
                 if x ~= last_x or y ~= last_y then
                     try_socket(socket:send(
-                        NetworkProtocol.render_message{
+                        Protocol.render_message{
                             type = 'place',
                             x = x,
                             y = y,

@@ -65,7 +65,7 @@ function love.load()
     Main.main_widget = UI.Overlay:new(scene_view, console)
     love.resize(love.graphics.getDimensions())
 
-    Main.session = require'Session':new(scene_view)
+    Main.session = require'Network/Session':new(scene_view)
 
     -- Copy prints to both standard output and the in-game console.
 
