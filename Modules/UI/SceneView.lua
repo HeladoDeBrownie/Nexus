@@ -96,13 +96,14 @@ function SceneView:draw_foreground()
 
         for entity_id in self.scene:each_entity() do
             local sprite, x, y = self.scene:get_entity_data(entity_id)
-            love.graphics.draw(sprite, x, y)
+            love.graphics.draw(sprite:get_image(), x, y)
         end
 
         local viewpoint_entity_id = self:get_viewpoint_entity()
 
         if viewpoint_entity_id ~= nil then
-            love.graphics.draw(self.scene:get_entity_data(viewpoint_entity_id))
+            local sprite, x, y = self.scene:get_entity_data(viewpoint_entity_id)
+            love.graphics.draw(sprite:get_image(), x, y)
         end
 
         love.graphics.pop()

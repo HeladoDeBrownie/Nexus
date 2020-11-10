@@ -1,9 +1,14 @@
 local Scene = {}
 
+--# Requires
+
+local Sprite = require'Sprite'
+
 --# Constants
 
 local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Placeholder Chunk.png'
-local PLACEHOLDER_SPRITE = love.graphics.newImage'Assets/Placeholder Sprite.png'
+local PLACEHOLDER_SPRITE = Sprite.from_image_data(love.image.newImageData'Assets/Placeholder Sprite.png')
+local ENTITY_DOESNT_EXIST_ERROR_FORMAT = "entity doesn't exist: %s"
 
 --# Interface
 
@@ -12,9 +17,15 @@ function Scene:initialize()
     self.next_entity_id = 1
 end
 
-function Scene:add_entity(initial_x, initial_y, entity_id)
+function Scene:add_entity(entity_id, sprite, initial_x, initial_y)
     local new_entity_id = entity_id or self:allocate_entity_id()
-    self.entities[new_entity_id] = {x = initial_x, y = initial_y}
+
+    self.entities[new_entity_id] = {
+        sprite = sprite or PLACEHOLDER_SPRITE,
+        x = initial_x,
+        y = initial_y,
+    }
+
     return new_entity_id
 end
 
@@ -36,14 +47,12 @@ end
 
 function Scene:get_entity_position(entity_id)
     local entity = self.entities[entity_id]
-
-    if entity ~= nil then
-        return entity.x, entity.y
-    end
+    assert(entity ~= nil, ENTITY_DOESNT_EXIST_ERROR_FORMAT:format(entity_id))
+    return entity.x, entity.y
 end
 
 function Scene:get_entity_sprite(entity_id)
-    return PLACEHOLDER_SPRITE
+    return self.entities[entity_id].sprite
 end
 
 function Scene:each_entity()
@@ -63,7 +72,7 @@ end
 
 function Scene:place_entity(entity_id, x, y)
     local entity = self.entities[entity_id]
-    assert(entity ~= nil, ("entity doesn't exist: %s"):format(entity_id))
+    assert(entity ~= nil, ENTITY_DOESNT_EXIST_ERROR_FORMAT:format(entity_id))
     entity.x = x
     entity.y = y
 end
@@ -72,7 +81,11 @@ function Scene:serialize()
     local data = ''
 
     for entity_id, entity in self:each_entity() do
-        data = data .. ('%s=%s,%s;'):format(entity_id, entity.x, entity.y)
+        data = data .. ('%s=%s:%s,%s;'):format(
+            entity_id,
+            entity.sprite:to_byte_string(),
+            entity.x, entity.y
+        )
     end
 
     return data
@@ -81,8 +94,8 @@ end
 function Scene:deserialize(data)
     self.entities = {}
 
-    for entity_id, x, y in data:gmatch'(.-)=(.-),(.-);' do
-        self:add_entity(x, y, entity_id)
+    for entity_id, sprite, x, y in data:gmatch'(.-)=(.-):(.-),(.-);' do
+        self:add_entity(entity_id, Sprite.from_byte_string(sprite), x, y)
     end
 end
 

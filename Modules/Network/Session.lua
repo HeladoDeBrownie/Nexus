@@ -38,7 +38,7 @@ end
 
 local function co_server_connection(client_socket, output_queue, session_queue, scene)
     client_socket:settimeout(0)
-    local entity_id = scene:add_entity(0, 0)
+    local entity_id = scene:add_entity(nil, 0, 0)
 
     output_queue:push{
         type = 'welcome',
@@ -138,7 +138,7 @@ local function co_client(scene_view, host, port)
 
                 if message.type == 'welcome' then
                     entity_id = message.origin
-                    scene:add_entity(0, 0, entity_id)
+                    scene:add_entity(entity_id, nil, 0, 0)
                     scene_view:set_viewpoint_entity(entity_id)
                 elseif message.type == 'place' then
                     local x, y = message.x, message.y
@@ -187,7 +187,7 @@ function Session:initialize(scene_view)
     self.scene = Scene:new()
     self.scene_view = scene_view
     self.scene_view:set_scene(self.scene)
-    self.scene_view:set_viewpoint_entity(self.scene:add_entity(0, 0))
+    self.scene_view:set_viewpoint_entity(self.scene:add_entity(nil, nil, 0, 0))
 end
 
 function Session:get_scene()
