@@ -154,9 +154,15 @@ local function co_client(scene_view, host, port)
                         scene:place_entity(message.origin, x, y)
                     elseif message.type == 'scene' then
                         local data = message.data
-                        local x, y = scene:get_entity_position(entity_id)
-                        scene:deserialize(data)
-                        scene:place_entity(entity_id, x, y)
+
+                        if entity_id ~= nil then
+                            local x, y = scene:get_entity_position(entity_id)
+                            scene:deserialize(data)
+                            scene:place_entity(entity_id, x, y)
+                        else
+                            scene:deserialize(data)
+                        end
+
                         try_socket(socket:send(NetworkProtocol.render_message{type = 'scene?'} .. '\n'))
                     end
                 end

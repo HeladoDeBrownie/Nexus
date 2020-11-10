@@ -63,13 +63,9 @@ end
 
 function Scene:place_entity(entity_id, x, y)
     local entity = self.entities[entity_id]
-
-    if entiy == nil then
-        self:add_entity(x, y, entity_id)
-    else
-        entity.x = x
-        entity.y = y
-    end
+    assert(entity ~= nil, ("entity doesn't exist: %s"):format(entity_id))
+    entity.x = x
+    entity.y = y
 end
 
 function Scene:serialize()
@@ -86,7 +82,7 @@ function Scene:deserialize(data)
     self.entities = {}
 
     for entity_id, x, y in data:gmatch'(.-)=(.-),(.-);' do
-        self:place_entity(entity_id, x, y)
+        self:add_entity(x, y, entity_id)
     end
 end
 
