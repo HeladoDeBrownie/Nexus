@@ -7,7 +7,7 @@ local Sprite = require'Sprite'
 --# Constants
 
 local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Placeholder Chunk.png'
-local PLACEHOLDER_SPRITE = Sprite.from_image_data(love.image.newImageData'Assets/Placeholder Sprite.png')
+local PLACEHOLDER_SPRITE = Sprite.from_file'Assets/Placeholder Sprite.png'
 local ENTITY_DOESNT_EXIST_ERROR_FORMAT = "entity doesn't exist: %s"
 
 --# Interface

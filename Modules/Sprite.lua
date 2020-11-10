@@ -36,15 +36,19 @@ function Sprite.from_byte_string(byte_string)
     error'TODO'
 end
 
+function Sprite.from_file(file_name)
+    return Sprite.from_image_data(love.image.newImageData(file_name))
+end
+
 function Sprite.from_image_data(image_data)
     return Sprite:new(image_data)
 end
 
-function Sprite:initialize(image_data)
-    if image_data == nil then
-        self.image_data = love.image.newImageData(SPRITE_WIDTH, SPRITE_HEIGHT)
-    else
-        self.image_data = image_data:clone()
+function Sprite:initialize(source_image_data)
+    self.image_data = love.image.newImageData(SPRITE_WIDTH, SPRITE_HEIGHT)
+
+    if source_image_data ~= nil then
+        self.image_data:paste(source_image_data, 0, 0)
     end
 
     self.image = love.graphics.newImage(self.image_data)
