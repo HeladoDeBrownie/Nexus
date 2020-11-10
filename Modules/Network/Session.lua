@@ -49,7 +49,7 @@ local function co_server_connection(client_socket, output_queue, session_queue, 
 
     while true do
         repeat
-            local raw_message, error_message = try_socket(client_socket:receive())
+            local raw_message = try_socket(client_socket:receive())
 
             if raw_message ~= nil then
                 local message = Protocol.parse_message(raw_message)
@@ -68,7 +68,7 @@ end
 
 local function co_server(scene, port)
     port = port or DEFAULT_PORT
-    local server_socket, error_message = try_socket(Socket.bind('*', port))
+    local server_socket = try_socket(Socket.bind('*', port))
     server_socket:settimeout(0)
     local clients = {}
     local session_queue = Queue:new()
