@@ -10,7 +10,7 @@ return {
             scale = {type = is_scale, default = 2},
         },
 
-        SessionView = {
+        SceneView = {
             scale = {type = is_scale, default = 4},
         },
     },
