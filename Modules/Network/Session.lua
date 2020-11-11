@@ -38,7 +38,7 @@ end
 
 local function co_server_connection(client_socket, output_queue, session_queue, scene)
     client_socket:settimeout(0)
-    local entity_id = scene:add_entity(nil, 0, 0)
+    local entity_id = scene:add_entity(nil, nil, 0, 0)
 
     output_queue:push{
         type = 'welcome',
