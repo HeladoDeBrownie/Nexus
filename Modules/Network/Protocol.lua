@@ -4,6 +4,10 @@ local NetworkProtocol = {}
 
 --## Renderers
 
+local function render_hello_message(sprite_byte_string)
+    return ('HELLO %s'):format(sprite_byte_string)
+end
+
 local function render_welcome_message(origin)
     return ('WELCOME %s'):format(origin)
 end
@@ -21,6 +25,17 @@ local function render_sceneq_message()
 end
 
 --## Parsers
+
+local function parse_hello_message(message)
+    local sprite_byte_string = message:match'^HELLO (.*)$'
+
+    if sprite_byte_string ~= nil then
+        return {
+            type = 'hello',
+            sprite_byte_string = sprite_byte_string,
+        }
+    end
+end
 
 local function parse_welcome_message(message)
     local origin = message:match'^WELCOME (.*)$'
@@ -75,7 +90,10 @@ function NetworkProtocol.render_message(message_table)
         origin_prefix = ('[%s]'):format(tostring(message_table.origin))
     end
 
-    if message_table.type == 'welcome' then
+    if message_table.type == 'hello' then
+        local sprite_byte_string = message_table.sprite_byte_string
+        return origin_prefix .. render_hello_message(sprite_byte_string)
+    elseif message_table.type == 'welcome' then
         local origin = message_table.origin
         return origin_prefix .. render_welcome_message(origin)
     elseif message_table.type == 'place' then
@@ -99,6 +117,7 @@ function NetworkProtocol.parse_message(raw_message)
     end
 
     local message_table =
+        parse_hello_message(message) or
         parse_welcome_message(message) or
         parse_place_message(message) or
         parse_scene_message(message) or

@@ -6,6 +6,7 @@ local Protocol = require'Network/Protocol'
 local Queue = require'Queue'
 local Scene = require'Scene'
 local Socket = require'socket'
+local Sprite = require'Sprite'
 local yield = coroutine.yield
 
 --# Constants
@@ -38,13 +39,7 @@ end
 
 local function co_server_connection(client_socket, output_queue, session_queue, scene)
     client_socket:settimeout(0)
-    local entity_id = scene:add_entity(nil, nil, 0, 0)
-
-    output_queue:push{
-        type = 'welcome',
-        origin = entity_id,
-    }
-
+    local entity_id = scene:allocate_entity_id()
     yield(entity_id)
 
     while true do
@@ -58,7 +53,7 @@ local function co_server_connection(client_socket, output_queue, session_queue, 
             end
         until raw_message == nil
 
-        if not output_queue:is_empty() then
+        while not output_queue:is_empty() do
             client_socket:send(Protocol.render_message(output_queue:pop()) .. '\n')
         end
 
@@ -103,7 +98,15 @@ local function co_server(scene, port)
             local message = session_queue:pop()
             local origin = message.origin
 
-            if message.type == 'place' then
+            if message.type == 'hello' then
+                local sprite_byte_string = message.sprite_byte_string
+                scene:add_entity(origin, Sprite.from_byte_string(sprite_byte_string), 0, 0)
+
+                clients[origin].queue:push{
+                    type = 'welcome',
+                    origin = origin,
+                }
+            elseif message.type == 'place' then
                 local x, y = message.x, message.y
                 scene:place_entity(origin, x, y)
             elseif message.type == 'scene?' then
@@ -127,7 +130,13 @@ local function co_client(scene_view, host, port)
     scene_view:set_scene(scene)
     local entity_id = nil
     local last_x, last_y = nil, nil
+    local sprite = Sprite.from_file'Assets/Placeholder Sprite 2.png'
     yield()
+
+    try_socket(socket:send(Protocol.render_message{
+        type = 'hello',
+        sprite_byte_string = sprite:to_byte_string(),
+    } .. '\n'))
 
     while true do
         repeat
@@ -138,7 +147,7 @@ local function co_client(scene_view, host, port)
 
                 if message.type == 'welcome' then
                     entity_id = message.origin
-                    scene:add_entity(entity_id, nil, 0, 0)
+                    scene:add_entity(entity_id, sprite, 0, 0)
                     scene_view:set_viewpoint_entity(entity_id)
                 elseif message.type == 'place' then
                     local x, y = message.x, message.y
