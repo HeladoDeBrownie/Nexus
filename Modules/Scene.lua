@@ -77,6 +77,12 @@ function Scene:place_entity(entity_id, x, y)
     entity.y = y
 end
 
+function Scene:set_entity_sprite(entity_id, sprite)
+    local entity = self.entities[entity_id]
+    assert(entity ~= nil, ENTITY_DOESNT_EXIST_ERROR_FORMAT:format(entity_id))
+    entity.sprite = sprite
+end
+
 function Scene:serialize()
     local data = ''
 

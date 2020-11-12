@@ -20,6 +20,10 @@ local function render_scene_message(data)
     return ('SCENE %s'):format(data)
 end
 
+local function render_sprite_message(sprite_byte_string)
+    return ('SPRITE %s'):format(sprite_byte_string)
+end
+
 local function render_sceneq_message()
     return 'SCENE?'
 end
@@ -81,6 +85,17 @@ local function parse_sceneq_message(message)
     end
 end
 
+local function parse_sprite_message(message)
+    local sprite_byte_string = message:match'^SPRITE (.*)$'
+
+    if sprite_byte_string ~= nil then
+        return {
+            type = 'sprite',
+            sprite_byte_string = sprite_byte_string,
+        }
+    end
+end
+
 --# Interface
 
 function NetworkProtocol.render_message(message_table)
@@ -104,6 +119,9 @@ function NetworkProtocol.render_message(message_table)
         return origin_prefix .. render_scene_message(data)
     elseif message_table.type == 'scene?' then
         return origin_prefix .. render_sceneq_message()
+    elseif message_table.type == 'sprite' then
+        local sprite_byte_string = message_table.sprite_byte_string
+        return origin_prefix .. render_sprite_message(sprite_byte_string)
     else
         error(('could not render message of type %q'):format(tostring(message_table.type)))
     end
@@ -121,7 +139,8 @@ function NetworkProtocol.parse_message(raw_message)
         parse_welcome_message(message) or
         parse_place_message(message) or
         parse_scene_message(message) or
-        parse_sceneq_message(message)
+        parse_sceneq_message(message) or
+        parse_sprite_message(message)
 
     if message_table == nil then
         error(('could not parse message %q'):format(raw_message))

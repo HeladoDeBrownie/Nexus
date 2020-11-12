@@ -49,6 +49,14 @@ function SceneView:set_scene(new_scene)
     self.viewpoint_entity = nil
 end
 
+function SceneView:get_session()
+    return self.session
+end
+
+function SceneView:set_session(new_session)
+    self.session = new_session
+end
+
 function SceneView:get_viewpoint_entity()
     return self.viewpoint_entity
 end
@@ -144,8 +152,31 @@ function SceneView:tick()
             delta_x = delta_x + 1
         end
 
-        self.scene:move_entity(viewpoint_entity, delta_x, delta_y)
+        if delta_x ~= 0 or delta_y ~= 0 then
+            self.scene:move_entity(viewpoint_entity, delta_x, delta_y)
+            self:broadcast_position()
+        end
     end
+end
+
+function SceneView:broadcast_position()
+    local x, y = self.scene:get_entity_position(self.viewpoint_entity)
+
+    self.session:broadcast_message{
+        type = 'place',
+        origin = self.viewpoint_entity,
+        x = x, y = y,
+    }
+end
+
+function SceneView:broadcast_sprite()
+    local sprite = self.scene:get_entity_sprite(self.viewpoint_entity)
+
+    self.session:broadcast_message{
+        type = 'sprite',
+        origin = self.viewpoint_entity,
+        sprite_byte_string = sprite:to_byte_string(),
+    }
 end
 
 return augment(mix{Widget, Scalable, SceneView})

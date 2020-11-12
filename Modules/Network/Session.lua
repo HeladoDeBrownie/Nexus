@@ -114,6 +114,8 @@ local function co_server(scene, port)
                     type = 'scene',
                     data = scene:serialize(),
                 }
+            elseif message.type == 'sprite' then
+                scene:set_entity_sprite(origin, Sprite.from_byte_string(message.sprite_byte_string))
             end
         end
 
@@ -121,7 +123,7 @@ local function co_server(scene, port)
     end
 end
 
-local function co_client(scene_view, host, port)
+local function co_client(scene_view, host, port, message_queue)
     host = host or DEFAULT_HOST
     port = port or DEFAULT_PORT
     local socket = try_socket(Socket.connect(host, port))
@@ -129,7 +131,6 @@ local function co_client(scene_view, host, port)
     local scene = Scene:new()
     scene_view:set_scene(scene)
     local entity_id = nil
-    local last_x, last_y = nil, nil
     local sprite = Sprite.from_file'Assets/Placeholder Sprite 2.png'
     yield()
 
@@ -139,6 +140,12 @@ local function co_client(scene_view, host, port)
     } .. '\n'))
 
     while true do
+        while not message_queue:is_empty() do
+            local raw_message = Protocol.render_message(message_queue:pop())
+            print(raw_message)
+            try_socket(socket:send(raw_message .. '\n'))
+        end
+
         repeat
             local raw_message = try_socket(socket:receive())
 
@@ -168,22 +175,6 @@ local function co_client(scene_view, host, port)
             end
         until raw_message == nil
 
-        if entity_id ~= nil then
-            local x, y = scene:get_entity_position(entity_id)
-
-            if x ~= last_x or y ~= last_y then
-                try_socket(socket:send(
-                    Protocol.render_message{
-                        type = 'place',
-                        x = x,
-                        y = y,
-                    }
-                .. '\n'))
-            end
-
-            last_x, last_y = x, y
-        end
-
         yield()
     end
 end
@@ -195,8 +186,10 @@ function Session:initialize(scene_view)
     self.status = 'offline'
     self.scene = Scene:new()
     self.scene_view = scene_view
+    self.scene_view:set_session(self._public)
     self.scene_view:set_scene(self.scene)
     self.scene_view:set_viewpoint_entity(self.scene:add_entity(nil, nil, 0, 0))
+    self.message_queue = nil
 end
 
 function Session:get_scene()
@@ -215,7 +208,8 @@ end
 
 function Session:join(host, port)
     self.thread = coroutine.create(co_client)
-    try_coroutine(coroutine.resume(self.thread, self.scene_view, host, port))
+    self.message_queue = Queue:new()
+    try_coroutine(coroutine.resume(self.thread, self.scene_view, host, port, self.message_queue))
     self.status = 'visiting'
 end
 
@@ -235,6 +229,12 @@ function Session:process()
         else
             try_coroutine(coroutine.resume(self.thread))
         end
+    end
+end
+
+function Session:broadcast_message(message)
+    if self.message_queue ~= nil then
+        self.message_queue:push(message)
     end
 end
 

@@ -95,7 +95,9 @@ function Mixin.new(mixin, ...)
     end
 
     local instance = setmetatable({}, {__index = index_metamethod})
-    local private_instance = setmetatable({}, {__index = instance})
+
+    local private_instance = setmetatable({_public = instance},
+        {__index = instance})
 
     -- Make the private instance available where proxy methods can find it.
     private[instance] = private_instance
