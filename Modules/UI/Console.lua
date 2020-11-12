@@ -1,11 +1,9 @@
-local Console = {}
-
---# Requires
-
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
 local Widget = require'UI/Widget'
+
+local Console = augment(mix{Widget, Scalable})
 
 --# Constants
 
@@ -139,4 +137,6 @@ function Console:run_command()
     input_buffer:clear()
 end
 
-return augment(mix{Widget, Scalable, Console})
+--#
+
+return Console

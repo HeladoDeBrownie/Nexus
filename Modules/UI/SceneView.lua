@@ -1,10 +1,8 @@
-local SceneView = {}
-
---# Requires
-
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local Widget = require'UI/Widget'
+
+local SceneView = augment(mix{Widget, Scalable})
 
 --# Constants
 
@@ -179,4 +177,6 @@ function SceneView:broadcast_sprite()
     }
 end
 
-return augment(mix{Widget, Scalable, SceneView})
+--#
+
+return SceneView

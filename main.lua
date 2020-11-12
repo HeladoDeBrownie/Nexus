@@ -25,7 +25,7 @@ local Main = {}
 function love.load()
     -- Look for modules in the Modules directory.
     love.filesystem.setRequirePath(
-        'Modules/?.lua;' .. love.filesystem.getRequirePath()
+        'Modules/?.lua;Modules/?/init.lua;' .. love.filesystem.getRequirePath()
     )
 
     -- Make the mixin library available to all modules.

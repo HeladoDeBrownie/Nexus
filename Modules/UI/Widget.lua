@@ -3,11 +3,9 @@
     might need to handle. This includes drawing, input, and per-frame logic.
 ]]
 
-local Widget = {}
-
---# Requires
-
 local Bindable = require'UI/Bindable'
+
+local Widget = mix{Bindable}
 
 --# Interface
 
@@ -89,4 +87,4 @@ function Widget:tick() end
 
 --#
 
-return mix{Bindable, Widget}
+return Widget

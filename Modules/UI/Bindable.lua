@@ -1,9 +1,7 @@
-local Bindable = {}
-
---# Requires
-
 local utf8 = require'utf8'
 local is_ctrl_down = require'Helpers'.is_ctrl_down
+
+local Bindable = {}
 
 --# Helpers
 

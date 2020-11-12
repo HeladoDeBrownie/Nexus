@@ -1,9 +1,7 @@
-local Overlay = {}
-
---# Requires
-
 local Widget = require'UI/Widget'
 local is_ctrl_down = require'Helpers'.is_ctrl_down
+
+local Overlay = augment(mix{Widget})
 
 --# Constants
 
@@ -106,4 +104,6 @@ function Overlay:resize(...)
     self.over_widget:resize(width, math.floor(height / 3))
 end
 
-return augment(mix{Widget, Overlay})
+--#
+
+return Overlay
