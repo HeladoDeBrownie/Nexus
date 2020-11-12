@@ -12,7 +12,7 @@ local is_ctrl_down
 
 --# Constants
 
-local SECONDS_PER_TICK = 1 / 60
+local SECONDS_PER_TICK = 1 / 48
 
 --# State
 
