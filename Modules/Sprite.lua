@@ -6,7 +6,7 @@ local Predicates = require'Predicates'
 
 --# Constants
 
-local SPRITE_WIDTH, SPRITE_HEIGHT = 12, 12
+Sprite.WIDTH, Sprite.HEIGHT = 12, 12
 
 --# Helpers
 
@@ -43,8 +43,8 @@ function Sprite.from_byte_string(byte_string)
     local result = Sprite:new()
     local byte_index = 1
 
-    for x = 0, SPRITE_WIDTH - 1 do
-        for y = 0, SPRITE_HEIGHT - 1 do
+    for x = 0, Sprite.WIDTH - 1 do
+        for y = 0, Sprite.HEIGHT - 1 do
             result:set_pixel(x, y,
                 tonumber(byte_string:sub(byte_index, byte_index)))
 
@@ -64,7 +64,7 @@ function Sprite.from_image_data(image_data)
 end
 
 function Sprite:initialize(source_image_data)
-    self.image_data = love.image.newImageData(SPRITE_WIDTH, SPRITE_HEIGHT)
+    self.image_data = love.image.newImageData(Sprite.WIDTH, Sprite.HEIGHT)
 
     if source_image_data ~= nil then
         self.image_data:paste(source_image_data, 0, 0)
@@ -89,8 +89,8 @@ end
 function Sprite:to_byte_string()
     local result = ''
 
-    for x = 0, SPRITE_WIDTH - 1 do
-        for y = 0, SPRITE_HEIGHT - 1 do
+    for x = 0, Sprite.WIDTH - 1 do
+        for y = 0, Sprite.HEIGHT - 1 do
             result = result .. tostring(self:get_pixel(x, y))
         end
     end

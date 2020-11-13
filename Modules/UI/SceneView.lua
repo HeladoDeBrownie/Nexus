@@ -1,5 +1,6 @@
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
+local Sprite = require'Sprite'
 local Widget = require'UI/Widget'
 
 local SceneView = augment(mix{Widget, Scalable})
@@ -80,8 +81,8 @@ function SceneView:before_drawing()
     local base_x, base_y = self.transform:inverseTransformPoint(width / 2, height / 2)
 
     self.transform:translate(
-        math.floor(base_x - viewpoint_x - 6),
-        math.floor(base_y - viewpoint_y - 6)
+        math.floor(base_x - viewpoint_x - Sprite.WIDTH / 2),
+        math.floor(base_y - viewpoint_y - Sprite.HEIGHT / 2)
     )
 end
 
