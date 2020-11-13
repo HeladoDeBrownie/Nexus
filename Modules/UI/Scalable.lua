@@ -2,8 +2,8 @@ local Scalable = {}
 
 --# Constants
 
-Scalable.minimum_scale = 2
-Scalable.maximum_scale = 8
+Scalable.minimum_scale = 4
+Scalable.maximum_scale = 16
 
 --# Interface
 

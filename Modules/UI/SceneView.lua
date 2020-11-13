@@ -28,7 +28,7 @@ local IDENTITY_TRANSFORM = love.math.newTransform()
 
 function SceneView:initialize(scene)
     Widget.initialize(self, COLOR_SCHEME)
-    Scalable.initialize(self, require'Settings'.UI.SceneView)
+    Scalable.initialize(self, require'Settings'.UI.SceneView, 2, 16)
     self.scene = scene
     self.keys_down = {}
     self.viewpoint_entity = nil

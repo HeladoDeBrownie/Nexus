@@ -27,7 +27,7 @@ Console.color_scheme = require'ColorScheme':new(
 
 function Console:initialize(environment, prompt_string)
     Widget.initialize(self)
-    Scalable.initialize(self, require'Settings'.UI.Console)
+    Scalable.initialize(self, require'Settings'.UI.Console, 2, 8)
 
     self.environment = setmetatable(environment or {}, {__index = _G})
 

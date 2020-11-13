@@ -1,17 +1,17 @@
 --# Helpers
 
-local is_scale = require'Predicates'.is_integer_in_range(2, 8)
+local is_integer_in_range = require'Predicates'.is_integer_in_range
 
 --# Interface
 
 return {
     UI = {
         Console = {
-            scale = {type = is_scale, default = 2},
+            scale = {type = is_integer_in_range(2, 8), default = 2},
         },
 
         SceneView = {
-            scale = {type = is_scale, default = 4},
+            scale = {type = is_integer_in_range(4, 16), default = 8},
         },
     },
 }
