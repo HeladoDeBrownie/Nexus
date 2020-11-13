@@ -33,6 +33,11 @@ function SceneView:initialize(scene)
     self.scene = scene
     self.keys_down = {}
     self.viewpoint_entity = nil
+    self.active_color = 0
+
+    for color = 0, 3 do
+        self:bind(tostring(color), SceneView.set_active_color, color)
+    end
 
     -- transient draw state
     self.entities_canvas = love.graphics.newCanvas()
@@ -62,6 +67,10 @@ end
 
 function SceneView:set_viewpoint_entity(new_viewpoint_entity)
     self.viewpoint_entity = new_viewpoint_entity
+end
+
+function SceneView:set_active_color(new_active_color)
+    self.active_color = new_active_color
 end
 
 function SceneView:get_viewpoint_position()
@@ -122,6 +131,27 @@ end
 
 function SceneView:on_unbound_key(key, down)
     self.keys_down[key] = down or nil
+end
+
+function SceneView:on_press(screen_x, screen_y)
+    local scene_x, scene_y =
+        self.transform:inverseTransformPoint(screen_x, screen_y)
+
+    local entity_id = self.viewpoint_entity
+
+    if entity_id ~= nil then
+        local entity_x, entity_y = self:get_viewpoint_position()
+
+        if
+            entity_x <= scene_x and scene_x < entity_x + Sprite.WIDTH and
+            entity_y <= scene_y and scene_y < entity_y + Sprite.HEIGHT
+        then
+            local sprite = self.scene:get_entity_sprite(entity_id)
+            local sprite_x, sprite_y = scene_x - entity_x, scene_y - entity_y
+            sprite:set_pixel(sprite_x, sprite_y, self.active_color)
+            self:broadcast_sprite()
+        end
+    end
 end
 
 function SceneView:resize(...)

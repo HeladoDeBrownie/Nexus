@@ -131,7 +131,7 @@ local function co_client(scene_view, host, port, message_queue)
     local scene = Scene:new()
     scene_view:set_scene(scene)
     local entity_id = nil
-    local sprite = Sprite.from_file'Assets/Placeholder Sprite 2.png'
+    local sprite = Sprite.from_file'Assets/Placeholder Sprite.png'
     yield()
 
     try_socket(socket:send(Protocol.render_message{
@@ -142,7 +142,6 @@ local function co_client(scene_view, host, port, message_queue)
     while true do
         while not message_queue:is_empty() do
             local raw_message = Protocol.render_message(message_queue:pop())
-            print(raw_message)
             try_socket(socket:send(raw_message .. '\n'))
         end
 

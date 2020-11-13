@@ -6,6 +6,5 @@ return {
     Overlay = require'UI/Overlay',
     Scalable = require'UI/Scalable',
     SceneView = require'UI/SceneView',
-    SpriteEditor = require'UI/SpriteEditor',
     Widget = require'UI/Widget',
 }
