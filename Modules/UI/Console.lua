@@ -7,13 +7,16 @@ local Console = augment(mix{Widget, Scalable})
 
 --# Constants
 
+Console.background_image = love.graphics.newImage'Assets/Console Background.png'
+Console.background_image:setWrap('repeat', 'repeat')
+
 Console.color_scheme = require'ColorScheme':new(
     Color:new(0, 0, 0),
 
     {
-        Color:new(  0,   0,   0),
-        Color:new(  0,   0,   0),
-        Color:new(  0,   0,   0),
+        Color:new(  0,   0,  4),
+        Color:new(  0,   0,  6),
+        Color:new(  0,   0,  8),
     },
 
     {
@@ -35,6 +38,7 @@ function Console:initialize(environment, prompt_string)
     self.scrollback = TextBuffer:new()
     self.input_buffer = TextBuffer:new()
     self.font = require'Font':new(require'Assets/Carpincho Mono')
+    self.quad = love.graphics.newQuad(0, 0, 0, 0, Console.background_image:getDimensions())
 
     self:bind('Backspace',      Console.backspace)
     self:bind('Return',         Console.run_command)
@@ -62,6 +66,12 @@ function Console:print(...)
     self.scrollback:append(output .. '\n')
 end
 
+function Console:draw_background()
+    local width, height = self:get_dimensions()
+    self:apply_scale()
+    love.graphics.draw(self.background_image, self.quad, 0, 0)
+end
+
 function Console:draw_foreground()
     local width, height = self:get_dimensions()
     self:apply_scale()
@@ -87,6 +97,12 @@ end
 
 function Console:on_text_input(text)
     self.input_buffer:append(text)
+end
+
+function Console:resize(...)
+    Widget.resize(self, ...)
+    local width, height = ...
+    self.quad:setViewport(0, 0, width, height)
 end
 
 function Console:insert_newline()

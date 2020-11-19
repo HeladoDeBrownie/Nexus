@@ -43,10 +43,14 @@ end
 function Widget:draw()
     love.graphics.push'all'
     self:before_drawing()
+    love.graphics.push'all'
     self:apply_palette'background'
     self:draw_background()
+    love.graphics.pop()
+    love.graphics.push'all'
     self:apply_palette'foreground'
     self:draw_foreground()
+    love.graphics.pop()
     love.graphics.pop()
 end
 
