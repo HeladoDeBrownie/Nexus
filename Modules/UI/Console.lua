@@ -44,6 +44,8 @@ function Console:initialize(environment, prompt_string)
     self:bind('Return',         Console.run_command)
     self:bind('Ctrl+Return',    Console.insert_newline)
     self:bind('Ctrl+V',         Console.paste)
+
+    self:print'Be careful! Running arbitrary Lua code can break your game.'
 end
 
 function Console:print(...)
