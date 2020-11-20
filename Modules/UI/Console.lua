@@ -37,6 +37,7 @@ function Console:initialize(environment, prompt_string)
     self.prompt_string = prompt_string or '> '
     self.scrollback = TextBuffer:new()
     self.input_buffer = TextBuffer:new()
+    self.scrolled_back_amount = 0
     self.font = require'Font':new(require'Assets/Carpincho Mono')
     self.quad = love.graphics.newQuad(0, 0, 0, 0, Console.background_image:getDimensions())
 
@@ -46,6 +47,11 @@ function Console:initialize(environment, prompt_string)
     self:bind('Ctrl+V',         Console.paste)
 
     self:print'Be careful! Running arbitrary Lua code can break your game.'
+end
+
+function Console:append(...)
+    self.scrolled_back_amount = 0
+    self.input_buffer:append(...)
 end
 
 function Console:print(...)
@@ -90,15 +96,32 @@ function Console:draw_foreground()
     local _, transformed_height =
         love.graphics.inverseTransformPoint(0, height)
 
+    local text_height = self.font:compute_height(text, width)
+
+    if self.scrolled_back_amount > text_height - transformed_height then
+        self.scrolled_back_amount = text_height - transformed_height
+    end
+
     love.graphics.translate(0, math.min(0,
-        transformed_height - self.font:compute_height(text, width))
+        transformed_height - text_height + self.scrolled_back_amount)
     )
 
     self.font:print(text)
 end
 
+function Console:on_scroll(...)
+    local units, ctrl = ...
+
+    if not ctrl then
+        self.scrolled_back_amount =
+            math.max(0, self.scrolled_back_amount + 9 * units)
+    else
+        return Scalable.on_scroll(self, ...)
+    end
+end
+
 function Console:on_text_input(text)
-    self.input_buffer:append(text)
+    self:append(text)
 end
 
 function Console:resize(...)
@@ -108,18 +131,20 @@ function Console:resize(...)
 end
 
 function Console:insert_newline()
-    self.input_buffer:append'\n'
+    self:append'\n'
 end
 
 function Console:backspace()
+    self.scrolled_back_amount = 0
     self.input_buffer:backspace()
 end
 
 function Console:paste()
-    self.input_buffer:append(love.system.getClipboardText())
+    self:append(love.system.getClipboardText())
 end
 
 function Console:run_command()
+    self.scrolled_back_amount = 0
     local input_buffer = self.input_buffer
     local input = input_buffer:read()
     self:print(self.prompt_string .. input)
