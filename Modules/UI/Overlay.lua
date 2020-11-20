@@ -7,14 +7,25 @@ local Overlay = augment(mix{Container})
 
 local TICKS_UNTIL_EXTENDED = 16
 
+--# Helpers
+
+local function update_over_widget(self)
+    local _, height = self.over_widget:get_dimensions()
+
+    self:place_widget(self.over_widget, 0,
+        math.floor((-1 + self.overlay_position / TICKS_UNTIL_EXTENDED) * height)
+    )
+end
+
 --# Interface
 
 function Overlay:initialize(root_widget, over_widget)
     Container.initialize(self, root_widget)
-    self:add_widget(over_widget, 0, 0, over_widget:get_dimensions())
     self.over_widget = over_widget
     self.just_switched = false
     self.overlay_position = 0 -- fraction out of TICKS_UNTIL_EXTENDED
+    self:add_widget(over_widget, 0, 0, over_widget:get_dimensions())
+    update_over_widget(self)
 end
 
 function Overlay:on_key(...)
@@ -52,12 +63,7 @@ function Overlay:tick(...)
         self.overlay_position = math.max(self.overlay_position - 1, 0)
     end
 
-    local _, height = self.over_widget:get_dimensions()
-
-    self:place_widget(self.over_widget, 0,
-        math.floor((-1 + self.overlay_position / TICKS_UNTIL_EXTENDED) * height)
-    )
-
+    update_over_widget(self)
     return Container.tick(self, ...)
 end
 
