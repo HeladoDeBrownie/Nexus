@@ -131,7 +131,7 @@ local function co_client(scene_view, host, port, message_queue)
     local scene = Scene:new()
     scene_view:set_scene(scene)
     local entity_id = nil
-    local sprite = Sprite.from_file'Assets/Placeholder Sprite.png'
+    local sprite = Sprite.from_file'Assets/Sprites/She.png'
     yield()
 
     try_socket(socket:send(Protocol.render_message{
