@@ -37,6 +37,14 @@ local function try_socket(result, error_message)
     end
 end
 
+local function send_to_all_but(excepted_origin, clients, message)
+    for origin, client in pairs(clients) do
+        if origin ~= excepted_origin then
+            client.queue:push(message)
+        end
+    end
+end
+
 local function co_server_connection(client_socket, output_queue, session_queue, scene)
     client_socket:settimeout(0)
     local entity_id = scene:allocate_entity_id()
@@ -61,12 +69,11 @@ local function co_server_connection(client_socket, output_queue, session_queue, 
     end
 end
 
-local function co_server(scene, port)
+local function co_server(session, port)
     port = port or DEFAULT_PORT
     local server_socket = try_socket(Socket.bind('*', port))
     server_socket:settimeout(0)
     local clients = {}
-    local session_queue = Queue:new()
     yield()
 
     while true do
@@ -78,10 +85,10 @@ local function co_server(scene, port)
 
             client_queue:push{
                 type = 'scene',
-                data = scene:serialize(),
+                data = session.scene:serialize(),
             }
 
-            local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session_queue, scene))
+            local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session.message_queue, session.scene))
 
             clients[origin] = {
                 thread = client_thread,
@@ -94,28 +101,30 @@ local function co_server(scene, port)
             try_coroutine(coroutine.resume(client.thread))
         end
 
-        while not session_queue:is_empty() do
-            local message = session_queue:pop()
+        while not session.message_queue:is_empty() do
+            local message = session.message_queue:pop()
             local origin = message.origin
 
             if message.type == 'hello' then
                 local sprite_byte_string = message.sprite_byte_string
-                scene:add_entity(origin, Sprite.from_byte_string(sprite_byte_string), 0, 0)
+                session.scene:add_entity(origin, Sprite.from_byte_string(sprite_byte_string), 0, 0)
 
                 clients[origin].queue:push{
                     type = 'welcome',
                     origin = origin,
                 }
+
+                send_to_all_but(nil, clients, {
+                    type = 'scene',
+                    data = session.scene:serialize()
+                })
             elseif message.type == 'place' then
                 local x, y = message.x, message.y
-                scene:place_entity(origin, x, y)
-            elseif message.type == 'scene?' then
-                clients[origin].queue:push{
-                    type = 'scene',
-                    data = scene:serialize(),
-                }
+                session.scene:place_entity(origin, x, y)
+                send_to_all_but(origin, clients, message)
             elseif message.type == 'sprite' then
-                scene:set_entity_sprite(origin, Sprite.from_byte_string(message.sprite_byte_string))
+                session.scene:set_entity_sprite(origin, Sprite.from_byte_string(message.sprite_byte_string))
+                send_to_all_but(origin, clients, message)
             end
         end
 
@@ -168,8 +177,8 @@ local function co_client(scene_view, host, port, message_queue)
                     else
                         scene:deserialize(data)
                     end
-
-                    try_socket(socket:send(Protocol.render_message{type = 'scene?'} .. '\n'))
+                elseif message.type == 'sprite' then
+                    scene:set_entity_sprite(message.origin, Sprite.from_byte_string(message.sprite_byte_string))
                 end
             end
         until raw_message == nil
@@ -201,7 +210,8 @@ end
 
 function Session:host(port)
     self.thread = coroutine.create(co_server)
-    try_coroutine(coroutine.resume(self.thread, self.scene, port))
+    self.message_queue = Queue:new()
+    try_coroutine(coroutine.resume(self.thread, self, port))
     self.status = 'hosting'
 end
 

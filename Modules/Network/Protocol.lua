@@ -24,10 +24,6 @@ local function render_sprite_message(sprite_byte_string)
     return ('SPRITE %s'):format(sprite_byte_string)
 end
 
-local function render_sceneq_message()
-    return 'SCENE?'
-end
-
 --## Parsers
 
 local function parse_hello_message(message)
@@ -75,16 +71,6 @@ local function parse_scene_message(message)
     end
 end
 
-local function parse_sceneq_message(message)
-    local matched = message:match'^SCENE%?$'
-
-    if matched ~= nil then
-        return {
-            type = 'scene?',
-        }
-    end
-end
-
 local function parse_sprite_message(message)
     local sprite_byte_string = message:match'^SPRITE (.*)$'
 
@@ -117,8 +103,6 @@ function NetworkProtocol.render_message(message_table)
     elseif message_table.type == 'scene' then
         local data = message_table.data
         return origin_prefix .. render_scene_message(data)
-    elseif message_table.type == 'scene?' then
-        return origin_prefix .. render_sceneq_message()
     elseif message_table.type == 'sprite' then
         local sprite_byte_string = message_table.sprite_byte_string
         return origin_prefix .. render_sprite_message(sprite_byte_string)
@@ -139,7 +123,6 @@ function NetworkProtocol.parse_message(raw_message)
         parse_welcome_message(message) or
         parse_place_message(message) or
         parse_scene_message(message) or
-        parse_sceneq_message(message) or
         parse_sprite_message(message)
 
     if message_table == nil then
