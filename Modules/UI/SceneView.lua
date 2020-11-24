@@ -24,6 +24,8 @@ local COLOR_SCHEME = require'ColorScheme':new(
 )
 
 local IDENTITY_TRANSFORM = love.math.newTransform()
+local INDICATOR = love.graphics.newImage'Assets/Indicator.png'
+local INDICATOR_WIDTH, INDICATOR_HEIGHT = INDICATOR:getDimensions()
 
 --# Interface
 
@@ -110,16 +112,28 @@ function SceneView:draw_foreground()
         love.graphics.setShader()
         love.graphics.setBlendMode'replace'
 
-        for entity_id in self.scene:each_entity() do
-            local sprite, x, y = self.scene:get_entity_data(entity_id)
-            love.graphics.draw(sprite:get_image(), x, y)
-        end
-
         local viewpoint_entity_id = self:get_viewpoint_entity()
 
+        -- Draw the non-viewpoint entities.
+        for entity_id in self.scene:each_entity() do
+            if entity_id ~= viewpoint_entity_id then
+                local sprite, x, y = self.scene:get_entity_data(entity_id)
+                love.graphics.draw(sprite:get_image(), x, y)
+            end
+        end
+
+        -- Draw the viewpoint entity above all others.
         if viewpoint_entity_id ~= nil then
             local sprite, x, y = self.scene:get_entity_data(viewpoint_entity_id)
             love.graphics.draw(sprite:get_image(), x, y)
+        end
+
+        -- Draw indicators above all non-viewpoint entities.
+        for entity_id in self.scene:each_entity() do
+            if entity_id ~= viewpoint_entity_id then
+                local x, y = self.scene:get_entity_position(entity_id)
+                love.graphics.draw(INDICATOR, x + math.floor((Sprite.WIDTH - INDICATOR_WIDTH) / 2), y - INDICATOR_HEIGHT - 1)
+            end
         end
 
         love.graphics.pop()
