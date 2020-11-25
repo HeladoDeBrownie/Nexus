@@ -116,12 +116,17 @@ function Container:on_key(...)
     end
 end
 
-function Container:on_press(...)
-    local widget = self:get_active_widget() or self.root_widget
-
-    if widget ~= nil then
-        return widget:on_press(...)
+function Container:on_press(x, y)
+    for widget, geometry in pairs(self.widget_geometries) do
+        if
+            geometry.x <= x and x <= geometry.x + geometry.width and
+            geometry.y <= y and y <= geometry.y + geometry.height
+        then
+            return widget:on_press(x - geometry.x, y - geometry.y)
+        end
     end
+
+    return self.root_widget:on_press(x, y)
 end
 
 function Container:on_scroll(...)
