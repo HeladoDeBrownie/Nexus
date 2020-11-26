@@ -77,6 +77,10 @@ function Sprite:get_image()
     return self.image
 end
 
+function Sprite:get_image_data()
+    return self.image_data
+end
+
 function Sprite:get_pixel(x, y)
     return rgba_to_palette_index(self.image_data:getPixel(x, y))
 end

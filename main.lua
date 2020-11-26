@@ -7,6 +7,7 @@
 --# Requires
 
 local Serialization
+local SessionCache
 local Settings
 local is_ctrl_down
 
@@ -33,6 +34,8 @@ function love.load()
     _G.augment = Mixin.augment
     _G.mix = Mixin.mix
 
+    SessionCache = require'SessionCache'
+
     -- The serialization module is used both in this callback and in love.quit.
     Serialization = require'Serialization'
 
@@ -55,6 +58,14 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
+    local file_name = 'Player Sprite.png'
+
+    if love.filesystem.getInfo(file_name) == nil then
+        file_name = 'Assets/Sprites/She.png'
+    end
+
+    SessionCache.player_sprite = require'Sprite'.from_file(file_name)
+
     Main.time = 0.0
 
     -- Create the UI.
@@ -64,7 +75,6 @@ function love.load()
     local scene_view = UI.SceneView:new()
     Main.main_widget = UI.Overlay:new(scene_view, console)
     love.resize(love.graphics.getDimensions())
-
     Main.session = require'Network/Session':new(scene_view)
 
     -- Copy prints to both standard output and the in-game console.
@@ -88,9 +98,15 @@ function love.update(time_delta)
 end
 
 function love.quit()
-    -- Write any changes to the settings to the save directory.
+    -- Write any changes to the settings and player sprite to the save
+    -- directory.
+
     love.filesystem.write('Settings.lua',
         Serialization.to_lua_module(Settings)
+    )
+
+    love.filesystem.write('Player Sprite.png',
+        SessionCache.player_sprite:get_image_data():encode'png'
     )
 end
 

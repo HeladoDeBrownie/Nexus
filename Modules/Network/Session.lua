@@ -5,6 +5,7 @@ local Session = {}
 local Protocol = require'Network/Protocol'
 local Queue = require'Queue'
 local Scene = require'Scene'
+local SessionCache = require'SessionCache'
 local Socket = require'socket'
 local Sprite = require'Sprite'
 local yield = coroutine.yield
@@ -140,7 +141,7 @@ local function co_client(scene_view, host, port, message_queue)
     local scene = Scene:new()
     scene_view:set_scene(scene)
     local entity_id = nil
-    local sprite = Sprite.from_file'Assets/Sprites/She.png'
+    local sprite = SessionCache.player_sprite
     yield()
 
     try_socket(socket:send(Protocol.render_message{
@@ -196,7 +197,7 @@ function Session:initialize(scene_view)
     self.scene_view = scene_view
     self.scene_view:set_session(self._public)
     self.scene_view:set_scene(self.scene)
-    self.scene_view:set_viewpoint_entity(self.scene:add_entity(nil, nil, 0, 0))
+    self.scene_view:set_viewpoint_entity(self.scene:add_entity(nil, SessionCache.player_sprite, 0, 0))
     self.message_queue = nil
 end
 
