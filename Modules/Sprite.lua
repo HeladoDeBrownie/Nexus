@@ -6,12 +6,12 @@ local Predicates = require'Predicates'
 
 --# Constants
 
-Sprite.WIDTH, Sprite.HEIGHT = 12, 12
+Sprite.WIDTH, Sprite.HEIGHT = 16, 16
 
 --# Helpers
 
 local function palette_index_to_rgba(palette_index)
-    assert(Predicates.is_integer_in_range(0, 3)(palette_index), "palette index is not 0, 1, 2, or 4")
+    assert(Predicates.is_integer_in_range(0, 3)(palette_index), "palette index must be 0, 1, 2, or 3")
 
     if palette_index == 0 then
         return 0  , 0  , 0  , 0
