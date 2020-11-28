@@ -1,4 +1,4 @@
-local RingBuffer = {}
+local RingBuffer = augment{}
 
 --# Constants
 
@@ -66,4 +66,4 @@ end
 
 --#
 
-return augment(RingBuffer)
+return RingBuffer

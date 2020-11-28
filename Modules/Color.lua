@@ -1,4 +1,4 @@
-local Color = {}
+local Color = augment{}
 
 --# Requires
 
@@ -63,4 +63,4 @@ end
 
 --#
 
-return augment(Color)
+return Color

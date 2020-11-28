@@ -1,4 +1,4 @@
-local Session = {}
+local Session = augment{}
 
 --# Requires
 
@@ -248,4 +248,4 @@ function Session:broadcast_message(message)
     end
 end
 
-return augment(Session)
+return Session

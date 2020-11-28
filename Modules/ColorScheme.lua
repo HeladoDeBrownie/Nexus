@@ -1,4 +1,4 @@
-local ColorScheme = {}
+local ColorScheme = augment{}
 
 --# Requires
 
@@ -40,4 +40,4 @@ end
 
 --#
 
-return augment(ColorScheme)
+return ColorScheme

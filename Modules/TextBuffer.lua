@@ -1,4 +1,4 @@
-local TextBuffer = {}
+local TextBuffer = augment{}
 
 --# Requires
 
@@ -55,4 +55,4 @@ function TextBuffer:clear()
     self.buffer:push''
 end
 
-return augment(TextBuffer)
+return TextBuffer

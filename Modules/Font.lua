@@ -1,4 +1,4 @@
-local Font = {}
+local Font = augment{}
 
 --# Requires
 
@@ -74,4 +74,4 @@ function Font:compute_height(text, width)
     return number_of_rows * self.metadata.glyph_height
 end
 
-return augment(Font)
+return Font

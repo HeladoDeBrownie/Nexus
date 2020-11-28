@@ -1,4 +1,4 @@
-local Queue = {}
+local Queue = augment{}
 
 --# Interface
 
@@ -20,4 +20,4 @@ end
 
 --#
 
-return augment(Queue)
+return Queue
