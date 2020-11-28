@@ -100,7 +100,7 @@ end
 function SceneView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
-    love.graphics.draw(self.scene:get_chunk(0, 0))
+    love.graphics.draw(self.scene:get_chunk(0, 0):get_drawable())
 end
 
 function SceneView:draw_foreground()

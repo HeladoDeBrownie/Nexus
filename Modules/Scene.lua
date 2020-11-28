@@ -1,27 +1,30 @@
-local Scene = {}
-
---# Requires
-
+local Area = require'Area'
 local Sprite = require'Sprite'
+
+local Scene = augment{}
 
 --# Constants
 
-local PLACEHOLDER_CHUNK = love.graphics.newImage'Assets/Placeholder Chunk.png'
-local PLACEHOLDER_SPRITE = Sprite.from_file'Assets/Sprites/She.png'
-local ENTITY_DOESNT_EXIST_ERROR_FORMAT = "entity doesn't exist: %s"
+local ENTITY_DOESNT_EXIST_ERROR_FORMAT = "entity %q doesn't exist"
 
 --# Interface
 
 function Scene:initialize()
+    self.area = Area:new()
     self.entities = {}
     self.next_entity_id = 1
+end
+
+-- TODO: Rework this method once multi-area scenes are implemented.
+function Scene:get_area()
+    return self.area
 end
 
 function Scene:add_entity(entity_id, sprite, initial_x, initial_y)
     local new_entity_id = entity_id or self:allocate_entity_id()
 
     self.entities[new_entity_id] = {
-        sprite = sprite or PLACEHOLDER_SPRITE,
+        sprite = sprite,
         x = initial_x,
         y = initial_y,
     }
@@ -60,9 +63,7 @@ function Scene:each_entity()
 end
 
 function Scene:get_chunk(chunk_x, chunk_y)
-    if chunk_x == 0 and chunk_y == 0 then
-        return PLACEHOLDER_CHUNK
-    end
+    return self.area:get_chunk(chunk_x, chunk_y)
 end
 
 function Scene:move_entity(entity_id, delta_x, delta_y)
@@ -105,4 +106,4 @@ function Scene:deserialize(data)
     end
 end
 
-return augment(Scene)
+return Scene

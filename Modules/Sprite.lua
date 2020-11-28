@@ -11,7 +11,7 @@ Sprite.WIDTH, Sprite.HEIGHT = 16, 16
 --# Helpers
 
 local function palette_index_to_rgba(palette_index)
-    assert(Predicates.is_integer_in_range(0, 3)(palette_index), "palette index must be 0, 1, 2, or 3")
+    assert(Predicates.is_integer_in_range(0, 3)(palette_index), 'palette index must be 0, 1, 2, or 3')
 
     if palette_index == 0 then
         return 0  , 0  , 0  , 0
@@ -39,7 +39,7 @@ end
 --# Interface
 
 function Sprite.from_byte_string(byte_string)
-    assert(type(byte_string) == 'string', "not a string")
+    assert(type(byte_string) == 'string', 'not a string')
     local result = Sprite:new()
     local byte_index = 1
 
@@ -64,6 +64,7 @@ function Sprite.from_image_data(image_data)
 end
 
 function Sprite:initialize(source_image_data)
+    self.modified = false
     self.image_data = love.image.newImageData(Sprite.WIDTH, Sprite.HEIGHT)
 
     if source_image_data ~= nil then
@@ -71,6 +72,14 @@ function Sprite:initialize(source_image_data)
     end
 
     self.image = love.graphics.newImage(self.image_data)
+end
+
+function Sprite:is_modified()
+    return self.modified
+end
+
+function Sprite:clear_modified()
+    self.modified = false
 end
 
 function Sprite:get_image()
@@ -88,6 +97,7 @@ end
 function Sprite:set_pixel(x, y, palette_index)
     self.image_data:setPixel(x, y, palette_index_to_rgba(palette_index))
     self.image:replacePixels(self.image_data)
+    self.modified = true
 end
 
 function Sprite:to_byte_string()
