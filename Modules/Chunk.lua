@@ -5,24 +5,7 @@ local Chunk = augment{}
 -- # Constants
 
 Chunk.WIDTH, Chunk.HEIGHT = 16, 16
-
--- # Helpers
-
-local function redraw_canvas(chunk)
-    love.graphics.push'all'
-    love.graphics.setCanvas(chunk.canvas)
-
-    for tile_x = 1, Chunk.WIDTH do
-        for tile_y = 1, Chunk.HEIGHT do
-            love.graphics.draw(
-                chunk.tiles[tile_x][tile_y]:get_image(),
-                Sprite.WIDTH * tile_x, Sprite.HEIGHT * tile_y
-            )
-        end
-    end
-
-    love.graphics.pop()
-end
+Chunk.PIXEL_WIDTH, Chunk.PIXEL_HEIGHT = Sprite.WIDTH * Chunk.WIDTH, Sprite.HEIGHT * Chunk.HEIGHT
 
 -- # Interface
 
@@ -35,16 +18,19 @@ function Chunk:initialize()
     self.modified = false
     self.tiles = {}
 
-    for tile_x = 1, Chunk.WIDTH do
+    for tile_x = 0, Chunk.WIDTH - 1 do
         self.tiles[tile_x] = {}
 
-        for tile_y = 1, Chunk.HEIGHT do
-            self.tiles[tile_x][tile_y] = Sprite:new()
+        for tile_y = 0, Chunk.HEIGHT - 1 do
+            local tile = Sprite:new()
+            tile:set_pixel(0, 0, 1) -- DEBUG
+            self.tiles[tile_x][tile_y] = tile
         end
     end
 
-    self.canvas = love.graphics.newCanvas(Chunk.WIDTH * Sprite.WIDTH, Chunk.HEIGHT * Sprite.HEIGHT)
-    redraw_canvas(self)
+    self.image_data = love.image.newImageData(Chunk.PIXEL_WIDTH, Chunk.PIXEL_HEIGHT)
+    self.image = love.graphics.newImage(self.image_data)
+    self:redraw()
 end
 
 function Chunk:is_modified()
@@ -61,18 +47,33 @@ function Chunk:with_tile(tile_x, tile_y, f)
     
     if tile:is_modified() then
         self.modified = true
-        redraw_canvas(self)
+        self:redraw()
     end
 end
 
 function Chunk:set(tile_x, tile_y, sprite)
     self.tiles[tile_x][tile_y] = sprite
     self.modified = true
-    redraw_canvas(self)
+    self:redraw()
 end
 
-function Chunk:get_drawable()
-    return self.canvas
+function Chunk:redraw()
+    for tile_x = 0, Chunk.WIDTH - 1 do
+        for tile_y = 0, Chunk.HEIGHT - 1 do
+            self.image_data:paste(
+                self.tiles[tile_x][tile_y]:get_image_data(),
+                Sprite.WIDTH * tile_x, Sprite.HEIGHT * tile_y,
+                0, 0,
+                Sprite.WIDTH, Sprite.HEIGHT
+            )
+        end
+    end
+
+    self.image:replacePixels(self.image_data)
+end
+
+function Chunk:get_image()
+    return self.image
 end
 
 -- #

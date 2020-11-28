@@ -1,3 +1,4 @@
+local Chunk = require'Chunk'
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local Sprite = require'Sprite'
@@ -100,7 +101,8 @@ end
 function SceneView:draw_background()
     Widget.draw_background(self)
     love.graphics.replaceTransform(self.transform)
-    love.graphics.draw(self.scene:get_chunk(0, 0):get_drawable())
+    love.graphics.draw(self.scene:get_chunk(0, 0):get_image(), 0 * Chunk.PIXEL_WIDTH, 0 * Chunk.PIXEL_HEIGHT)
+    love.graphics.draw(self.scene:get_chunk(1, 1):get_image(), 1 * Chunk.PIXEL_WIDTH, 1 * Chunk.PIXEL_HEIGHT)
 end
 
 function SceneView:draw_foreground()
