@@ -84,7 +84,7 @@ function Scene:set_entity_sprite(entity_id, sprite)
     entity.sprite = sprite
 end
 
-function Scene:serialize()
+function Scene:to_byte_string()
     local data = ''
 
     for entity_id, entity in self:each_entity() do
@@ -98,7 +98,7 @@ function Scene:serialize()
     return data
 end
 
-function Scene:deserialize(data)
+function Scene:update_from_byte_string(data)
     self.entities = {}
 
     for entity_id, sprite, x, y in data:gmatch'(.-)=(.-):(.-),(.-);' do

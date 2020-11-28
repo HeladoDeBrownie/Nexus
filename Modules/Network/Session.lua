@@ -86,7 +86,7 @@ local function co_server(session, port)
 
             client_queue:push{
                 type = 'scene',
-                data = session.scene:serialize(),
+                data = session.scene:to_byte_string(),
             }
 
             local origin = try_coroutine(coroutine.resume(client_thread, client_socket, client_queue, session.message_queue, session.scene))
@@ -117,7 +117,7 @@ local function co_server(session, port)
 
                 send_to_all_but(nil, clients, {
                     type = 'scene',
-                    data = session.scene:serialize()
+                    data = session.scene:to_byte_string()
                 })
             elseif message.type == 'place' then
                 local x, y = message.x, message.y
@@ -171,12 +171,12 @@ local function co_client(scene_view, host, port, message_queue)
                 elseif message.type == 'scene' then
                     local data = message.data
 
-                    if entity_id ~= nil then
-                        local x, y = scene:get_entity_position(entity_id)
-                        scene:deserialize(data)
-                        scene:place_entity(entity_id, x, y)
+                    if entity_id == nil then
+                        scene:update_from_byte_string(data)
                     else
-                        scene:deserialize(data)
+                        local x, y = scene:get_entity_position(entity_id)
+                        scene:update_from_byte_string(data)
+                        scene:place_entity(entity_id, x, y)
                     end
                 elseif message.type == 'sprite' then
                     scene:set_entity_sprite(message.origin, Sprite.from_byte_string(message.sprite_byte_string))
