@@ -7,6 +7,10 @@ local Console = augment(mix{Widget, Scalable})
 
 --# Constants
 
+Console.minimum_scale = 2
+Console.maximum_scale = 4
+Console.default_scale = 2
+
 Console.background_image = love.graphics.newImage'Assets/Console Background.png'
 Console.background_image:setWrap('repeat', 'repeat')
 
@@ -30,7 +34,10 @@ Console.color_scheme = require'ColorScheme':new(
 
 function Console:initialize(environment, prompt_string)
     Widget.initialize(self)
-    Scalable.initialize(self, require'Settings'.UI.Console, 2, 8)
+
+    Scalable.initialize(self, require'Settings'.UI.Console,
+        self.minimum_scale, self.maximum_scale
+    )
 
     self.environment = setmetatable(environment or {}, {__index = _G})
 

@@ -8,6 +8,10 @@ local SceneView = augment(mix{Widget, Scalable})
 
 --# Constants
 
+SceneView.minimum_scale = 4
+SceneView.maximum_scale = 16
+SceneView.default_scale = 8
+
 local COLOR_SCHEME = require'ColorScheme':new(
     Color:new(315,  15,  90),
 
@@ -32,7 +36,11 @@ local INDICATOR_WIDTH, INDICATOR_HEIGHT = INDICATOR:getDimensions()
 
 function SceneView:initialize(scene)
     Widget.initialize(self, COLOR_SCHEME)
-    Scalable.initialize(self, require'Settings'.UI.SceneView, 2, 16)
+
+    Scalable.initialize(self, require'Settings'.UI.SceneView,
+        self.minimum_scale, self.maximum_scale
+    )
+
     self.scene = scene
     self.keys_down = {}
     self.viewpoint_entity = nil
