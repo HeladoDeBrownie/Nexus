@@ -25,7 +25,9 @@ function Widget:get_dimensions()
 end
 
 function Widget:apply_palette(background_or_foreground)
-    if self.color_scheme ~= nil then
+    if self.color_scheme == nil then
+        love.graphics.setShader()
+    else
         self.shader:sendColor('palette',
             self.color_scheme:to_normalized_rgba(background_or_foreground)
         )
