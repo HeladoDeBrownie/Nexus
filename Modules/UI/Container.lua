@@ -7,6 +7,7 @@ local Container = augment(mix{Widget})
 function Container:initialize(root_widget)
     Widget.initialize(self, nil)
     self.root_widget = root_widget
+    root_widget:set_parent(self._public)
     self.widget_geometries = {}
     self.active_widget = nil
 end
@@ -31,6 +32,7 @@ function Container:add_widget(widget, x, y, width, height)
 
     self.widget_geometries[widget] = {}
     self:set_widget_geometry(widget, x, y, width, height)
+    widget:set_parent(self._public)
 end
 
 function Container:get_widget_geometry(widget)

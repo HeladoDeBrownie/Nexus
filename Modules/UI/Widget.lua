@@ -14,6 +14,7 @@ function Widget:initialize(color_scheme)
     self.canvas = love.graphics.newCanvas()
     self.color_scheme = color_scheme
     self.shader = love.graphics.newShader'palette_swap.glsl'
+    self.parent = nil
 end
 
 function Widget:get_canvas()
@@ -24,13 +25,23 @@ function Widget:get_dimensions()
     return self.canvas:getDimensions()
 end
 
+function Widget:get_parent()
+    return self.parent
+end
+
+function Widget:set_parent(new_parent)
+    self.parent = new_parent
+end
+
 function Widget:apply_palette(background_or_foreground)
-    if self.color_scheme == nil then
-        love.graphics.setShader()
-    else
+    if self.color_scheme ~= nil then
+        love.graphics.setShader(self.shader)
+
         self.shader:sendColor('palette',
             self.color_scheme:to_normalized_rgba(background_or_foreground)
         )
+    elseif self.parent ~= nil then
+        self.parent:apply_palette(background_or_foreground)
     end
 end
 
@@ -58,7 +69,6 @@ end
 
 function Widget:before_drawing()
     love.graphics.setCanvas(self.canvas)
-    love.graphics.setShader(self.shader)
 end
 
 -- Fill the entire widget with the background color.
