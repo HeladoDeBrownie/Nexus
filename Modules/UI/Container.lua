@@ -110,7 +110,7 @@ function Container:draw()
     love.graphics.pop()
 end
 
-function Container:on_key(...)
+function Container:on_unbound_key(...)
     local widget = self:get_active_widget() or self.root_widget
 
     if widget ~= nil then

@@ -21,6 +21,12 @@ local SECONDS_PER_TICK = 1 / 48
 -- console easily.
 local Main = {}
 
+--# Helpers
+
+local function toggle_fullscreen()
+    love.window.setFullscreen(not love.window.getFullscreen())
+end
+
 --# Callbacks
 
 function love.load()
@@ -74,6 +80,7 @@ function love.load()
     local console = UI.Console:new{Main = Main}
     local scene_view = UI.SceneView:new()
     Main.main_widget = UI.Overlay:new(scene_view, console)
+    Main.main_widget:bind('F11', toggle_fullscreen)
     love.resize(love.graphics.getDimensions())
     Main.session = require'Network/Session':new(scene_view)
 
