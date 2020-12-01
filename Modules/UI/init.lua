@@ -8,5 +8,6 @@ return {
     Overlay = require'UI/Overlay',
     Scalable = require'UI/Scalable',
     SceneView = require'UI/SceneView',
+    TextInput = require'UI/TextInput',
     Widget = require'UI/Widget',
 }
