@@ -25,6 +25,7 @@ local Main = {}
 
 local function toggle_fullscreen()
     love.window.setFullscreen(not love.window.getFullscreen())
+    love.resize(love.graphics.getDimensions())
 end
 
 --# Callbacks
