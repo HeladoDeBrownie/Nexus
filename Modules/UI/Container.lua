@@ -6,10 +6,11 @@ local Container = augment(mix{Widget})
 
 function Container:initialize(root_widget)
     Widget.initialize(self, nil)
-    self.root_widget = root_widget
+    self.root_widget = root_widget  -- widget rendered behind all other widgets
     root_widget:set_parent(self._public)
-    self.widget_geometries = {}
-    self.active_widget = nil
+    self.widget_geometries = {}     -- map from widgets to their geometries
+    self.widgets = {}               -- list of widgets in z-order
+    self.active_widget = nil        -- widget that receives inputs
 end
 
 function Container:get_root_widget()
@@ -29,7 +30,7 @@ function Container:add_widget(widget, x, y, width, height)
     y = y or 0
     width = width or 0
     height = height or 0
-
+    table.insert(self.widgets, widget)
     self.widget_geometries[widget] = {}
     self:set_widget_geometry(widget, x, y, width, height)
     widget:set_parent(self._public)
@@ -88,6 +89,17 @@ end
 
 function Container:remove_widget(widget)
     assert(self:has_widget(widget), 'widget not in container')
+
+    local z_index = 1
+    local number_of_widgets = #self.widgets
+
+    while z_index < number_of_widgets do
+        if self.widgets[z_index] == widget then
+            break
+        end
+    end
+
+    table.remove(self.widgets, widget)
     self.widget_geometries[widget] = nil
 end
 
@@ -102,7 +114,8 @@ function Container:draw()
         love.graphics.draw(self.root_widget:get_canvas(), 0, 0)
     end
 
-    for widget, geometry in pairs(self.widget_geometries) do
+    for _, widget in ipairs(self.widgets) do
+        local geometry = self.widget_geometries[widget]
         widget:draw()
         love.graphics.draw(widget:get_canvas(), geometry.x, geometry.y)
     end
@@ -119,7 +132,9 @@ function Container:on_unbound_key(...)
 end
 
 function Container:on_press(x, y)
-    for widget, geometry in pairs(self.widget_geometries) do
+    for _, widget in ipairs(self.widgets) do
+        local geometry = self.widget_geometries[widget]
+
         if
             geometry.x <= x and x <= geometry.x + geometry.width and
             geometry.y <= y and y <= geometry.y + geometry.height
@@ -156,7 +171,7 @@ function Container:resize(...)
 end
 
 function Container:tick(...)
-    for widget, _ in pairs(self.widget_geometries) do
+    for _, widget in ipairs(self.widgets) do
         widget:tick(...)
     end
 
