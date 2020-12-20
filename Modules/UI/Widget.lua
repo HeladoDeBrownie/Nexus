@@ -69,6 +69,7 @@ end
 
 function Widget:before_drawing()
     love.graphics.setCanvas(self.canvas)
+    love.graphics.clear()
 end
 
 -- Fill the entire widget with the background color.
