@@ -157,7 +157,7 @@ function Console:run_command()
     self:print(self.prompt_string .. input)
 
     local chunk, load_error_message = load(
-        input_buffer:read(),
+        'return ' .. input_buffer:read(),
         'player input',
         't',
         self.environment
@@ -165,7 +165,7 @@ function Console:run_command()
 
     if chunk == nil then
         chunk, load_error_message = load(
-            'return ' .. input_buffer:read(),
+            input_buffer:read(),
             'player input',
             't',
             self.environment
