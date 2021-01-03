@@ -37,6 +37,13 @@ function love.load()
         'Modules/?.lua;Modules/?/init.lua;' .. love.filesystem.getRequirePath()
     )
 
+    --[[
+        Use nearest neighbor scaling in order to preserve pixel fidelity. Do
+        this before loading any modules with images so that the setting is in
+        place when images are loaded.
+    --]]
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+
     -- Make the mixin library available to all modules.
     local Mixin = require'Mixin'
     _G.augment = Mixin.augment
@@ -55,13 +62,6 @@ function love.load()
     Settings = Serialization.safe_require('Settings', require'Schemas/Settings')
 
     is_ctrl_down = require'Helpers'.is_ctrl_down
-
-    --[[
-        Use nearest neighbor scaling in order to preserve pixel fidelity. Do
-        this before loading any modules with images so that the setting is in
-        place when images are loaded.
-    --]]
-    love.graphics.setDefaultFilter('nearest', 'nearest')
 
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
