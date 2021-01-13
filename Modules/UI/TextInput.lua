@@ -33,7 +33,7 @@ function TextInput:draw_foreground()
     FONT:print(self:get_text(), 0, 0)
 end
 
-function TextInput:on_text_input(text)
+function TextInput:text_input(text)
     self.text_buffer:append(text)
 end
 

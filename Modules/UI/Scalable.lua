@@ -33,7 +33,7 @@ function Scalable:apply_scale()
     love.graphics.scale(self.settings.scale)
 end
 
-function Scalable:on_scroll(units, ctrl)
+function Scalable:scroll(units, ctrl)
     if ctrl then
         -- Ctrl+Scroll: Zoom in/out
         self:adjust_scale(units)

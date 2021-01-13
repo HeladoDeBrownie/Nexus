@@ -21,7 +21,7 @@ function Bindable:initialize()
     self.bindings = {}
 end
 
--- Create a key binding, used by Bindable.on_key to handle key combinations.
+-- Create a key binding, used by Bindable.key to handle key combinations.
 function Bindable:bind(key_combination, handler, extra_data)
     self.bindings[key_combination] = {
         handler = handler,
@@ -29,7 +29,7 @@ function Bindable:bind(key_combination, handler, extra_data)
     }
 end
 
-function Bindable:on_key(key, down)
+function Bindable:key(key, down)
     -- When a key combination is pressed, trigger a binding if there is an
     -- appropriate one. Otherwise, call the fallback key handler.
     if down then
@@ -37,19 +37,19 @@ function Bindable:on_key(key, down)
         local binding = self.bindings[key_combination]
 
         if binding == nil then
-            return self:on_unbound_key(key, down)
+            return self:unbound_key(key, down)
         else
             return binding.handler(self, binding.extra_data)
         end
     else
-        return self:on_unbound_key(key, down)
+        return self:unbound_key(key, down)
     end
 end
 
 --## Abstract
 
 -- Called when a key combination is not handled by a binding.
-function Bindable:on_unbound_key(key, down) end
+function Bindable:unbound_key(key, down) end
 
 --#
 

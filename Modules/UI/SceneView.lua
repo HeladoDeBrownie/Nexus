@@ -153,11 +153,11 @@ function SceneView:draw_foreground()
     love.graphics.draw(self.entities_canvas)
 end
 
-function SceneView:on_unbound_key(key, down)
+function SceneView:unbound_key(key, down)
     self.keys_down[key] = down or nil
 end
 
-function SceneView:on_press(screen_x, screen_y)
+function SceneView:press(screen_x, screen_y)
     local scene_x, scene_y =
         self.transform:inverseTransformPoint(screen_x, screen_y)
 

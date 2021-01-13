@@ -123,15 +123,15 @@ function Container:draw()
     love.graphics.pop()
 end
 
-function Container:on_unbound_key(...)
+function Container:unbound_key(...)
     local widget = self:get_active_widget() or self.root_widget
 
     if widget ~= nil then
-        return widget:on_key(...)
+        return widget:key(...)
     end
 end
 
-function Container:on_press(x, y)
+function Container:press(x, y)
     for _, widget in ipairs(self.widgets) do
         local geometry = self.widget_geometries[widget]
 
@@ -139,26 +139,26 @@ function Container:on_press(x, y)
             geometry.x <= x and x <= geometry.x + geometry.width and
             geometry.y <= y and y <= geometry.y + geometry.height
         then
-            return widget:on_press(x - geometry.x, y - geometry.y)
+            return widget:press(x - geometry.x, y - geometry.y)
         end
     end
 
-    return self.root_widget:on_press(x, y)
+    return self.root_widget:press(x, y)
 end
 
-function Container:on_scroll(...)
+function Container:scroll(...)
     local widget = self:get_active_widget() or self.root_widget
 
     if widget ~= nil then
-        return widget:on_scroll(...)
+        return widget:scroll(...)
     end
 end
 
-function Container:on_text_input(...)
+function Container:text_input(...)
     local widget = self:get_active_widget() or self.root_widget
 
     if widget ~= nil then
-        return widget:on_text_input(...)
+        return widget:text_input(...)
     end
 end
 

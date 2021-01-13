@@ -116,18 +116,18 @@ function Console:draw_foreground()
     self.font:print(text)
 end
 
-function Console:on_scroll(...)
+function Console:scroll(...)
     local units, ctrl = ...
 
     if not ctrl then
         self.scrolled_back_amount =
             math.max(0, self.scrolled_back_amount + 9 * units)
     else
-        return Scalable.on_scroll(self, ...)
+        return Scalable.scroll(self, ...)
     end
 end
 
-function Console:on_text_input(text)
+function Console:text_input(text)
     self:append(text)
 end
 

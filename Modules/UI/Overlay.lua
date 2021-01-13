@@ -28,7 +28,7 @@ function Overlay:initialize(root_widget, over_widget)
     update_over_widget(self)
 end
 
-function Overlay:on_key(...)
+function Overlay:key(...)
     local key, down = ...
     local ctrl = is_ctrl_down()
     local active_widget = self:get_active_widget()
@@ -41,13 +41,13 @@ function Overlay:on_key(...)
         self.just_switched = true
     else
         self.just_switched = false
-        return Container.on_key(self, ...)
+        return Container.key(self, ...)
     end
 end
 
-function Overlay:on_text_input(...)
+function Overlay:text_input(...)
     if not self.just_switched then
-        Container.on_text_input(self, ...)
+        Container.text_input(self, ...)
     end
 end
 

@@ -27,7 +27,7 @@ function Button:set_action(new_action)
     self.action = new_action
 end
 
-function Button:on_press(...)
+function Button:press(...)
     if self.action ~= nil then
         self.action()
     end

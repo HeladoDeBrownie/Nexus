@@ -91,13 +91,13 @@ end
 function Widget:draw_foreground() end
 
 -- Called when a mouse or touch press occurs.
-function Widget:on_press(x, y) end
+function Widget:press(x, y) end
 
 -- Called when the mouse wheel scrolls.
-function Widget:on_scroll(units, ctrl) end
+function Widget:scroll(units, ctrl) end
 
 -- Called when text is entered.
-function Widget:on_text_input(text) end
+function Widget:text_input(text) end
 
 -- Called each frame.
 function Widget:tick() end

@@ -127,15 +127,15 @@ function love.draw()
 end
 
 function love.keypressed(key)
-    Main.main_widget:on_key(key, true)
+    Main.main_widget:key(key, true)
 end
 
 function love.keyreleased(key)
-    Main.main_widget:on_key(key, false)
+    Main.main_widget:key(key, false)
 end
 
 function love.mousepressed(x, y)
-    Main.main_widget:on_press(x, y)
+    Main.main_widget:press(x, y)
 end
 
 function love.resize(window_width, window_height)
@@ -143,9 +143,9 @@ function love.resize(window_width, window_height)
 end
 
 function love.textinput(text)
-    Main.main_widget:on_text_input(text)
+    Main.main_widget:text_input(text)
 end
 
 function love.wheelmoved(_, y)
-    Main.main_widget:on_scroll(y, is_ctrl_down())
+    Main.main_widget:scroll(y, is_ctrl_down())
 end
