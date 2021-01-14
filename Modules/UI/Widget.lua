@@ -11,18 +11,14 @@ local Widget = mix{Bindable}
 
 function Widget:initialize(color_scheme)
     Bindable.initialize(self)
-    self.canvas = love.graphics.newCanvas()
     self.color_scheme = color_scheme
     self.shader = love.graphics.newShader'palette_swap.glsl'
     self.parent = nil
-end
-
-function Widget:get_canvas()
-    return self.canvas
+    self.width, self.height = 1, 1
 end
 
 function Widget:get_dimensions()
-    return self.canvas:getDimensions()
+    return self.width, self.height
 end
 
 function Widget:get_parent()
@@ -46,34 +42,31 @@ function Widget:apply_palette(background_or_foreground)
 end
 
 function Widget:resize(width, height)
-    -- Canvas dimensions cannot be changed after they're created, so instead
-    -- discard the old canvas and create a new one of the correct size.
-    self.canvas = love.graphics.newCanvas(width, height)
+    self.width, self.height = width, height
 end
 
--- Draw the widget to its canvas. This does *not* draw it to the screen. For
--- screen drawing, use love.graphics.draw with Widget.get_canvas.
-function Widget:draw()
+-- Draw the widget to the screen.
+function Widget:draw(x, y)
+    x, y = x or 0, y or 0
     love.graphics.push'all'
-    self:before_drawing()
+    love.graphics.translate(x, y)
+    self:paint()
+    love.graphics.pop()
+end
+
+function Widget:paint()
     love.graphics.push'all'
     self:apply_palette'background'
-    self:draw_background()
+    self:paint_background()
     love.graphics.pop()
     love.graphics.push'all'
     self:apply_palette'foreground'
-    self:draw_foreground()
+    self:paint_foreground()
     love.graphics.pop()
-    love.graphics.pop()
-end
-
-function Widget:before_drawing()
-    love.graphics.setCanvas(self.canvas)
-    love.graphics.clear()
 end
 
 -- Fill the entire widget with the background color.
-function Widget:draw_background()
+function Widget:paint_background()
     love.graphics.setColor(0, 0, 0, 0)
     love.graphics.rectangle('fill', 0, 0, self:get_dimensions())
     love.graphics.setColor(1, 1, 1)
@@ -88,7 +81,7 @@ end
 --]]
 
 -- Called by Widget.draw after setting up the draw state.
-function Widget:draw_foreground() end
+function Widget:paint_foreground() end
 
 -- Called when a mouse or touch press occurs.
 function Widget:press(x, y) end

@@ -3,6 +3,7 @@
 return {
     Bindable = require'UI/Bindable',
     Button = require'UI/Button',
+    CanvasBufferedWidget = require'UI/CanvasBufferedWidget',
     Console = require'UI/Console',
     Container = require'UI/Container',
     Label = require'UI/Label',

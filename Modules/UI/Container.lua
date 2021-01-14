@@ -105,19 +105,16 @@ end
 
 --## Widget Methods
 
-function Container:draw()
+function Container:paint()
     love.graphics.push'all'
-    love.graphics.setCanvas(self.canvas)
 
     if self.root_widget ~= nil then
-        self.root_widget:draw()
-        love.graphics.draw(self.root_widget:get_canvas(), 0, 0)
+        self.root_widget:draw(0, 0)
     end
 
     for _, widget in ipairs(self.widgets) do
         local geometry = self.widget_geometries[widget]
-        widget:draw()
-        love.graphics.draw(widget:get_canvas(), geometry.x, geometry.y)
+        widget:draw(geometry.x, geometry.y)
     end
 
     love.graphics.pop()
@@ -167,7 +164,7 @@ function Container:resize(...)
         self.root_widget:resize(...)
     end
 
-    return Widget.resize(self)
+    return Widget.resize(self, ...)
 end
 
 function Container:tick(...)

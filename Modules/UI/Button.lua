@@ -33,11 +33,11 @@ function Button:press(...)
     end
 end
 
-function Button:draw_background()
+function Button:paint_background()
     love.graphics.rectangle('fill', 0, 0, self:get_dimensions())
 end
 
-function Button:draw_foreground()
+function Button:paint_foreground()
     FONT:print(self:get_label(), 0, 0)
 end
 

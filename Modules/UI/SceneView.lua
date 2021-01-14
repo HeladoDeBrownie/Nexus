@@ -1,10 +1,10 @@
+local CanvasBufferedWidget = require'UI/CanvasBufferedWidget'
 local Chunk = require'Chunk'
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local Sprite = require'Sprite'
-local Widget = require'UI/Widget'
 
-local SceneView = augment(mix{Widget, Scalable})
+local SceneView = augment(mix{CanvasBufferedWidget, Scalable})
 
 --# Constants
 
@@ -35,7 +35,7 @@ local INDICATOR_WIDTH, INDICATOR_HEIGHT = INDICATOR:getDimensions()
 --# Interface
 
 function SceneView:initialize(scene)
-    Widget.initialize(self, COLOR_SCHEME)
+    CanvasBufferedWidget.initialize(self, COLOR_SCHEME)
 
     Scalable.initialize(self, require'Settings'.UI.SceneView,
         self.minimum_scale, self.maximum_scale
@@ -92,8 +92,7 @@ function SceneView:get_viewpoint_position()
     end
 end
 
-function SceneView:before_drawing()
-    Widget.before_drawing(self)
+function SceneView:paint()
     self.transform:reset()
     local width, height = self:get_dimensions()
     local viewpoint_x, viewpoint_y = self:get_viewpoint_position()
@@ -104,16 +103,18 @@ function SceneView:before_drawing()
         math.floor(base_x - viewpoint_x - Sprite.WIDTH / 2),
         math.floor(base_y - viewpoint_y - Sprite.HEIGHT / 2)
     )
+
+    CanvasBufferedWidget.paint(self)
 end
 
-function SceneView:draw_background()
-    Widget.draw_background(self)
-    love.graphics.replaceTransform(self.transform)
+function SceneView:paint_background()
+    CanvasBufferedWidget.paint_background(self)
+    love.graphics.applyTransform(self.transform)
     love.graphics.draw(self.scene:get_chunk(0, 0):get_image(), 0 * Chunk.PIXEL_WIDTH, 0 * Chunk.PIXEL_HEIGHT)
     love.graphics.draw(self.scene:get_chunk(1, 1):get_image(), 1 * Chunk.PIXEL_WIDTH, 1 * Chunk.PIXEL_HEIGHT)
 end
 
-function SceneView:draw_foreground()
+function SceneView:paint_foreground()
     love.graphics.replaceTransform(self.transform)
 
     self.entities_canvas:renderTo(function ()
@@ -179,7 +180,7 @@ function SceneView:press(screen_x, screen_y)
 end
 
 function SceneView:resize(...)
-    Widget.resize(self, ...)
+    CanvasBufferedWidget.resize(self, ...)
     self.entities_canvas = love.graphics.newCanvas(...)
 end
 

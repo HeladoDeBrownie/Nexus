@@ -24,12 +24,12 @@ function TextInput:set_text(new_text)
     self.text_buffer:append(new_text)
 end
 
-function TextInput:draw_background()
+function TextInput:paint_background()
     love.graphics.setColor(0, 0, 0, 1)
     love.graphics.rectangle('fill', 0, 0, self:get_dimensions())
 end
 
-function TextInput:draw_foreground()
+function TextInput:paint_foreground()
     FONT:print(self:get_text(), 0, 0)
 end
 

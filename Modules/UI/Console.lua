@@ -1,9 +1,9 @@
+local CanvasBufferedWidget = require'UI/CanvasBufferedWidget'
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
-local Widget = require'UI/Widget'
 
-local Console = augment(mix{Widget, Scalable})
+local Console = augment(mix{CanvasBufferedWidget, Scalable})
 
 --# Constants
 
@@ -33,7 +33,7 @@ Console.color_scheme = require'ColorScheme':new(
 --# Interface
 
 function Console:initialize(environment, prompt_string)
-    Widget.initialize(self)
+    CanvasBufferedWidget.initialize(self)
 
     Scalable.initialize(self, require'Settings'.UI.Console,
         self.minimum_scale, self.maximum_scale
@@ -81,13 +81,13 @@ function Console:print(...)
     self.scrollback:append(output .. '\n')
 end
 
-function Console:draw_background()
+function Console:paint_background()
     local width, height = self:get_dimensions()
     self:apply_scale()
     love.graphics.draw(self.background_image, self.quad, 0, 0)
 end
 
-function Console:draw_foreground()
+function Console:paint_foreground()
     local width, height = self:get_dimensions()
     self:apply_scale()
 
@@ -132,7 +132,7 @@ function Console:text_input(text)
 end
 
 function Console:resize(...)
-    Widget.resize(self, ...)
+    CanvasBufferedWidget.resize(self, ...)
     local width, height = ...
     self.quad:setViewport(0, 0, width, height)
 end

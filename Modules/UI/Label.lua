@@ -21,7 +21,7 @@ function Label:set_text(new_text)
     self.text = new_text
 end
 
-function Label:draw_foreground()
+function Label:paint_foreground()
     FONT:print(self.text)
 end
 

@@ -122,8 +122,8 @@ end
 -- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
+    love.graphics.clear()
     Main.main_widget:draw()
-    love.graphics.draw(Main.main_widget:get_canvas())
 end
 
 function love.keypressed(key)
