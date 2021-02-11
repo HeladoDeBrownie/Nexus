@@ -87,7 +87,7 @@ function Container:resize_widget(widget, width, height)
 end
 
 function Container:get_active_widget()
-    return self.active_widget
+    return self.active_widget or self.root_widget
 end
 
 function Container:set_active_widget(widget)
@@ -129,7 +129,7 @@ function Container:paint()
 end
 
 function Container:unbound_key(...)
-    local widget = self:get_active_widget() or self.root_widget
+    local widget = self:get_active_widget()
 
     if widget ~= nil then
         return widget:key(...)
@@ -152,7 +152,7 @@ function Container:press(x, y)
 end
 
 function Container:scroll(...)
-    local widget = self:get_active_widget() or self.root_widget
+    local widget = self:get_active_widget()
 
     if widget ~= nil then
         return widget:scroll(...)
@@ -160,7 +160,7 @@ function Container:scroll(...)
 end
 
 function Container:text_input(...)
-    local widget = self:get_active_widget() or self.root_widget
+    local widget = self:get_active_widget()
 
     if widget ~= nil then
         return widget:text_input(...)
