@@ -2,12 +2,20 @@ local Widget = require'UI/Widget'
 
 local Container = augment(mix{Widget})
 
+--# Helpers
+
+function inherit_color_scheme(container, containee)
+    if containee:get_color_scheme() == nil then
+        containee:set_color_scheme(container:get_color_scheme())
+    end
+end
+
 --# Interface
 
 function Container:initialize(root_widget)
     Widget.initialize(self, nil)
     self.root_widget = root_widget  -- widget rendered behind all other widgets
-    root_widget:set_parent(self._public)
+    inherit_color_scheme(self, root_widget)
     self.widget_geometries = {}     -- map from widgets to their geometries
     self.widgets = {}               -- list of widgets in z-order
     self.active_widget = nil        -- widget that receives inputs
@@ -33,7 +41,7 @@ function Container:add_widget(widget, x, y, width, height)
     table.insert(self.widgets, widget)
     self.widget_geometries[widget] = {}
     self:set_widget_geometry(widget, x, y, width, height)
-    widget:set_parent(self._public)
+    inherit_color_scheme(self, widget)
 end
 
 function Container:get_widget_geometry(widget)

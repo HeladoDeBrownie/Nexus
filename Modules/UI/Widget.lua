@@ -13,20 +13,19 @@ function Widget:initialize(color_scheme)
     Bindable.initialize(self)
     self.color_scheme = color_scheme
     self.shader = love.graphics.newShader'palette_swap.glsl'
-    self.parent = nil
     self.width, self.height = 1, 1
+end
+
+function Widget:get_color_scheme()
+    return self.color_scheme
+end
+
+function Widget:set_color_scheme(new_color_scheme)
+    self.color_scheme = new_color_scheme
 end
 
 function Widget:get_dimensions()
     return self.width, self.height
-end
-
-function Widget:get_parent()
-    return self.parent
-end
-
-function Widget:set_parent(new_parent)
-    self.parent = new_parent
 end
 
 function Widget:apply_palette(background_or_foreground)
@@ -36,8 +35,6 @@ function Widget:apply_palette(background_or_foreground)
         self.shader:sendColor('palette',
             self.color_scheme:to_normalized_rgba(background_or_foreground)
         )
-    elseif self.parent ~= nil then
-        self.parent:apply_palette(background_or_foreground)
     end
 end
 
