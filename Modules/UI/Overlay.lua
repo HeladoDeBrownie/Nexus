@@ -33,10 +33,10 @@ function Overlay:key(...)
     local ctrl = is_ctrl_down()
     local active_widget = self:get_active_widget()
 
-    if active_widget == nil and down and not ctrl and key == '`' then
+    if active_widget == self.root_widget and down and not ctrl and key == '`' then
         self:set_active_widget(self.over_widget)
         self.just_switched = true
-    elseif active_widget ~= nil and down and not ctrl and key == 'escape' then
+    elseif active_widget ~= self.root_widget and down and not ctrl and key == 'escape' then
         self:set_active_widget(nil)
         self.just_switched = true
     else
