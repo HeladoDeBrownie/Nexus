@@ -159,22 +159,33 @@ function SceneView:unbound_key(key, down)
 end
 
 function SceneView:press(screen_x, screen_y)
+    local object_type, object, offset_x, offset_y =
+        self:get_object_from_screen(screen_x, screen_y)
+
+    if object == self.viewpoint_entity then
+        self.scene:get_entity_sprite(object):set_pixel(
+            offset_x, offset_y,
+            self.active_color
+        )
+
+        self:broadcast_sprite()
+    end
+end
+
+function SceneView:get_object_from_screen(screen_x, screen_y)
     local scene_x, scene_y =
         self.transform:inverseTransformPoint(screen_x, screen_y)
 
     local entity_id = self.viewpoint_entity
 
     if entity_id ~= nil then
-        local entity_x, entity_y = self:get_viewpoint_position()
+        local entity_x, entity_y = self.scene:get_entity_position(entity_id)
 
         if
             entity_x <= scene_x and scene_x < entity_x + Sprite.WIDTH and
             entity_y <= scene_y and scene_y < entity_y + Sprite.HEIGHT
         then
-            local sprite = self.scene:get_entity_sprite(entity_id)
-            local sprite_x, sprite_y = scene_x - entity_x, scene_y - entity_y
-            sprite:set_pixel(sprite_x, sprite_y, self.active_color)
-            self:broadcast_sprite()
+            return 'entity', entity_id, scene_x - entity_x, scene_y - entity_y
         end
     end
 end
