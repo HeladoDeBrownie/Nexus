@@ -1,3 +1,5 @@
+local is_ctrl_down = require'Helpers'.is_ctrl_down
+
 local Scalable = {}
 
 --# Constants
@@ -33,8 +35,8 @@ function Scalable:apply_scale()
     love.graphics.scale(self.settings.scale)
 end
 
-function Scalable:scroll(units, ctrl)
-    if ctrl then
+function Scalable:scroll(units)
+    if is_ctrl_down() then
         -- Ctrl+Scroll: Zoom in/out
         self:adjust_scale(units)
     end

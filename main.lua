@@ -9,7 +9,6 @@
 local Serialization
 local SessionCache
 local Settings
-local is_ctrl_down
 
 --# Constants
 
@@ -60,8 +59,6 @@ function love.load()
         further uses of the settings module don't need to use safe_require.
     --]]
     Settings = Serialization.safe_require('Settings', require'Schemas/Settings')
-
-    is_ctrl_down = require'Helpers'.is_ctrl_down
 
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
@@ -147,5 +144,5 @@ function love.textinput(text)
 end
 
 function love.wheelmoved(_, y)
-    Main.main_widget:scroll(y, is_ctrl_down())
+    Main.main_widget:scroll(y)
 end

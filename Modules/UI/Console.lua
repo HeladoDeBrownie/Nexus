@@ -2,6 +2,7 @@ local CanvasBufferedWidget = require'UI/CanvasBufferedWidget'
 local Color = require'Color'
 local Scalable = require'UI/Scalable'
 local TextBuffer = require'TextBuffer'
+local is_ctrl_down = require'Helpers'.is_ctrl_down
 
 local Console = augment(mix{CanvasBufferedWidget, Scalable})
 
@@ -117,13 +118,13 @@ function Console:paint_foreground()
 end
 
 function Console:scroll(...)
-    local units, ctrl = ...
+    local units = ...
 
-    if not ctrl then
+    if is_ctrl_down() then
+        return Scalable.scroll(self, ...)
+    else
         self.scrolled_back_amount =
             math.max(0, self.scrolled_back_amount + 9 * units)
-    else
-        return Scalable.scroll(self, ...)
     end
 end
 

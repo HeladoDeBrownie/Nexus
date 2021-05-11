@@ -84,7 +84,7 @@ function Widget:paint_foreground() end
 function Widget:press(x, y) end
 
 -- Called when the mouse wheel scrolls.
-function Widget:scroll(units, ctrl) end
+function Widget:scroll(units) end
 
 -- Called when text is entered.
 function Widget:text_input(text) end
