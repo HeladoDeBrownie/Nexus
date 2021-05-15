@@ -1,6 +1,7 @@
+local EventSource = require'EventSource'
 local Sprite = require'Sprite'
 
-local Chunk = augment{}
+local Chunk = augment(mix{EventSource})
 
 -- # Constants
 
@@ -15,7 +16,7 @@ function Chunk.from_byte_string(byte_string)
 end
 
 function Chunk:initialize()
-    self.modified = false
+    EventSource.initialize(self)
     self.tiles = {}
 
     for tile_x = 0, Chunk.WIDTH - 1 do
@@ -25,6 +26,11 @@ function Chunk:initialize()
             local tile = Sprite:new()
             tile:set_pixel(0, 0, 1) -- DEBUG
             self.tiles[tile_x][tile_y] = tile
+
+            tile:listen('change', function ()
+                self:redraw()
+                self:emit('change', tile_x, tile_y, tile)
+            end)
         end
     end
 
@@ -33,27 +39,19 @@ function Chunk:initialize()
     self:redraw()
 end
 
-function Chunk:is_modified()
-    return self.modified
+function Chunk:get_tile(tile_x, tile_y)
+    return self.tiles[tile_x][tile_y]
 end
 
-function Chunk:clear_modified()
-    self.modified = false
-end
+function Chunk:set_tile(tile_x, tile_y, tile)
+    self.tiles[tile_x][tile_y] = tile
 
-function Chunk:with_tile(tile_x, tile_y, f)
-    local tile = self.tiles[tile_x][tile_y]
-    f(tile)
-    
-    if tile:is_modified() then
-        self.modified = true
+    sprite:listen('change', function ()
         self:redraw()
-    end
-end
+        self:emit('change', tile_x, tile_y, tile)
+    end)
 
-function Chunk:set(tile_x, tile_y, sprite)
-    self.tiles[tile_x][tile_y] = sprite
-    self.modified = true
+    self:emit('change', tile_x, tile_y, tile)
     self:redraw()
 end
 

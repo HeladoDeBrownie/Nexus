@@ -11,7 +11,7 @@ function EventSource:emit(event_name, ...)
 
     if handlers ~= nil then
         for index, handler in ipairs(handlers) do
-            handler(event_name, ...)
+            handler(self, event_name, ...)
         end
     end
 end

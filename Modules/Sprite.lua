@@ -1,8 +1,7 @@
-local Sprite = augment{}
-
---# Requires
-
+local EventSource = require'EventSource'
 local Predicates = require'Predicates'
+
+local Sprite = augment(mix{EventSource})
 
 --# Constants
 
@@ -64,7 +63,7 @@ function Sprite.from_image_data(image_data)
 end
 
 function Sprite:initialize(source_image_data)
-    self.modified = false
+    EventSource.initialize(self)
     self.image_data = love.image.newImageData(Sprite.WIDTH, Sprite.HEIGHT)
 
     if source_image_data ~= nil then
@@ -72,14 +71,6 @@ function Sprite:initialize(source_image_data)
     end
 
     self.image = love.graphics.newImage(self.image_data)
-end
-
-function Sprite:is_modified()
-    return self.modified
-end
-
-function Sprite:clear_modified()
-    self.modified = false
 end
 
 function Sprite:get_image()
@@ -97,7 +88,7 @@ end
 function Sprite:set_pixel(x, y, palette_index)
     self.image_data:setPixel(x, y, palette_index_to_rgba(palette_index))
     self.image:replacePixels(self.image_data)
-    self.modified = true
+    self:emit('change', x, y, palette_index)
 end
 
 function Sprite:to_byte_string()
