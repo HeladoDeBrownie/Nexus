@@ -9,7 +9,7 @@ return {
     Label = require'UI/Label',
     Overlay = require'UI/Overlay',
     Scalable = require'UI/Scalable',
-    SceneView = require'UI/SceneView',
+    SessionView = require'UI/SessionView',
     TextInput = require'UI/TextInput',
     Widget = require'UI/Widget',
 }

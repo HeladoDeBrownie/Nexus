@@ -75,13 +75,13 @@ function love.load()
 
     -- Create the UI.
 
+    Main.session = require'Network/Session':new()
     local UI = require'UI'
     local console = UI.Console:new{Main = Main}
-    local scene_view = UI.SceneView:new()
-    Main.main_widget = UI.Overlay:new(scene_view, console)
+    local session_view = UI.SessionView:new(Main.session)
+    Main.main_widget = UI.Overlay:new(session_view, console)
     Main.main_widget:bind('F11', toggle_fullscreen)
     love.resize(love.graphics.getDimensions())
-    Main.session = require'Network/Session':new(scene_view)
 
     -- Copy prints to both standard output and the in-game console.
 
@@ -94,7 +94,6 @@ function love.load()
 end
 
 function love.update(time_delta)
-    Main.session:process()
     Main.time = Main.time + time_delta
 
     while Main.time >= SECONDS_PER_TICK do

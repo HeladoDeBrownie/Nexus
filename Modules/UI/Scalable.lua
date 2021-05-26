@@ -31,8 +31,12 @@ function Scalable:adjust_scale(scale_delta)
     self:set_scale(self:get_scale() + scale_delta)
 end
 
-function Scalable:apply_scale()
-    love.graphics.scale(self.settings.scale)
+function Scalable:apply_scale(a_transform)
+    if a_transform == nil then
+        love.graphics.scale(self.settings.scale)
+    else
+        a_transform:scale(self.settings.scale)
+    end
 end
 
 function Scalable:scroll(units)

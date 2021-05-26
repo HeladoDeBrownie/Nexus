@@ -19,14 +19,14 @@ return {
             },
         },
 
-        SceneView = {
+        SessionView = {
             scale = {
                 type = is_integer_in_range(
-                    UI.SceneView.minimum_scale,
-                    UI.SceneView.maximum_scale
+                    UI.SessionView.minimum_scale,
+                    UI.SessionView.maximum_scale
                 ),
 
-                default = UI.SceneView.default_scale,
+                default = UI.SessionView.default_scale,
             },
         },
     },
