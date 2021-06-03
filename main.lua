@@ -77,7 +77,12 @@ function love.load()
 
     Main.session = require'Network/Session':new()
     local UI = require'UI'
-    local console = UI.Console:new{Main = Main}
+
+    local console = UI.Console:new(mix{require'.', {
+        Main = Main,
+        SessionCache = SessionCache,
+    }})
+
     local session_view = UI.SessionView:new(Main.session)
     Main.main_widget = UI.Overlay:new(session_view, console)
     Main.main_widget:bind('F11', toggle_fullscreen)
