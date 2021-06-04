@@ -26,6 +26,9 @@ function SessionView:initialize(session)
     self:set_session(session)
     self:set_active_color(0)
     self.keys_down = {}
+
+    -- transient draw state
+    self.entity_canvas = love.graphics.newCanvas(self:get_dimensions())
     self.transform = love.math.newTransform()
 
     for color = 0, 3 do
@@ -104,17 +107,38 @@ function SessionView:paint_background()
 end
 
 function SessionView:paint_foreground()
+    -- Stage entity drawing using a separate canvas so that we can use the
+    -- "replace" blend mode, which makes entities erase any portions of other
+    -- entities that they are drawn in front of.
+    love.graphics.push'all'
+    love.graphics.setCanvas(self.entity_canvas)
+    love.graphics.clear()
+    love.graphics.setShader()
+    love.graphics.setBlendMode'replace'
     love.graphics.applyTransform(self.transform)
     local area = self:get_area()
     local player = self:get_player()
 
+    -- Draw non-player entities.
     for entity in area:each_entity() do
         if entity ~= player then
             love.graphics.draw(entity:get_sprite():get_image(), area:get_entity_position(entity))
         end
     end
 
+    -- Draw the player.
     love.graphics.draw(player:get_sprite():get_image(), area:get_entity_position(player))
+
+    -- Draw indicators above non-player entities.
+    for entity in area:each_entity() do
+        if entity ~= player then
+            local x, y = area:get_entity_position(entity)
+            love.graphics.draw(INDICATOR, x + math.floor((Sprite.WIDTH - INDICATOR_WIDTH) / 2), y - INDICATOR_HEIGHT - 1)
+        end
+    end
+
+    love.graphics.pop()
+    love.graphics.draw(self.entity_canvas)
 end
 
 function SessionView:press(screen_x, screen_y)
@@ -127,6 +151,12 @@ function SessionView:press(screen_x, screen_y)
             self.active_color
         )
     end
+end
+
+function SessionView:resize(...)
+    Widget.resize(self, ...)
+    local width, height = ...
+    self.entity_canvas = love.graphics.newCanvas(width, height)
 end
 
 function SessionView:tick()
