@@ -4,8 +4,8 @@ local Color = require'Color'
 local ColorScheme = require'ColorScheme'
 local Entity = require'Entity'
 local EventSource = require'EventSource'
-local SessionCache = require'SessionCache'
 local Socket = require'socket'
+local Sprite = require'Sprite'
 
 local Session = augment(mix{EventSource})
 
@@ -41,7 +41,13 @@ function Session:initialize()
 
     self.area:set_chunk(0, 0, Chunk:new())
     self.area:set_chunk(1, 1, Chunk:new())
-    self.player = Entity:new(SessionCache.player_sprite)
+    local file_name = 'Player Sprite.png'
+
+    if love.filesystem.getInfo(file_name) == nil then
+        file_name = 'Assets/Sprites/She.png'
+    end
+
+    self.player = Entity:new(Sprite.from_file(file_name))
     self.area:add_entity(self.player, 0, 0)
     self.status = 'offline'
 end
@@ -55,7 +61,12 @@ function Session:get_player()
 end
 
 function Session:get_status()
-    return self.status    
+    return self.status
+end
+
+function Session:quit()
+    love.filesystem.write('Player Sprite.png',
+        self:get_player():get_sprite():get_image_data():encode'png')
 end
 
 --#

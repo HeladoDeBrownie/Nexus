@@ -7,7 +7,6 @@
 --# Requires
 
 local Serialization
-local SessionCache
 local Settings
 
 --# Constants
@@ -48,8 +47,6 @@ function love.load()
     _G.augment = Mixin.augment
     _G.mix = Mixin.mix
 
-    SessionCache = require'SessionCache'
-
     -- The serialization module is used both in this callback and in love.quit.
     Serialization = require'Serialization'
 
@@ -63,14 +60,6 @@ function love.load()
     -- While a key is held, repeat its key event after a short delay.
     love.keyboard.setKeyRepeat(true)
 
-    local file_name = 'Player Sprite.png'
-
-    if love.filesystem.getInfo(file_name) == nil then
-        file_name = 'Assets/Sprites/She.png'
-    end
-
-    SessionCache.player_sprite = require'Sprite'.from_file(file_name)
-
     Main.time = 0.0
 
     -- Create the UI.
@@ -80,7 +69,6 @@ function love.load()
 
     local console = UI.Console:new(mix{require'.', {
         Main = Main,
-        SessionCache = SessionCache,
     }})
 
     local session_view = UI.SessionView:new(Main.session)
@@ -108,16 +96,13 @@ function love.update(time_delta)
 end
 
 function love.quit()
-    -- Write any changes to the settings and player sprite to the save
-    -- directory.
+    -- Write the settings to storage and notify the current session to quit.
 
     love.filesystem.write('Settings.lua',
         Serialization.to_lua_module(Settings)
     )
 
-    love.filesystem.write('Player Sprite.png',
-        SessionCache.player_sprite:get_image_data():encode'png'
-    )
+    Main.session:quit()
 end
 
 -- The remaining callbacks defined here are thin wrappers around UI code.
