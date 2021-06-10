@@ -1,4 +1,5 @@
 local Chunk = require'Chunk'
+local Font = require'Font'
 local Sprite = require'Sprite'
 local Scalable = require'UI/Scalable'
 local Widget = require'UI/Widget'
@@ -26,6 +27,7 @@ function SessionView:initialize(session)
     self:set_session(session)
     self:set_active_color(0)
     self.keys_down = {}
+    self.font = Font:new(require'Assets/Carpincho Mono')
 
     -- transient draw state
     self.entity_canvas = love.graphics.newCanvas(self:get_dimensions())
@@ -139,6 +141,12 @@ function SessionView:paint_foreground()
 
     love.graphics.pop()
     love.graphics.draw(self.entity_canvas)
+    love.graphics.scale(2)
+    local status = self:get_session():get_status()
+
+    if status ~= 'offline' then
+        self.font:print(status)
+    end
 end
 
 function SessionView:press(screen_x, screen_y)
