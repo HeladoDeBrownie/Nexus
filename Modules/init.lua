@@ -7,7 +7,7 @@ return {
     Chunk = require'Chunk',
     Color = require'Color',
     ColorScheme = require'ColorScheme',
-    deep_merge = require'deep_merge',
+    Debug = require'Debug',
     Entity = require'Entity',
     EventSource = require'EventSource',
     Font = require'Font',
@@ -20,4 +20,6 @@ return {
     SparseArray2D = require'SparseArray2D',
     Sprite = require'Sprite',
     TextBuffer = require'TextBuffer',
+
+    deep_merge = require'deep_merge',
 }
