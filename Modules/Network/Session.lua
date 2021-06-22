@@ -6,6 +6,9 @@ local Entity = require'Entity'
 local EventSource = require'EventSource'
 local Socket = require'socket'
 local Sprite = require'Sprite'
+local Host = require'Network/Host'
+local SocketConnection = require'Network/SocketConnection'
+local Visitor = require'Network/Visitor'
 
 local Session = augment(mix{EventSource})
 
@@ -62,6 +65,52 @@ end
 
 function Session:get_status()
     return self.status
+end
+
+function Session:host(port)
+    port = port or Session.DEFAULT_PORT
+    local socket, error_reason = Socket.bind('*', port)
+
+    if socket == nil then
+        error(error_reason)
+    else
+        socket:settimeout(0)
+        self.socket = socket
+        self.host = Host:new()
+        self.status = 'hosting'
+    end
+end
+
+function Session:visit(host, port)
+    host = host or Session.DEFAULT_HOST
+    port = port or Session.DEFAULT_PORT
+    local socket, error_reason = Socket.connect(host, port)
+
+    if socket == nil then
+        error(error_reason)
+    else
+        socket:settimeout(0)
+        self.socket = socket
+        self.visitor = Visitor:new(SocketConnection:new(socket))
+        self.status = 'visiting'
+    end
+end
+
+function Session:process()
+    if self.status == 'hosting' then
+        client_socket, error_reason = self.socket:accept()
+
+        if client_socket ~= nil then
+            client_socket:settimeout(0)
+            self.host:connect(SocketConnection:new(client_socket))
+        elseif error_reason ~= 'timeout' then
+            error(error_reason)
+        end
+
+        self.host:process()
+    elseif self.status == 'visiting' then
+        self.visitor:process()
+    end
 end
 
 function Session:quit()

@@ -91,6 +91,7 @@ function love.update(time_delta)
 
     while Main.time >= SECONDS_PER_TICK do
         Main.time = Main.time - SECONDS_PER_TICK
+        Main.session:process()
         Main.main_widget:tick()
     end
 end
@@ -108,7 +109,6 @@ end
 -- The remaining callbacks defined here are thin wrappers around UI code.
 
 function love.draw()
-    love.graphics.clear()
     Main.main_widget:draw()
 end
 

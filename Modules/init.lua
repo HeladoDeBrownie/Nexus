@@ -1,6 +1,7 @@
--- Re-export (almost) all modules.
+-- Re-export all modules.
 
 return {
+    Network = require'Network',
     UI = require'UI',
 
     Area = require'Area',
